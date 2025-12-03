@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="header-actions">
+    <h2>👥 Employees & Departments</h2>
+    <div class="buttons-group">
+      <button class="btn-secondary" routerLink="/hr/create-department" style="margin-right: 10px;">🏢 New Dept</button>
+      <button class="btn-primary" routerLink="/hr/create-employee">👤 New Employee</button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">⏳ Loading staff...</div>
+  } 
+  @else {
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Job Title</th>
+          <th>Department</th>
+          <th>Phone</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (emp of employees(); track emp.id) {
+          <tr>
+            <td><strong>{{ emp.fullName }}</strong></td>
+            <td>{{ emp.jobTitle }}</td>
+            <td><span class="badge dept">{{ emp.departmentName || 'N/A' }}</span></td>
+            <td>{{ emp.phoneNumber }}</td>
+            <td>{{ emp.email }}</td>
+          </tr>
+        } 
+        @empty {
+          <tr><td colspan="5" style="text-align: center;">No employees found.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

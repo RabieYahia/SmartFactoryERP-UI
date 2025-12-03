@@ -1,0 +1,57 @@
+<div class="container">
+  <h2>📥 Receive Goods (PO #{{ orderData()?.poNumber }})</h2>
+
+  @if (orderData()) {
+    <form [formGroup]="receiptForm" (ngSubmit)="onSubmit()" class="receipt-form">
+      
+      <div class="info-card">
+        <p><strong>Supplier:</strong> {{ orderData().supplierName }}</p>
+        <p><strong>Date:</strong> {{ orderData().orderDate | date }}</p>
+        
+        <div class="form-group">
+          <label>Received By:</label>
+          <input type="text" formControlName="receivedBy">
+        </div>
+        <div class="form-group">
+          <label>Notes:</label>
+          <input type="text" formControlName="notes" placeholder="e.g. Delivery arrived late">
+        </div>
+      </div>
+
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Ordered Qty</th>
+            <th width="150">Received ✅</th>
+            <th width="150">Rejected ❌</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="items">
+          @for (control of itemsArray.controls; track $index) {
+            <tr [formGroupName]="$index">
+              <td>{{ control.get('materialName')?.value }}</td>
+              <td style="font-weight: bold;">{{ control.get('orderedQty')?.value }}</td>
+              <td>
+                <input type="number" formControlName="receivedQuantity" class="input-qty">
+              </td>
+              <td>
+                <input type="number" formControlName="rejectedQuantity" class="input-qty reject">
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="actions">
+        <button type="button" class="btn-secondary" routerLink="/purchasing/orders">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+          @if (isSubmitting()) { Processing... } @else { 📥 Confirm Receipt }
+        </button>
+      </div>
+    </form>
+  } 
+  @else {
+    <div class="loading-spinner">Loading Order Details...</div>
+  }
+</div>

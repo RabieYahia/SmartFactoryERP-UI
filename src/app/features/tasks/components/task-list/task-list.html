@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="header-actions">
+    <h2>📋 Tasks Management</h2>
+    <div class="buttons">
+      <button class="btn-secondary" routerLink="/tasks/performance" style="margin-right: 10px;">
+        🏆 Performance Report
+      </button>
+      
+      <button class="btn-primary" routerLink="/tasks/create">
+        ➕ New Task
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">⏳ Loading tasks...</div>
+  } 
+  @else {
+    <div class="tasks-grid">
+      
+      @for (task of tasks(); track task.id) {
+        <div class="task-card">
+          <div class="card-header">
+            <span class="status-badge" 
+                  [class.in-progress]="task.status === 'InProgress'"
+                  [class.completed]="task.status === 'Completed'">
+              {{ task.status }}
+            </span>
+            <span class="priority-dot" [ngClass]="getPriorityClass(task.priority)" [title]="'Priority: ' + task.priority"></span>
+          </div>
+          
+          <h3>{{ task.title }}</h3>
+          <p class="desc">{{ task.description || 'No description provided.' }}</p>
+          
+          <div class="meta-info">
+            <div class="assignee" title="Assigned Employee">
+              👤 {{ task.assignedEmployeeName || 'Unassigned' }}
+            </div>
+            <div class="date" title="Due Date">
+              📅 {{ task.dueDate | date:'shortDate' }}
+            </div>
+          </div>
+
+          <div class="actions">
+            
+            @if (task.status === 'Pending') {
+              <button class="btn-action btn-start" (click)="updateStatus(task, 'Start')">
+                🚀 Start Work
+              </button>
+            }
+
+            @if (task.status === 'InProgress') {
+              <button class="btn-action btn-complete" (click)="updateStatus(task, 'Complete')">
+                ✅ Mark Done
+              </button>
+            }
+
+            @if (task.status === 'Completed') {
+              <span class="done-text">✨ Good Job!</span>
+            }
+
+          </div>
+
+        </div>
+      } 
+      @empty {
+        <div class="empty-state">
+          <p>No tasks found. Create a new one to get started!</p>
+        </div>
+      }
+    </div>
+  }
+</div>

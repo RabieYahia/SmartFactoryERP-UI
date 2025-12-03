@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="container">
+  <div class="header-actions">
+    <h2>👥 Customers List</h2>
+    
+    <div class="buttons-group">
+      <button class="btn-secondary" routerLink="/sales/create-order" style="margin-right: 10px;">
+        🛒 New Order
+      </button>
+      
+      <button class="btn-primary" routerLink="/sales/create-customer">
+        ➕ Add Customer
+      </button>
+    </div>
+  </div>
+
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">⏳ Loading customers...</div>
+  } 
+  @else {
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Credit Limit</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (customer of customers(); track customer.id) {
+          <tr>
+            <td><strong>{{ customer.customerName }}</strong></td>
+            <td>{{ customer.phoneNumber }}</td>
+            <td>{{ customer.email }}</td>
+            <td style="color: green; font-weight: bold;">{{ customer.creditLimit | currency }}</td>
+            <td>
+              <span class="badge" [class.active]="customer.isActive">
+                {{ customer.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </tr>
+        } 
+        @empty {
+          <tr>
+            <td colspan="5" style="text-align: center;">No customers found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

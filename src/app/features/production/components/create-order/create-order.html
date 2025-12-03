@@ -1,0 +1,37 @@
+<div class="container">
+  <h2>🏭 Plan New Production</h2> <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="prod-form">
+    
+    <div class="form-group">
+      <label>📦 What to produce?</label>
+      <select formControlName="productId">
+        <option value="">-- Select Finished Product --</option>
+        @for (prod of products(); track prod.id) {
+          <option [value]="prod.id">{{ prod.materialName }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🔢 Quantity</label>
+      <input type="number" formControlName="quantity" min="1">
+    </div>
+
+    <div class="form-group">
+      <label>📅 Start Date</label>
+      <input type="date" formControlName="startDate">
+    </div>
+
+    <div class="form-group">
+      <label>📝 Notes</label>
+      <textarea formControlName="notes" rows="3" placeholder="e.g. Urgent order..."></textarea>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-secondary" routerLink="/production/bom">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+        @if (isSubmitting()) { Planning... } @else { 📅 Plan Order }
+      </button>
+    </div>
+
+  </form>
+</div>

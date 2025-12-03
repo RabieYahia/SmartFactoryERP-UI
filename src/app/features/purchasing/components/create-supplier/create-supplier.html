@@ -1,0 +1,61 @@
+<p>create-supplier works!</p>
+<div class="container">
+  <h2>➕ Register New Supplier</h2>
+
+  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="form-card">
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Supplier Code <span class="req">*</span></label>
+        <input type="text" formControlName="supplierCode" placeholder="e.g. SUP-2024-01">
+        @if (supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched) {
+          <small class="error">Code is required.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Company Name <span class="req">*</span></label>
+        <input type="text" formControlName="supplierName" placeholder="e.g. Advanced Steel Co.">
+        @if (supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched) {
+          <small class="error">Company name is required.</small>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Contact Person</label>
+        <input type="text" formControlName="contactPerson" placeholder="e.g. Mr. John Doe">
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number <span class="req">*</span></label>
+        <input type="text" formControlName="phoneNumber" placeholder="e.g. +2010xxxxxxx">
+        @if (supplierForm.get('phoneNumber')?.invalid && supplierForm.get('phoneNumber')?.touched) {
+          <small class="error">Phone is required.</small>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" formControlName="email" placeholder="info@company.com">
+      @if (supplierForm.get('email')?.hasError('email')) {
+        <small class="error">Invalid email format.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Address</label>
+      <textarea formControlName="address" rows="3" placeholder="Full office address..."></textarea>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-secondary" routerLink="/purchasing">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+        @if (isSubmitting()) { Saving... } @else { Save Supplier }
+      </button>
+    </div>
+
+  </form>
+</div>

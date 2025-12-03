@@ -1,0 +1,76 @@
+.container { padding: 30px; font-family: 'Segoe UI', sans-serif; }
+
+.dashboard-header { margin-bottom: 30px; }
+.subtitle { color: #666; }
+
+/* الشبكة (Grid System) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+/* البطاقات */
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  border-top: 5px solid transparent;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* ألوان خاصة لكل كارت */
+.inventory-card { border-top-color: #0055ff; }
+.sales-card { border-top-color: #28a745; }
+.production-card { border-top-color: #ff9800; }
+
+.icon { font-size: 2.5rem; margin-bottom: 15px; }
+h3 { margin: 0 0 20px 0; color: #333; }
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 1.1rem;
+}
+
+.stat-row:last-child { border-bottom: none; }
+
+/* ألوان الأرقام */
+.warning strong { color: #dc3545; }
+.success strong { color: #28a745; }
+.highlight { color: #ff9800; font-size: 1.5rem; }
+
+.status-text {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+  color: #666;
+  background: #f8f9fa;
+  padding: 8px;
+  border-radius: 6px;
+  /* ... الستايل القديم ... */
+
+/* ألوان خاصة للمالية */
+.finance-card { border-top-color: #6f42c1; } /* بنفسجي */
+
+.danger strong { color: #dc3545; } /* أحمر للمصروفات */
+
+.stat-row.total {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px dashed #eee;
+  font-size: 1.2rem;
+}
+
+.profit strong { color: #28a745; } /* أخضر للربح */
+.loss strong { color: #dc3545; }   /* أحمر للخسارة */ 
+}

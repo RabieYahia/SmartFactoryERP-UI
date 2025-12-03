@@ -1,0 +1,33 @@
+.container { max-width: 700px; margin: 20px auto; font-family: sans-serif; }
+
+.form-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border-top: 4px solid #6f42c1; /* لون المبيعات المميز */
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-group { margin-bottom: 15px; }
+
+label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; }
+.req { color: red; }
+
+input, textarea {
+  width: 100%; padding: 10px; border: 1px solid #ddd;
+  border-radius: 5px; box-sizing: border-box;
+}
+input:focus, textarea:focus { border-color: #6f42c1; outline: none; }
+
+.error { color: #e53e3e; font-size: 0.85rem; margin-top: 4px; display: block; }
+
+.actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;
+}
+
+.btn-primary { background: #6f42c1; color: white; padding: 10px 25px; border: none; border-radius: 5px; cursor: pointer; }
+.btn-primary:disabled { background: #b8a4e0; cursor: not-allowed; }
+
+.btn-secondary { background: #ecf0f1; color: #333; padding: 10px 25px; border: none; border-radius: 5px; cursor: pointer; }

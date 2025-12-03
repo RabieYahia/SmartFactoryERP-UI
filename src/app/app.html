@@ -1,0 +1,19 @@
+<nav class="main-nav">
+  <h1 style="cursor: pointer" routerLink="/dashboard">🏭 Smart Factory</h1>
+  
+  <ul>
+    <li><a routerLink="/dashboard" routerLinkActive="active-link">📊 Dashboard</a></li>
+    <li><a routerLink="/hr" routerLinkActive="active-link">👥 HR</a></li>
+    <li><a routerLink="/inventory" routerLinkActive="active-link">📦 Inventory</a></li>
+    <li><a routerLink="/purchasing" routerLinkActive="active-link">🚚 Purchasing</a></li>
+    <li><a routerLink="/sales" routerLinkActive="active-link">💰 Sales</a></li>
+    <li><a routerLink="/production/bom" routerLinkActive="active-link">📜 BOM</a></li>
+    
+    <li><a routerLink="/tasks/performance" routerLinkActive="active-link">🏆 Performance</a></li>
+    <li><a routerLink="/tasks" routerLinkActive="active-link">📋 Tasks</a></li>
+  </ul>
+</nav>
+
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

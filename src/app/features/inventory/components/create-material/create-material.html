@@ -1,0 +1,50 @@
+<div class="container">
+  <h2>➕ Add New Material</h2>
+
+  <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="material-form">
+    
+    <div class="form-group">
+      <label>Code:</label>
+      <input type="text" formControlName="materialCode" placeholder="e.g. STEEL-001">
+      
+      @if (materialForm.get('materialCode')?.invalid && materialForm.get('materialCode')?.touched) {
+        <small class="error">Code is required (Max 50 chars).</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Name:</label>
+      <input type="text" formControlName="materialName" placeholder="e.g. Steel Sheet">
+      @if (materialForm.get('materialName')?.invalid && materialForm.get('materialName')?.touched) {
+        <small class="error">Name is required.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Unit:</label>
+      <input type="text" formControlName="unitOfMeasure" placeholder="e.g. KG, Meter">
+    </div>
+
+    <div class="form-group">
+      <label>Price:</label>
+      <input type="number" formControlName="unitPrice">
+      @if (materialForm.get('unitPrice')?.hasError('min')) {
+        <small class="error">Price must be greater than 0.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Min Stock Level:</label>
+      <input type="number" formControlName="minimumStockLevel">
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-secondary" routerLink="/inventory">Cancel</button>
+      
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+        @if (isSubmitting()) { Saving... } @else { Save Material }
+      </button>
+    </div>
+
+  </form>
+</div>

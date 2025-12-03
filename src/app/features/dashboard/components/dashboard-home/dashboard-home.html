@@ -1,0 +1,38 @@
+<div class="container">
+  <header class="dashboard-header">
+    <h2>📊 Factory Overview</h2>
+    <p class="subtitle">Real-time insights from your factory floor.</p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">⏳ Crunching numbers...</div>
+  } 
+  @else if (stats()) {
+    
+    <div class="stats-grid">
+  
+  <div class="card finance-card"> <div class="icon">💵</div>
+    <h3>Financial Health</h3>
+    
+    <div class="stat-row success">
+      <span>Total Sales:</span>
+      <strong>{{ stats()?.totalRevenue | currency }}</strong>
+    </div>
+    
+    <div class="stat-row danger">
+      <span>Total Expenses:</span>
+      <strong>- {{ stats()?.totalExpenses | currency }}</strong>
+    </div>
+
+    <div class="stat-row total" 
+         [class.profit]="stats()?.netProfit! >= 0" 
+         [class.loss]="stats()?.netProfit! < 0">
+      <span>Net Profit:</span>
+      <strong>{{ stats()?.netProfit | currency }}</strong>
+    </div>
+  </div>
+
+</div>
+
+  }
+</div>

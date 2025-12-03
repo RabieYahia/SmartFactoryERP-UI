@@ -1,0 +1,48 @@
+<div class="container">
+  <h2>🏆 Employee Performance Report</h2>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">⏳ Analyzing performance...</div>
+  } 
+  @else {
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Total Tasks</th>
+          <th>Completed ✅</th>
+          <th>Pending ⏳</th>
+          <th>Completion Rate</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of report(); track item.employeeId) {
+          <tr>
+            <td style="font-weight: bold;">{{ item.employeeName }}</td>
+            <td>{{ item.totalTasks }}</td>
+            <td style="color: green;">{{ item.completedTasks }}</td>
+            <td style="color: orange;">{{ item.pendingTasks }}</td>
+            
+            <td style="width: 200px;">
+              <div class="progress-container">
+                <div class="progress-bar" [style.width.%]="item.completionRate">
+                  {{ item.completionRate }}%
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <span class="badge" [ngClass]="getBadgeClass(item.performanceLabel)">
+                {{ item.performanceLabel }}
+              </span>
+            </td>
+          </tr>
+        } 
+        @empty {
+          <tr><td colspan="6" style="text-align: center;">No performance data available.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

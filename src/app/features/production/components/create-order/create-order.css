@@ -1,0 +1,23 @@
+.container { max-width: 600px; margin: 40px auto; font-family: sans-serif; }
+
+.prod-form {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  border-top: 5px solid #ff9800; /* برتقالي للإنتاج */
+}
+
+.form-group { margin-bottom: 20px; }
+label { font-weight: bold; display: block; margin-bottom: 8px; color: #333; }
+select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+select:focus, input:focus { border-color: #ff9800; outline: none; }
+
+.actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px; }
+
+.btn-primary {
+  background-color: #ff9800; color: white; padding: 12px 25px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;
+}
+.btn-secondary {
+  background-color: #eee; color: #333; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer;
+}

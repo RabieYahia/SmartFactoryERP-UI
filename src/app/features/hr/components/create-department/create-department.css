@@ -1,0 +1,114 @@
+/* 1. الحاوية الرئيسية والعنوان */
+.container {
+  padding: 30px;
+  max-width: 600px; /* تحديد العرض عشان ميكونش عريض أوي على الشاشات الكبيرة */
+  margin: 0 auto;   /* توسيط الفورم في نصف الشاشة */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 25px;
+  border-bottom: 3px solid #e9ecef;
+  padding-bottom: 15px;
+  display: inline-block; /* الخط يبقى على قد الكلمة بس */
+}
+
+/* 2. تصميم الكارت (الفورم) */
+.form-card {
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 12px; /* حواف دائرية ناعمة */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); /* ظل خفيف يعطي عمق */
+  border: 1px solid #f0f0f0;
+}
+
+/* 3. تنسيق مجموعات الإدخال (Labels & Inputs) */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column; /* الاسم فوق الحقل */
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="number"] {
+  padding: 12px 15px;
+  border: 2px solid #dee2e6; /* حدود رمادية فاتحة */
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease; /* تنعيم الحركة عند التغيير */
+  background-color: #fdfdfd;
+}
+
+/* تأثير عند الضغط داخل الحقل (Focus) */
+input:focus {
+  border-color: #0055ff; /* لون أزرق مميز */
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(0, 85, 255, 0.1); /* توهج خفيف حول الحقل */
+  outline: none; /* إزالة خط المتصفح الافتراضي */
+}
+
+/* 4. منطقة الأزرار (Actions) */
+.actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end; /* الأزرار على اليمين */
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* مسافة بين الأيقونة والنص لو فيه */
+}
+
+/* زر الحفظ (Primary) */
+.btn-primary {
+  background: linear-gradient(135deg, #0055ff, #003db8); /* تدرج لوني جذاب */
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 85, 255, 0.3);
+}
+
+.btn-primary:hover:not([disabled]) {
+  transform: translateY(-2px); /* يرتفع قليلاً لأعلى */
+  box-shadow: 0 6px 15px rgba(0, 85, 255, 0.4);
+}
+
+/* زر الإلغاء (Secondary) */
+.btn-secondary {
+  background-color: #fff;
+  color: #495057;
+  border: 2px solid #dee2e6;
+}
+
+.btn-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+  color: #212529;
+}
+
+/* حالة الزر المعطل (Disabled - أثناء الحفظ) */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important; /* إلغاء حركة الرفع */
+  box-shadow: none !important;
+}

@@ -1,0 +1,46 @@
+<div class="container">
+  <h2>💸 Record New Expense</h2>
+  
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
+    
+    <div class="form-group">
+      <label>Description:</label>
+      <input formControlName="description" placeholder="e.g. Office Electricity Bill">
+    </div>
+
+    <div class="form-group">
+      <label>Amount ($):</label>
+      <input type="number" formControlName="amount" min="1">
+    </div>
+
+    <div class="form-group">
+      <label>Category:</label>
+      <select formControlName="category">
+        <option [ngValue]="null">-- Select Category --</option>
+        @for (cat of categories; track cat) {
+          <option [value]="cat">{{ cat }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Paid By (Employee):</label>
+      <select formControlName="employeeId">
+        <option [ngValue]="null">-- Company Account --</option>
+        @for (emp of employees(); track emp.id) {
+          <option [value]="emp.id">{{ emp.fullName }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Date:</label>
+      <input type="date" formControlName="expenseDate">
+    </div>
+
+    <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+      @if(isSubmitting()) { Saving... } @else { 💾 Save Expense }
+    </button>
+
+  </form>
+</div>

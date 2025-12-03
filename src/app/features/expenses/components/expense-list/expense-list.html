@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="header-actions">
+    <h2>📉 Expenses History</h2>
+    <button class="btn-primary" routerLink="/expenses/create">➕ New Expense</button>
+  </div>
+
+  <table class="modern-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (exp of expenses(); track exp.id) {
+        <tr>
+          <td>{{ exp.expenseDate | date }}</td>
+          <td>{{ exp.description }}</td>
+          <td><span class="badge">{{ exp.category }}</span></td>
+          <td style="color: red; font-weight: bold;">- {{ exp.amount | currency }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

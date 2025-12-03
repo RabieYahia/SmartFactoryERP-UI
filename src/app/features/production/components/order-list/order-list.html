@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="header-actions">
+    <h2>🏭 Production Orders</h2>
+    <div class="buttons-group">
+      <button class="btn-secondary" routerLink="/production/bom" style="margin-right: 10px;">📜 Define Recipe (BOM)</button>
+      <button class="btn-primary" routerLink="/production/create-order">📅 Plan New Order</button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">⏳ Loading factory status...</div>
+  } 
+  @else {
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Start Date</th>
+          <th>Status</th>
+          <th>Actions</th> </tr>
+      </thead>
+      <tbody>
+        @for (order of orders(); track order.id) {
+          <tr>
+            <td><strong>{{ order.orderNumber }}</strong></td>
+            <td>{{ order.productName }}</td>
+            <td style="font-weight: bold;">{{ order.quantity }}</td>
+            <td>{{ order.startDate | date:'mediumDate' }}</td>
+            <td>
+              <span class="badge" 
+                    [class.planned]="order.status === 'Planned'"
+                    [class.started]="order.status === 'Started'"
+                    [class.completed]="order.status === 'Completed'">
+                {{ order.status }}
+              </span>
+            </td>
+            <td>
+              @if (order.status === 'Planned') {
+                <button class="btn-action btn-start" (click)="onStart(order.id)">
+                  🚀 Start
+                </button>
+              }
+              
+              @else if (order.status === 'Started') {
+                <button class="btn-action btn-complete" (click)="onComplete(order.id)">
+                  ✅ Complete
+                </button>
+              }
+
+              @else if (order.status === 'Completed') {
+                <span class="text-muted">Stored in Warehouse</span>
+              }
+            </td>
+          </tr>
+        } 
+        @empty {
+          <tr>
+            <td colspan="6" style="text-align: center;">No production orders found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
