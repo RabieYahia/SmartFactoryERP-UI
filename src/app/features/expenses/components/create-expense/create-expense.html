@@ -1,46 +1,147 @@
-<div class="container">
-  <h2>💸 Record New Expense</h2>
-  
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
-    
-    <div class="form-group">
-      <label>Description:</label>
-      <input formControlName="description" placeholder="e.g. Office Electricity Bill">
+<!-- ⚠️ COMPONENT: Expense Creation Form
+     - Purpose: Record new organizational expenses with description, amount, category, and date
+     - No functional changes - styling updates only using Bootstrap classes
+     - All form validation and submission logic remains intact
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header Section: Page title and description -->
+  <div class="mb-4">
+    <h2 class="h3">💸 Record New Expense</h2>
+    <p class="text-muted small">Add a new expense entry to the system</p>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <!-- Loading Alert: Display spinner while submitting form -->
+      @if (isSubmitting()) {
+        <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <span>⏳ Saving expense... Please wait.</span>
+        </div>
+      }
+      
+      <!-- Expense Creation Form Card: Uses Bootstrap form-control and reactive form validation -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Description Field: Brief description of the expense (Required) -->
+          <div class="mb-3">
+            <label for="description" class="form-label">
+              <i class="bi bi-card-text me-2"></i>Description
+            </label>
+            <input 
+              class="form-control" 
+              id="description"
+              formControlName="description" 
+              placeholder="e.g. Office Electricity Bill"
+              [class.is-invalid]="form.get('description')?.invalid && form.get('description')?.touched"
+            >
+            <!-- Show error message if field is invalid and touched -->
+            @if (form.get('description')?.invalid && form.get('description')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Please enter a description.
+              </div>
+            }
+            <small class="form-text text-muted">What is this expense for?</small>
+          </div>
+
+          <!-- Amount Field: Expense amount in currency (Required, must be > 0) -->
+          <div class="mb-3">
+            <label for="amount" class="form-label">
+              <i class="bi bi-cash-coin me-2"></i>Amount ($)
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="amount"
+              formControlName="amount" 
+              min="1"
+              step="0.01"
+              placeholder="0.00"
+              [class.is-invalid]="form.get('amount')?.invalid && form.get('amount')?.touched"
+            >
+            <!-- Show error if amount validation fails -->
+            @if (form.get('amount')?.invalid && form.get('amount')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Amount must be greater than 0.
+              </div>
+            }
+          </div>
+
+          <!-- Category Select: Choose expense category (Required) -->
+          <div class="mb-3">
+            <label for="category" class="form-label">
+              <i class="bi bi-tag me-2"></i>Category
+            </label>
+            <select class="form-select" id="category" formControlName="category" [class.is-invalid]="form.get('category')?.invalid && form.get('category')?.touched">
+              <option [ngValue]="null">-- Select Category --</option>
+              <!-- Loop through available categories -->
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+            <!-- Show error if category not selected -->
+            @if (form.get('category')?.invalid && form.get('category')?.touched) {
+              <div class="invalid-feedback d-block\">
+                <i class="bi bi-exclamation-circle me-1\"></i> Please select a category.
+              </div>
+            }
+          </div>
+
+          <!-- Employee Select: Who paid for this expense (Optional, defaults to Company Account) -->
+          <div class="mb-3">
+            <label for="employeeId" class="form-label">
+              <i class="bi bi-person me-2"></i>Paid By (Employee)
+            </label>
+            <select class="form-select" id="employeeId" formControlName="employeeId">
+              <!-- Default option: Company Account -->
+              <option [ngValue]="null">-- Company Account --</option>
+              <!-- Loop through all employees to select who paid -->
+              @for (emp of employees(); track emp.id) {
+                <option [value]="emp.id">{{ emp.fullName }}</option>
+              }
+            </select>
+            <small class="form-text text-muted">Leave empty to charge to company account</small>
+          </div>
+
+          <!-- Date Field: When the expense occurred (Required) -->
+          <div class="mb-4">
+            <label for="expenseDate" class="form-label">
+              <i class="bi bi-calendar-event me-2"></i>Date
+            </label>
+            <input 
+              type="date" 
+              class="form-control" 
+              id="expenseDate"
+              formControlName="expenseDate"
+              [class.is-invalid]="form.get('expenseDate')?.invalid && form.get('expenseDate')?.touched"
+            >
+            <!-- Show error if date not selected -->
+            @if (form.get('expenseDate')?.invalid && form.get('expenseDate')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Please select a date.
+              </div>
+            }
+          </div>
+
+          <!-- Form Action Buttons: Submit or Cancel -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/expenses">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            <button class="btn btn-primary" type="submit" [disabled]="isSubmitting()">
+              @if(isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Save Expense
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
-
-    <div class="form-group">
-      <label>Amount ($):</label>
-      <input type="number" formControlName="amount" min="1">
-    </div>
-
-    <div class="form-group">
-      <label>Category:</label>
-      <select formControlName="category">
-        <option [ngValue]="null">-- Select Category --</option>
-        @for (cat of categories; track cat) {
-          <option [value]="cat">{{ cat }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Paid By (Employee):</label>
-      <select formControlName="employeeId">
-        <option [ngValue]="null">-- Company Account --</option>
-        @for (emp of employees(); track emp.id) {
-          <option [value]="emp.id">{{ emp.fullName }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Date:</label>
-      <input type="date" formControlName="expenseDate">
-    </div>
-
-    <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
-      @if(isSubmitting()) { Saving... } @else { 💾 Save Expense }
-    </button>
-
-  </form>
+  </div>
 </div>

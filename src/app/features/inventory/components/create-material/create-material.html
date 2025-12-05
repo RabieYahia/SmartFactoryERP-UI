@@ -1,50 +1,142 @@
-<div class="container">
-  <h2>➕ Add New Material</h2>
+<!-- ⚠️ COMPONENT: Material Creation Form
+     - Purpose: Create new raw materials for inventory management
+     - No functional changes - styling updates only using Bootstrap classes
+     - All form validation and submission logic remains intact
+-->
 
-  <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="material-form">
-    
-    <div class="form-group">
-      <label>Code:</label>
-      <input type="text" formControlName="materialCode" placeholder="e.g. STEEL-001">
-      
-      @if (materialForm.get('materialCode')?.invalid && materialForm.get('materialCode')?.touched) {
-        <small class="error">Code is required (Max 50 chars).</small>
+<div class="container-fluid p-4">
+  <!-- Header Section -->
+  <div class="mb-4">
+    <h2 class="h3">➕ Add New Material</h2>
+    <p class="text-muted small">Create a new raw material entry for inventory</p>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <!-- Loading Alert: Display while submitting form -->
+      @if (isSubmitting()) {
+        <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+          <i class="bi bi-hourglass-split me-2 spinner-border spinner-border-sm"></i>
+          <span>⏳ Creating material... Please wait.</span>
+        </div>
       }
-    </div>
 
-    <div class="form-group">
-      <label>Name:</label>
-      <input type="text" formControlName="materialName" placeholder="e.g. Steel Sheet">
-      @if (materialForm.get('materialName')?.invalid && materialForm.get('materialName')?.touched) {
-        <small class="error">Name is required.</small>
-      }
-    </div>
+      <!-- Material Creation Form Card: Uses Bootstrap form-control and validation -->
+      <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Material Code Field: Unique identifier for the material (Required, max 50 chars) -->
+          <div class="mb-3">
+            <label for="materialCode" class="form-label">
+              <i class="bi bi-tag me-2"></i>Material Code
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="materialCode"
+              formControlName="materialCode" 
+              placeholder="e.g. STEEL-001"
+              [class.is-invalid]="materialForm.get('materialCode')?.invalid && materialForm.get('materialCode')?.touched"
+            >
+            <!-- Show error message only if field is invalid and user has interacted with it -->
+            @if (materialForm.get('materialCode')?.invalid && materialForm.get('materialCode')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Material code is required and must be 50 characters or less.
+              </div>
+            }
+          </div>
 
-    <div class="form-group">
-      <label>Unit:</label>
-      <input type="text" formControlName="unitOfMeasure" placeholder="e.g. KG, Meter">
-    </div>
+          <!-- Material Name Field: Full descriptive name of the material (Required, max 200 chars) -->
+          <div class="mb-3">
+            <label for="materialName" class="form-label">
+              <i class="bi bi-file-text me-2"></i>Material Name
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="materialName"
+              formControlName="materialName" 
+              placeholder="e.g. Steel Sheet"
+              [class.is-invalid]="materialForm.get('materialName')?.invalid && materialForm.get('materialName')?.touched"
+            >
+            <!-- Display validation error with icon -->
+            @if (materialForm.get('materialName')?.invalid && materialForm.get('materialName')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Please enter a material name.
+              </div>
+            }
+          </div>
 
-    <div class="form-group">
-      <label>Price:</label>
-      <input type="number" formControlName="unitPrice">
-      @if (materialForm.get('unitPrice')?.hasError('min')) {
-        <small class="error">Price must be greater than 0.</small>
-      }
-    </div>
+          <!-- Unit of Measure Field: How the material is measured (KG, Meter, etc.) -->
+          <div class="mb-3">
+            <label for="unitOfMeasure" class="form-label">
+              <i class="bi bi-rulers me-2"></i>Unit of Measure
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="unitOfMeasure"
+              formControlName="unitOfMeasure" 
+              placeholder="e.g. KG, Meter, Liter"
+            >
+            <small class="form-text text-muted">Examples: KG, Meter, Piece, Liter</small>
+          </div>
 
-    <div class="form-group">
-      <label>Min Stock Level:</label>
-      <input type="number" formControlName="minimumStockLevel">
-    </div>
+          <!-- Unit Price Field: Cost per unit of measurement (Must be greater than 0) -->
+          <div class="mb-3">
+            <label for="unitPrice" class="form-label">
+              <i class="bi bi-cash me-2"></i>Unit Price
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="unitPrice"
+              formControlName="unitPrice"
+              placeholder="0.00"
+              step="0.01"
+              [class.is-invalid]="materialForm.get('unitPrice')?.hasError('min') && materialForm.get('unitPrice')?.touched"
+            >
+            <!-- Show error if price is not greater than 0 -->
+            @if (materialForm.get('unitPrice')?.hasError('min') && materialForm.get('unitPrice')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Price must be greater than 0.
+              </div>
+            }
+          </div>
 
-    <div class="actions">
-      <button type="button" class="btn-secondary" routerLink="/inventory">Cancel</button>
-      
-      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
-        @if (isSubmitting()) { Saving... } @else { Save Material }
-      </button>
-    </div>
+          <!-- Minimum Stock Level Field: Alert threshold when stock falls below this value -->
+          <div class="mb-4">
+            <label for="minimumStockLevel" class="form-label">
+              <i class="bi bi-exclamation-triangle me-2"></i>Minimum Stock Level
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="minimumStockLevel"
+              formControlName="minimumStockLevel"
+              placeholder="0"
+              min="0"
+            >
+            <small class="form-text text-muted">System will alert when stock falls below this level</small>
+          </div>
+          <!-- Form Action Buttons: Submit or Cancel -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/inventory">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Save Material
+              }
+            </button>
+          </div>
 
-  </form>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

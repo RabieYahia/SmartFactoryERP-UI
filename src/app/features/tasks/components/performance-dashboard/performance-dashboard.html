@@ -1,48 +1,68 @@
-<div class="container">
-  <h2>🏆 Employee Performance Report</h2>
+<!-- ⚠️ NOTE: Performance report uses Bootstrap table and progress bars.
+     No functional changes - styling updates only. All calculation logic remains intact.
+-->
 
+<div class="container-fluid p-4">
+  <div class="mb-4">
+    <h2 class="h3">🏆 Employee Performance Report</h2>
+  </div>
+
+  <!-- Loading alert -->
   @if (isLoading()) {
-    <div class="loading-spinner">⏳ Analyzing performance...</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="bi bi-hourglass-split me-2"></i> 
+      <span>Analyzing performance...</span>
+    </div>
   } 
   @else {
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>Employee</th>
-          <th>Total Tasks</th>
-          <th>Completed ✅</th>
-          <th>Pending ⏳</th>
-          <th>Completion Rate</th>
-          <th>Rating</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of report(); track item.employeeId) {
+    <!-- Bootstrap table for performance data -->
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle">
+        <thead class="table-light">
           <tr>
-            <td style="font-weight: bold;">{{ item.employeeName }}</td>
-            <td>{{ item.totalTasks }}</td>
-            <td style="color: green;">{{ item.completedTasks }}</td>
-            <td style="color: orange;">{{ item.pendingTasks }}</td>
-            
-            <td style="width: 200px;">
-              <div class="progress-container">
-                <div class="progress-bar" [style.width.%]="item.completionRate">
-                  {{ item.completionRate }}%
-                </div>
-              </div>
-            </td>
-
-            <td>
-              <span class="badge" [ngClass]="getBadgeClass(item.performanceLabel)">
-                {{ item.performanceLabel }}
-              </span>
-            </td>
+            <th>Employee</th>
+            <th>Total Tasks</th>
+            <th>Completed ✅</th>
+            <th>Pending ⏳</th>
+            <th>Completion Rate</th>
+            <th>Rating</th>
           </tr>
-        } 
-        @empty {
-          <tr><td colspan="6" style="text-align: center;">No performance data available.</td></tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (item of report(); track item.employeeId) {
+            <tr>
+              <td class="fw-bold">{{ item.employeeName }}</td>
+              <td class="text-center">{{ item.totalTasks }}</td>
+              <td class="text-center text-success">{{ item.completedTasks }}</td>
+              <td class="text-center text-warning">{{ item.pendingTasks }}</td>
+              
+              <td style="min-width: 180px;">
+                <div class="progress" role="progressbar">
+                  <div 
+                    class="progress-bar bg-info" 
+                    [style.width.%]="item.completionRate"
+                  >
+                    {{ item.completionRate }}%
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span class="badge" [ngClass]="getBadgeClass(item.performanceLabel)">
+                  {{ item.performanceLabel }}
+                </span>
+              </td>
+            </tr>
+          } 
+          @empty {
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox me-2"></i> No performance data available.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

@@ -1,55 +1,68 @@
-<div class="container">
-  <div class="container">
-  <div class="header-actions">
-    <h2>🚚 Suppliers List</h2>
-    
-    <div class="buttons-group">
-      <button class="btn-secondary" routerLink="/purchasing/orders" style="margin-right: 10px;">
-        📑 View Orders
+<!-- ⚠️ NOTE: Supplier list uses Bootstrap table and utilities.
+     No functional changes - styling updates only. All data binding remains intact.
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header with action buttons -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="h3 mb-0">🚚 Suppliers List</h2>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary" routerLink="/purchasing/orders">
+        <i class="bi bi-file-text me-2"></i> View Orders
       </button>
-      
-      <button class="btn-primary" routerLink="/purchasing/create">
-        ➕ Add Supplier
+      <button class="btn btn-primary" routerLink="/purchasing/create">
+        <i class="bi bi-plus-circle me-2"></i> Add Supplier
       </button>
     </div>
   </div>
 
+  <!-- Loading alert -->
   @if (isLoading()) {
-    <div class="loading-spinner">⏳ Loading suppliers data...</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="bi bi-hourglass-split me-2"></i> 
+      <span>Loading suppliers data...</span>
+    </div>
   } 
   @else {
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Company Name</th>
-          <th>Contact Person</th>
-          <th>Phone</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (supplier of suppliers(); track supplier.id) {
+    <!-- Bootstrap table for suppliers list -->
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle">
+        <thead class="table-light">
           <tr>
-            <td>{{ supplier.supplierCode }}</td>
-            <td>{{ supplier.supplierName }}</td>
-            <td>{{ supplier.contactPerson }}</td>
-            <td>{{ supplier.phoneNumber }}</td>
-            <td>
-              <span class="badge" 
-                    [class.active]="supplier.isActive" 
-                    [class.inactive]="!supplier.isActive">
-                {{ supplier.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
+            <th>Code</th>
+            <th>Company Name</th>
+            <th>Contact Person</th>
+            <th>Phone</th>
+            <th>Status</th>
           </tr>
-        } 
-        @empty {
-          <tr>
-            <td colspan="5" style="text-align: center;">No suppliers found.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (supplier of suppliers(); track supplier.id) {
+            <tr>
+              <td><strong>{{ supplier.supplierCode }}</strong></td>
+              <td>{{ supplier.supplierName }}</td>
+              <td>{{ supplier.contactPerson }}</td>
+              <td>{{ supplier.phoneNumber }}</td>
+              <td>
+                <span class="badge" 
+                      [class.bg-success]="supplier.isActive" 
+                      [class.bg-secondary]="!supplier.isActive">
+                  {{ supplier.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+            </tr>
+          } 
+          @empty {
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox me-2"></i> No suppliers found.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

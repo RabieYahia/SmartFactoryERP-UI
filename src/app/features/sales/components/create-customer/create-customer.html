@@ -1,54 +1,130 @@
-<div class="container">
-  <h2>👤 Register New Customer</h2>
+<!-- ⚠️ NOTE: Customer creation form uses Bootstrap form components.
+     No functional changes - styling updates only. All form validation remains intact.
+-->
 
-  <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="form-card">
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Customer Name <span class="req">*</span></label>
-        <input type="text" formControlName="customerName" placeholder="e.g. Global Tech Solutions">
-        @if (customerForm.get('customerName')?.invalid && customerForm.get('customerName')?.touched) {
-          <small class="error">Name is required.</small>
-        }
-      </div>
+<div class="container-fluid p-4">
+  <div class="mb-4">
+    <h2 class="h3">👤 Register New Customer</h2>
+  </div>
 
-      <div class="form-group">
-        <label>Email <span class="req">*</span></label>
-        <input type="email" formControlName="email" placeholder="contact@client.com">
-        @if (customerForm.get('email')?.hasError('email')) {
-          <small class="error">Invalid email.</small>
-        }
-      </div>
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Customer Name field -->
+          <div class="mb-3">
+            <label for="customerName" class="form-label">
+              Customer Name 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="customerName"
+              formControlName="customerName" 
+              placeholder="e.g. Global Tech Solutions"
+              [class.is-invalid]="customerForm.get('customerName')?.invalid && customerForm.get('customerName')?.touched"
+            >
+            @if (customerForm.get('customerName')?.invalid && customerForm.get('customerName')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Name is required.
+              </div>
+            }
+          </div>
+
+          <!-- Email field -->
+          <div class="mb-3">
+            <label for="email" class="form-label">
+              Email 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email"
+              formControlName="email" 
+              placeholder="contact@client.com"
+              [class.is-invalid]="customerForm.get('email')?.invalid && customerForm.get('email')?.touched"
+            >
+            @if (customerForm.get('email')?.hasError('email') && customerForm.get('email')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Invalid email format.
+              </div>
+            }
+          </div>
+
+          <!-- Phone field -->
+          <div class="mb-3">
+            <label for="phoneNumber" class="form-label">
+              Phone Number 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="phoneNumber"
+              formControlName="phoneNumber" 
+              placeholder="+1 555 0199"
+            >
+          </div>
+
+          <!-- Tax Number field -->
+          <div class="mb-3">
+            <label for="taxNumber" class="form-label">Tax Number (VAT)</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="taxNumber"
+              formControlName="taxNumber" 
+              placeholder="TX-123456"
+            >
+          </div>
+
+          <!-- Credit Limit field -->
+          <div class="mb-3">
+            <label for="creditLimit" class="form-label">
+              Credit Limit ($) 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="creditLimit"
+              formControlName="creditLimit" 
+              min="0"
+            >
+          </div>
+
+          <!-- Address field -->
+          <div class="mb-4">
+            <label for="address" class="form-label">Billing Address</label>
+            <textarea 
+              class="form-control" 
+              id="address"
+              formControlName="address" 
+              rows="3" 
+              placeholder="Full address..."
+            ></textarea>
+          </div>
+
+          <!-- Form actions -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/sales">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Save Customer
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Phone Number <span class="req">*</span></label>
-        <input type="text" formControlName="phoneNumber" placeholder="+1 555 0199">
-      </div>
-
-      <div class="form-group">
-        <label>Tax Number (VAT)</label>
-        <input type="text" formControlName="taxNumber" placeholder="TX-123456">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Credit Limit ($) <span class="req">*</span></label>
-      <input type="number" formControlName="creditLimit" min="0">
-    </div>
-
-    <div class="form-group">
-      <label>Billing Address</label>
-      <textarea formControlName="address" rows="3" placeholder="Full address..."></textarea>
-    </div>
-
-    <div class="actions">
-      <button type="button" class="btn-secondary" routerLink="/sales">Cancel</button>
-      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
-        @if (isSubmitting()) { Saving... } @else { Save Customer }
-      </button>
-    </div>
-
-  </form>
+  </div>
 </div>

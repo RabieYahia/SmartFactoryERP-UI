@@ -1,51 +1,101 @@
-<div class="container">
-  <h2>📌 Assign New Task</h2>
+<!-- ⚠️ NOTE: Task creation form uses Bootstrap form components.
+     No functional changes - styling updates only. All task assignment logic remains intact.
+-->
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
-    
-    <div class="form-group">
-      <label>Task Title <span style="color: red">*</span></label>
-      <input formControlName="title" placeholder="e.g. Fix Machine #5">
+<div class="container-fluid p-4">
+  <div class="mb-4">
+    <h2 class="h3">📌 Assign New Task</h2>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Task Title field -->
+          <div class="mb-3">
+            <label for="title" class="form-label">
+              Task Title 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              class="form-control" 
+              id="title"
+              formControlName="title" 
+              placeholder="e.g. Fix Machine #5"
+            >
+          </div>
+
+          <!-- Assign To field -->
+          <div class="mb-3">
+            <label for="assignedEmployeeId" class="form-label">
+              Assign To (Employee) 
+              <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" id="assignedEmployeeId" formControlName="assignedEmployeeId">
+              <option value="">-- Select Employee --</option>
+              @for (emp of employees(); track emp.id) {
+                <option [value]="emp.id">{{ emp.fullName }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Priority select -->
+          <div class="mb-3">
+            <label for="priority" class="form-label">
+              Priority 
+              <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" id="priority" formControlName="priority">
+              <option value="1"><span class="badge bg-success">Low</span> Priority</option>
+              <option value="2"><span class="badge bg-warning">Medium</span> Priority</option>
+              <option value="3"><span class="badge bg-danger">High</span> Priority</option>
+            </select>
+          </div>
+
+          <!-- Due Date field -->
+          <div class="mb-3">
+            <label for="dueDate" class="form-label">
+              Due Date 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="date" 
+              class="form-control" 
+              id="dueDate"
+              formControlName="dueDate"
+            >
+          </div>
+
+          <!-- Description field -->
+          <div class="mb-4">
+            <label for="description" class="form-label">Description</label>
+            <textarea 
+              class="form-control" 
+              id="description"
+              formControlName="description" 
+              rows="4" 
+              placeholder="Enter task details..."
+            ></textarea>
+          </div>
+
+          <!-- Form actions -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/tasks">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            <button class="btn btn-primary" type="submit" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Assign Task
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
-
-    <div class="form-group">
-      <label>Assign To (Employee) <span style="color: red">*</span></label>
-      <select formControlName="assignedEmployeeId">
-        <option value="">-- Select Employee --</option>
-        @for (emp of employees(); track emp.id) {
-          <option [value]="emp.id">{{ emp.fullName }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="row">
-      <div class="form-group">
-        <label>Priority <span style="color: red">*</span></label>
-        <select formControlName="priority">
-          <option value="1">🟢 Low</option>
-          <option value="2">🟠 Medium</option>
-          <option value="3">🔴 High</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Due Date <span style="color: red">*</span></label>
-        <input type="date" formControlName="dueDate">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Description</label>
-      <textarea formControlName="description" rows="4" placeholder="Enter task details..."></textarea>
-    </div>
-
-    <div class="actions">
-      <button type="button" class="btn-secondary" routerLink="/tasks">Cancel</button>
-
-      <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
-        @if (isSubmitting()) { Saving... } @else { 🚀 Assign Task }
-      </button>
-    </div>
-    
-  </form>
-</div>9
+  </div>
+</div>

@@ -1,61 +1,139 @@
-<p>create-supplier works!</p>
-<div class="container">
-  <h2>➕ Register New Supplier</h2>
+<!-- ⚠️ NOTE: Supplier creation form uses Bootstrap form components.
+     No functional changes - styling updates only. All form validation remains intact.
+-->
 
-  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="form-card">
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Supplier Code <span class="req">*</span></label>
-        <input type="text" formControlName="supplierCode" placeholder="e.g. SUP-2024-01">
-        @if (supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched) {
-          <small class="error">Code is required.</small>
-        }
-      </div>
+<div class="container-fluid p-4">
+  <div class="mb-4">
+    <h2 class="h3">➕ Register New Supplier</h2>
+  </div>
 
-      <div class="form-group">
-        <label>Company Name <span class="req">*</span></label>
-        <input type="text" formControlName="supplierName" placeholder="e.g. Advanced Steel Co.">
-        @if (supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched) {
-          <small class="error">Company name is required.</small>
-        }
-      </div>
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Supplier Code field -->
+          <div class="mb-3">
+            <label for="supplierCode" class="form-label">
+              Supplier Code 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="supplierCode"
+              formControlName="supplierCode" 
+              placeholder="e.g. SUP-2024-01"
+              [class.is-invalid]="supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched"
+            >
+            @if (supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Code is required.
+              </div>
+            }
+          </div>
+
+          <!-- Company Name field -->
+          <div class="mb-3">
+            <label for="supplierName" class="form-label">
+              Company Name 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="supplierName"
+              formControlName="supplierName" 
+              placeholder="e.g. Advanced Steel Co."
+              [class.is-invalid]="supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched"
+            >
+            @if (supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Company name is required.
+              </div>
+            }
+          </div>
+
+          <!-- Contact Person field -->
+          <div class="mb-3">
+            <label for="contactPerson" class="form-label">Contact Person</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="contactPerson"
+              formControlName="contactPerson" 
+              placeholder="e.g. Mr. John Doe"
+            >
+          </div>
+
+          <!-- Phone Number field -->
+          <div class="mb-3">
+            <label for="phoneNumber" class="form-label">
+              Phone Number 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="phoneNumber"
+              formControlName="phoneNumber" 
+              placeholder="e.g. +2010xxxxxxx"
+              [class.is-invalid]="supplierForm.get('phoneNumber')?.invalid && supplierForm.get('phoneNumber')?.touched"
+            >
+            @if (supplierForm.get('phoneNumber')?.invalid && supplierForm.get('phoneNumber')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Phone is required.
+              </div>
+            }
+          </div>
+
+          <!-- Email field -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email"
+              formControlName="email" 
+              placeholder="info@company.com"
+              [class.is-invalid]="supplierForm.get('email')?.hasError('email') && supplierForm.get('email')?.touched"
+            >
+            @if (supplierForm.get('email')?.hasError('email') && supplierForm.get('email')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Invalid email format.
+              </div>
+            }
+          </div>
+
+          <!-- Address field -->
+          <div class="mb-4">
+            <label for="address" class="form-label">Address</label>
+            <textarea 
+              class="form-control" 
+              id="address"
+              formControlName="address" 
+              rows="3" 
+              placeholder="Full office address..."
+            ></textarea>
+          </div>
+
+          <!-- Form actions -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/purchasing">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Save Supplier
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Contact Person</label>
-        <input type="text" formControlName="contactPerson" placeholder="e.g. Mr. John Doe">
-      </div>
-
-      <div class="form-group">
-        <label>Phone Number <span class="req">*</span></label>
-        <input type="text" formControlName="phoneNumber" placeholder="e.g. +2010xxxxxxx">
-        @if (supplierForm.get('phoneNumber')?.invalid && supplierForm.get('phoneNumber')?.touched) {
-          <small class="error">Phone is required.</small>
-        }
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Email Address</label>
-      <input type="email" formControlName="email" placeholder="info@company.com">
-      @if (supplierForm.get('email')?.hasError('email')) {
-        <small class="error">Invalid email format.</small>
-      }
-    </div>
-
-    <div class="form-group">
-      <label>Address</label>
-      <textarea formControlName="address" rows="3" placeholder="Full office address..."></textarea>
-    </div>
-
-    <div class="actions">
-      <button type="button" class="btn-secondary" routerLink="/purchasing">Cancel</button>
-      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
-        @if (isSubmitting()) { Saving... } @else { Save Supplier }
-      </button>
-    </div>
-
-  </form>
+  </div>
 </div>

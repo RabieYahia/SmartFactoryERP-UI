@@ -1,35 +1,123 @@
-<div class="container">
-  <h2>✏️ Edit Material</h2>
+<!-- ⚠️ COMPONENT: Material Edit Form
+     - Purpose: Update existing raw material information in the inventory
+     - No functional changes - styling updates only using Bootstrap classes
+     - All form validation and submission logic remains intact
+-->
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
-    
-    <div class="form-group">
-      <label>Material Name:</label>
-      <input type="text" formControlName="materialName">
-    </div>
+<div class="container-fluid p-4">
+  <!-- Header Section: Page title and description -->
+  <div class="mb-4">
+    <h2 class="h3">✏️ Edit Material</h2>
+    <p class="text-muted small">Update material details and pricing information</p>
+  </div>
 
-    <div class="form-group">
-      <label>Unit of Measure:</label>
-      <input type="text" formControlName="unitOfMeasure">
-    </div>
-
-    <div class="form-group">
-      <label>Unit Price:</label>
-      <input type="number" formControlName="unitPrice">
-    </div>
-
-    <div class="form-group">
-      <label>Minimum Stock Level:</label>
-      <input type="number" formControlName="minimumStockLevel">
-    </div>
-
-    <div class="actions" style="margin-top: 20px; display: flex; gap: 10px;">
-      <button type="button" class="btn-secondary" routerLink="/inventory">Cancel</button>
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <!-- Loading Alert: Display spinner while submitting form changes -->
+      @if (isSubmitting()) {
+        <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <span>⏳ Updating material... Please wait.</span>
+        </div>
+      }
       
-      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
-        @if (isSubmitting()) { Saving... } @else { 💾 Update Changes }
-      </button>
-    </div>
+      <!-- Material Edit Form Card: Uses Bootstrap form-control and reactive form validation -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Material Name Field: Full descriptive name of the material (Required) -->
+          <div class="mb-3">
+            <label for="materialName" class="form-label">
+              <i class="bi bi-file-text me-2"></i>Material Name
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="materialName"
+              formControlName="materialName"
+              placeholder="e.g. Steel Sheet"
+              [class.is-invalid]="form.get('materialName')?.invalid && form.get('materialName')?.touched"
+            >
+            <!-- Show error message only if field is invalid and user has interacted with it -->
+            @if (form.get('materialName')?.invalid && form.get('materialName')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Material name is required.
+              </div>
+            }
+            <small class="form-text text-muted">Enter the full name or description of the material</small>
+          </div>
 
-  </form>
+          <!-- Unit of Measure Field: Measurement unit (KG, Meter, Piece, etc.) -->
+          <div class="mb-3">
+            <label for="unitOfMeasure" class="form-label">
+              <i class="bi bi-rulers me-2"></i>Unit of Measure
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="unitOfMeasure"
+              formControlName="unitOfMeasure"
+              placeholder="e.g. KG, Meter, Piece"
+            >
+            <small class="form-text text-muted">Examples: KG, Meter, Piece, Liter, Box</small>
+          </div>
+
+          <!-- Unit Price Field: Cost per unit of measurement (Must be greater than 0) -->
+          <div class="mb-3">
+            <label for="unitPrice" class="form-label">
+              <i class="bi bi-cash me-2"></i>Unit Price
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="unitPrice"
+              formControlName="unitPrice"
+              placeholder="0.00"
+              step="0.01"
+              [class.is-invalid]="form.get('unitPrice')?.invalid && form.get('unitPrice')?.touched"
+            >
+            <!-- Show error if price validation fails -->
+            @if (form.get('unitPrice')?.invalid && form.get('unitPrice')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Price must be greater than 0.
+              </div>
+            }
+          </div>
+
+          <!-- Minimum Stock Level Field: Alert threshold when stock falls below this value -->
+          <div class="mb-4">
+            <label for="minimumStockLevel" class="form-label">
+              <i class="bi bi-exclamation-triangle me-2"></i>Minimum Stock Level
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="minimumStockLevel"
+              formControlName="minimumStockLevel"
+              placeholder="0"
+              min="0"
+            >
+            <small class="form-text text-muted">System will alert when stock falls below this level</small>
+          </div>
+
+          <!-- Form Action Buttons: Submit or Cancel -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/inventory">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Update Changes
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

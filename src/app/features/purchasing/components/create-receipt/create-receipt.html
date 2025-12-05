@@ -1,57 +1,121 @@
-<div class="container">
-  <h2>📥 Receive Goods (PO #{{ orderData()?.poNumber }})</h2>
+<!-- ⚠️ NOTE: Goods receipt form uses Bootstrap components and table.
+     No functional changes - styling updates only. All receiving logic remains intact.
+-->
+
+<div class="container-fluid p-4">
+  <div class="mb-4">
+    <h2 class="h3">📥 Receive Goods (PO #{{ orderData()?.poNumber }})</h2>
+  </div>
 
   @if (orderData()) {
-    <form [formGroup]="receiptForm" (ngSubmit)="onSubmit()" class="receipt-form">
+    <form [formGroup]="receiptForm" (ngSubmit)="onSubmit()" class="row">
       
-      <div class="info-card">
-        <p><strong>Supplier:</strong> {{ orderData().supplierName }}</p>
-        <p><strong>Date:</strong> {{ orderData().orderDate | date }}</p>
-        
-        <div class="form-group">
-          <label>Received By:</label>
-          <input type="text" formControlName="receivedBy">
-        </div>
-        <div class="form-group">
-          <label>Notes:</label>
-          <input type="text" formControlName="notes" placeholder="e.g. Delivery arrived late">
-        </div>
-      </div>
+      <!-- Order Information Card -->
+      <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <div>
+                  <small class="text-muted">Supplier</small>
+                  <p class="h6 mb-0">{{ orderData().supplierName }}</p>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div>
+                  <small class="text-muted">Order Date</small>
+                  <p class="h6 mb-0">{{ orderData().orderDate | date: 'mediumDate' }}</p>
+                </div>
+              </div>
+            </div>
 
-      <table class="modern-table">
-        <thead>
-          <tr>
-            <th>Material</th>
-            <th>Ordered Qty</th>
-            <th width="150">Received ✅</th>
-            <th width="150">Rejected ❌</th>
-          </tr>
-        </thead>
-        <tbody formArrayName="items">
-          @for (control of itemsArray.controls; track $index) {
-            <tr [formGroupName]="$index">
-              <td>{{ control.get('materialName')?.value }}</td>
-              <td style="font-weight: bold;">{{ control.get('orderedQty')?.value }}</td>
-              <td>
-                <input type="number" formControlName="receivedQuantity" class="input-qty">
-              </td>
-              <td>
-                <input type="number" formControlName="rejectedQuantity" class="input-qty reject">
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+            <!-- Received By field -->
+            <div class="mb-3">
+              <label for="receivedBy" class="form-label">Received By</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="receivedBy"
+                formControlName="receivedBy"
+              >
+            </div>
 
-      <div class="actions">
-        <button type="button" class="btn-secondary" routerLink="/purchasing/orders">Cancel</button>
-        <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
-          @if (isSubmitting()) { Processing... } @else { 📥 Confirm Receipt }
-        </button>
+            <!-- Notes field -->
+            <div class="mb-0">
+              <label for="notes" class="form-label">Notes</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="notes"
+                formControlName="notes" 
+                placeholder="e.g. Delivery arrived late"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Receipt Table -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Received Quantities</h5>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Material</th>
+                    <th class="text-center">Ordered Qty</th>
+                    <th class="text-center">Received ✅</th>
+                    <th class="text-center">Rejected ❌</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="items">
+                  @for (control of itemsArray.controls; track $index) {
+                    <tr [formGroupName]="$index">
+                      <td>{{ control.get('materialName')?.value }}</td>
+                      <td class="text-center fw-bold">{{ control.get('orderedQty')?.value }}</td>
+                      <td>
+                        <input 
+                          type="number" 
+                          class="form-control form-control-sm" 
+                          formControlName="receivedQuantity"
+                        >
+                      </td>
+                      <td>
+                        <input 
+                          type="number" 
+                          class="form-control form-control-sm text-danger" 
+                          formControlName="rejectedQuantity"
+                        >
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form actions -->
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/purchasing/orders">
+            <i class="bi bi-x-circle me-2"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+            @if (isSubmitting()) { 
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Processing... 
+            } @else { 
+              <i class="bi bi-inbox me-2"></i> Confirm Receipt
+            }
+          </button>
+        </div>
       </div>
     </form>
   } 
   @else {
-    <div class="loading-spinner">Loading Order Details...</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="bi bi-hourglass-split me-2"></i> 
+      <span>Loading Order Details...</span>
+    </div>
   }
 </div>

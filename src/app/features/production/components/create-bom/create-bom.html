@@ -1,62 +1,104 @@
-<div class="container">
-  
-  <div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<!-- ⚠️ NOTE: BOM (Bill of Materials) form uses Bootstrap form components.
+     No functional changes - styling updates only. All material linking logic remains intact.
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header section -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h2>📜 Define Production Recipe (BOM)</h2>
-      <p class="subtitle" style="margin: 0;">Link a raw material to a finished product.</p>
+      <h2 class="h3 mb-1">📜 Define Production Recipe (BOM)</h2>
+      <p class="text-muted mb-0">Link a raw material to a finished product.</p>
     </div>
-    <button class="btn-secondary" routerLink="/production/orders" style="padding: 10px 15px; border-radius: 5px; cursor: pointer;">
-      🏭 View Factory Orders
+    <button class="btn btn-outline-secondary" routerLink="/production/orders">
+      <i class="bi bi-factory me-2"></i> View Factory Orders
     </button>
   </div>
 
-  <form [formGroup]="bomForm" (ngSubmit)="onSubmit()" class="bom-card">
-    
-    <div class="form-group">
-      <label>🔨 Finished Product (What to make?)</label>
-      <select formControlName="productId">
-        <option value="">-- Select Product --</option>
-        @for (mat of materials(); track mat.id) {
-          <option [value]="mat.id">{{ mat.materialName }} (Stock: {{ mat.currentStockLevel }})</option>
-        }
-      </select>
-      @if (bomForm.get('productId')?.invalid && bomForm.get('productId')?.touched) {
-        <small style="color: red;">Product selection is required.</small>
-      }
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <form [formGroup]="bomForm" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Finished Product field -->
+          <div class="mb-3">
+            <label for="productId" class="form-label">🔨 Finished Product (What to make?)</label>
+            <select 
+              class="form-select" 
+              id="productId"
+              formControlName="productId"
+              [class.is-invalid]="bomForm.get('productId')?.invalid && bomForm.get('productId')?.touched"
+            >
+              <option value="">-- Select Product --</option>
+              @for (mat of materials(); track mat.id) {
+                <option [value]="mat.id">{{ mat.materialName }} (Stock: {{ mat.currentStockLevel }})</option>
+              }
+            </select>
+            @if (bomForm.get('productId')?.invalid && bomForm.get('productId')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Product selection is required.
+              </div>
+            }
+          </div>
+
+          <!-- Component Material field -->
+          <div class="mb-3">
+            <label for="componentId" class="form-label">🪵 Component Material (What to use?)</label>
+            <select 
+              class="form-select" 
+              id="componentId"
+              formControlName="componentId"
+              [class.is-invalid]="bomForm.get('componentId')?.invalid && bomForm.get('componentId')?.touched"
+            >
+              <option value="">-- Select Raw Material --</option>
+              @for (mat of materials(); track mat.id) {
+                <option [value]="mat.id">{{ mat.materialName }}</option>
+              }
+            </select>
+            @if (bomForm.get('componentId')?.invalid && bomForm.get('componentId')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Component selection is required.
+              </div>
+            }
+          </div>
+
+          <!-- Quantity Needed field -->
+          <div class="mb-4">
+            <label for="quantity" class="form-label">⚖️ Quantity Needed</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="quantity"
+              formControlName="quantity" 
+              step="0.1"
+              [class.is-invalid]="bomForm.get('quantity')?.invalid && bomForm.get('quantity')?.touched"
+            >
+            <small class="form-text text-muted d-block mt-2">
+              How much of the component is needed for 1 unit of the product?
+            </small>
+            @if (bomForm.get('quantity')?.invalid && bomForm.get('quantity')?.touched) {
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i> Quantity must be greater than 0.
+              </div>
+            }
+          </div>
+
+          <!-- Form actions -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/dashboard">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-link-45deg me-2"></i> Link Materials
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
-
-    <div class="form-group">
-      <label>🪵 Component Material (What to use?)</label>
-      <select formControlName="componentId">
-        <option value="">-- Select Raw Material --</option>
-        @for (mat of materials(); track mat.id) {
-          <option [value]="mat.id">{{ mat.materialName }}</option>
-        }
-      </select>
-      @if (bomForm.get('componentId')?.invalid && bomForm.get('componentId')?.touched) {
-        <small style="color: red;">Component selection is required.</small>
-      }
-    </div>
-
-    <div class="form-group">
-      <label>⚖️ Quantity Needed</label>
-      <input type="number" formControlName="quantity" step="0.1">
-      <small>How much of the component is needed for 1 unit of the product?</small>
-      
-      @if (bomForm.get('quantity')?.invalid && bomForm.get('quantity')?.touched) {
-        <small style="color: red;">Quantity must be greater than 0.</small>
-      }
-    </div>
-
-    <div style="display: flex; gap: 10px; margin-top: 20px;">
-      <button type="button" class="btn-secondary" routerLink="/dashboard" style="flex: 1; padding: 15px; border-radius: 6px; cursor: pointer; background: #eee; border: none;">
-        Cancel
-      </button>
-
-      <button type="submit" class="btn-primary" [disabled]="isSubmitting()" style="flex: 2;">
-        @if (isSubmitting()) { Saving... } @else { 🔗 Link Materials }
-      </button>
-    </div>
-
-  </form>
+  </div>
 </div>
