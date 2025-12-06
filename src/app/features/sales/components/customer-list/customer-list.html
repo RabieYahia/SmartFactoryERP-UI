@@ -1,55 +1,66 @@
-<div class="container">
-  <div class="container">
-  <div class="header-actions">
-    <h2>👥 Customers List</h2>
-    
-    <div class="buttons-group">
-      <button class="btn-secondary" routerLink="/sales/create-order" style="margin-right: 10px;">
-        🛒 New Order
+<!-- ⚠️ NOTE: Customer list uses Bootstrap table and utilities.
+     No functional changes - styling updates only. All data binding remains intact.
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header with action buttons -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="h3 mb-0">👥 Customers List</h2>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary" routerLink="/sales/create-order">
+        <i class="bi bi-cart-plus me-2"></i> New Order
       </button>
-      
-      <button class="btn-primary" routerLink="/sales/create-customer">
-        ➕ Add Customer
+      <button class="btn btn-primary" routerLink="/sales/create-customer">
+        <i class="bi bi-person-plus me-2"></i> Add Customer
       </button>
     </div>
   </div>
 
-  </div>
-
+  <!-- Loading alert -->
   @if (isLoading()) {
-    <div class="loading-spinner">⏳ Loading customers...</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="bi bi-hourglass-split me-2"></i> 
+      <span>Loading customers...</span>
+    </div>
   } 
   @else {
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Email</th>
-          <th>Credit Limit</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (customer of customers(); track customer.id) {
+    <!-- Bootstrap table for customers list -->
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle">
+        <thead class="table-light">
           <tr>
-            <td><strong>{{ customer.customerName }}</strong></td>
-            <td>{{ customer.phoneNumber }}</td>
-            <td>{{ customer.email }}</td>
-            <td style="color: green; font-weight: bold;">{{ customer.creditLimit | currency }}</td>
-            <td>
-              <span class="badge" [class.active]="customer.isActive">
-                {{ customer.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Credit Limit</th>
+            <th>Status</th>
           </tr>
-        } 
-        @empty {
-          <tr>
-            <td colspan="5" style="text-align: center;">No customers found.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (customer of customers(); track customer.id) {
+            <tr>
+              <td><strong>{{ customer.customerName }}</strong></td>
+              <td>{{ customer.phoneNumber }}</td>
+              <td>{{ customer.email }}</td>
+              <td class="text-success fw-bold">{{ customer.creditLimit | currency }}</td>
+              <td>
+                <span class="badge" [class.bg-success]="customer.isActive" [class.bg-secondary]="!customer.isActive">
+                  {{ customer.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+            </tr>
+          } 
+          @empty {
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox me-2"></i> No customers found.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

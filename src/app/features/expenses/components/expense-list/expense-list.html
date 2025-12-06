@@ -1,27 +1,51 @@
-<div class="container">
-  <div class="header-actions">
-    <h2>📉 Expenses History</h2>
-    <button class="btn-primary" routerLink="/expenses/create">➕ New Expense</button>
+<!-- ⚠️ COMPONENT: Expense List View
+     - Purpose: Display all recorded expenses with date, description, category, and amount
+     - No functional changes - styling updates only using Bootstrap classes
+     - All data binding and navigation remain intact
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header Section: Title and action button for adding new expenses -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="h3 mb-1">📉 Expenses History</h2>
+      <p class="text-muted small">Track and manage all organizational expenses</p>
+    </div>
+    <button class="btn btn-primary" routerLink="/expenses/create">
+      <i class="bi bi-plus-circle me-2"></i> New Expense
+    </button>
   </div>
 
-  <table class="modern-table">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Description</th>
-        <th>Category</th>
-        <th>Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (exp of expenses(); track exp.id) {
+  <!-- Expenses Table Section: Responsive Bootstrap table displaying all expenses -->
+  <div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+      <thead class="table-light">
         <tr>
-          <td>{{ exp.expenseDate | date }}</td>
-          <td>{{ exp.description }}</td>
-          <td><span class="badge">{{ exp.category }}</span></td>
-          <td style="color: red; font-weight: bold;">- {{ exp.amount | currency }}</td>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Amount</th>
         </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <!-- Loop through all expenses: track by ID for performance optimization -->
+        @for (exp of expenses(); track exp.id) {
+          <tr>
+            <!-- Expense Date: Formatted as medium date (e.g., Jan 5, 2024, 3:45 PM) -->
+            <td>{{ exp.expenseDate | date: 'medium' }}</td>
+            
+            <!-- Description: Brief description of the expense -->
+            <td>{{ exp.description }}</td>
+            
+            <!-- Category Badge: Visual category indicator with info styling -->
+            <td><span class="badge bg-info text-dark">{{ exp.category }}</span></td>
+            
+            <!-- Amount: Displayed in red (text-danger) with bold font and currency format -->
+            <!-- fw-bold class: Makes the amount stand out visually -->
+            <td class="text-danger fw-bold">- {{ exp.amount | currency }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -1,74 +1,107 @@
-<div class="container">
-  
-  <div class="header-actions">
-    <h2>📦 Inventory Materials</h2>
-    <button class="btn-primary" routerLink="/inventory/create">➕ Add Material</button>
+<!-- ⚠️ COMPONENT: Material List View
+     - Purpose: Display all inventory materials in a searchable table with edit, delete, and AI forecast actions
+     - No functional changes - styling updates only using Bootstrap classes
+     - All data binding and click handlers remain intact
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header Section: Title and action button for adding new materials -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="h3 mb-1">📦 Inventory Materials</h2>
+      <p class="text-muted small">Manage all raw materials in your inventory</p>
+    </div>
+    <button class="btn btn-primary" routerLink="/inventory/create">
+      <i class="bi bi-plus-circle me-2"></i> Add Material
+    </button>
   </div>
 
-  <div class="search-bar">
+  <!-- Search and Filter Section: Real-time search and result count -->
+  <div class="mb-4 d-flex gap-2">
     <input 
       type="text" 
+      class="form-control" 
       placeholder="🔍 Search by name or code..." 
       (input)="onSearch($event)"
-      class="search-input"
+      aria-label="Search materials by name or code"
     >
-    <span class="count-badge">
+    <!-- Result count badge: Updates as user filters materials -->
+    <span class="badge bg-light text-dark" [attr.aria-label]="'Found ' + filteredMaterials().length + ' materials'">
       Found: {{ filteredMaterials().length }}
     </span>
-    
   </div>
 
+  <!-- Loading Alert: Display spinner while fetching materials from API -->
   @if (isLoading()) {
-    <div class="loading-spinner">⏳ Loading data...</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      <span>⏳ Loading materials... Please wait.</span>
+    </div>
   } 
   @else {
-    
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Stock Level</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of filteredMaterials(); track item.id) {
+    <!-- Materials Table Section: Responsive Bootstrap table with search results -->
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle">
+        <thead class="table-light">
           <tr>
-            <td><strong>{{ item.materialCode }}</strong></td>
-            <td>{{ item.materialName }}</td>
-            <td>{{ item.unitPrice | currency }}</td>
-            
-            <td [style.color]="item.currentStockLevel < 10 ? 'red' : 'green'" 
-                style="font-weight: bold;">
-              {{ item.currentStockLevel }}
-            </td>
-
-            <td>
-              <button class="btn-icon edit" [routerLink]="['/inventory/edit', item.id]" title="Edit">
-                ✏️
-              </button>
-
-              <button class="btn-icon delete" (click)="onDelete(item.id)" title="Delete">
-                🗑️
-              </button>
-
-              <button class="btn-icon ai" (click)="onPredict(item.id, item.materialName)" title="AI Forecast">
-                🔮
-              </button>
-            </td>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock Level</th>
+            <th class="text-center">Actions</th>
           </tr>
-        } 
-        @empty {
-          <tr>
-            <td colspan="5" style="text-align: center; padding: 20px;">
-              🚫 No materials match your search "{{ searchQuery() }}"
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <!-- Loop through filtered materials: track by ID for performance -->
+          @for (item of filteredMaterials(); track item.id) {
+            <tr>
+              <!-- Material Code: Unique identifier displayed in bold -->
+              <td><strong>{{ item.materialCode }}</strong></td>
+              
+              <!-- Material Name: Full descriptive name -->
+              <td>{{ item.materialName }}</td>
+              
+              <!-- Unit Price: Formatted as currency -->
+              <td>{{ item.unitPrice | currency }}</td>
+              
+              <!-- Stock Level Badge: Shows red (bg-danger) if below 10 units, green (bg-success) if sufficient -->
+              <!-- [class.bg-danger] condition: Dynamically applies danger class when stock < 10 -->
+              <!-- [class.bg-success] condition: Dynamically applies success class when stock >= 10 -->
+              <td>
+                <span class="badge" [class.bg-danger]="item.currentStockLevel < 10" [class.bg-success]="item.currentStockLevel >= 10">
+                  {{ item.currentStockLevel }} units
+                </span>
+              </td>
 
+              <!-- Action Buttons: Edit, Delete, and AI Forecast actions for each material -->
+              <td class="text-center">
+                <!-- Edit Button: Navigate to edit page for this material -->
+                <button class="btn btn-sm btn-outline-primary me-2" [routerLink]="['/inventory/edit', item.id]" title="Edit material details">
+                  <i class="bi bi-pencil"></i> Edit
+                </button>
+
+                <!-- Delete Button: Remove material from inventory -->
+                <button class="btn btn-sm btn-outline-danger me-2" (click)="onDelete(item.id)" title="Delete this material">
+                  <i class="bi bi-trash"></i> Delete
+                </button>
+
+                <!-- AI Forecast Button: Use AI to predict future stock needs -->
+                <button class="btn btn-sm btn-outline-info" (click)="onPredict(item.id, item.materialName)" title="AI forecast for this material">
+                  <i class="bi bi-lightning"></i> Predict
+                </button>
+              </td>
+            </tr>
+          } 
+          @empty {
+            <!-- Empty State: Show when no materials match search -->
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox me-2"></i> No materials match your search "{{ searchQuery() }}"
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

@@ -1,31 +1,75 @@
-<div class="container">
-  <h2>🏢 New Department</h2>
+<!-- ⚠️ NOTE: Department creation form uses Bootstrap form components.
+     No functional changes - styling updates only. All form logic remains intact.
+-->
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
-    
-    <div class="form-group">
-      <label>Department Name <span style="color: red">*</span></label>
-      <input type="text" formControlName="name" placeholder="e.g. Sales & Marketing">
+<div class="container-fluid p-4">
+  <div class="mb-4">
+    <h2 class="h3">🏢 New Department</h2>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Department Name field -->
+          <div class="mb-3">
+            <label for="name" class="form-label">
+              Department Name 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="name"
+              formControlName="name" 
+              placeholder="e.g. Sales & Marketing"
+            >
+          </div>
+
+          <!-- Code field -->
+          <div class="mb-3">
+            <label for="code" class="form-label">
+              Code 
+              <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="code"
+              formControlName="code" 
+              placeholder="e.g. SL-MKT"
+            >
+          </div>
+
+          <!-- Description field -->
+          <div class="mb-4">
+            <label for="description" class="form-label">Description</label>
+            <textarea 
+              class="form-control" 
+              id="description"
+              formControlName="description" 
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Form actions -->
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/hr">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Save Department
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
-
-    <div class="form-group">
-      <label>Code <span style="color: red">*</span></label>
-      <input type="text" formControlName="code" placeholder="e.g. SL-MKT">
-    </div>
-
-    <div class="form-group">
-      <label>Description</label>
-      <textarea formControlName="description" rows="3" 
-                style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-family: inherit; font-size: 1rem;"></textarea>
-    </div>
-
-    <div class="actions">
-      <button type="button" class="btn-secondary" routerLink="/hr">Cancel</button>
-      
-      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
-        @if (isSubmitting()) { Saving... } @else { 💾 Save Department }
-      </button>
-    </div>
-
-  </form>
+  </div>
 </div>

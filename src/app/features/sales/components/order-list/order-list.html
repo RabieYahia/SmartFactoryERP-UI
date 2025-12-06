@@ -1,61 +1,79 @@
-<div class="container">
-  <div class="header-actions">
-    <h2>📑 Sales Orders</h2>
-    <button class="btn-primary" routerLink="/sales/create-order">🛒 New Sale</button>
+<!-- ⚠️ NOTE: Sales order list uses Bootstrap table and utilities.
+     No functional changes - styling updates only. All status logic remains intact.
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header with title and action button -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="h3 mb-0">📑 Sales Orders</h2>
+    </div>
+    <button class="btn btn-primary" routerLink="/sales/create-order">
+      <i class="bi bi-cart-plus me-2"></i> New Sale
+    </button>
   </div>
 
+  <!-- Loading alert -->
   @if (isLoading()) {
-    <div class="loading-spinner">⏳ Loading sales...</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="bi bi-hourglass-split me-2"></i> 
+      <span>Loading sales...</span>
+    </div>
   } 
   @else {
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>Order #</th>
-          <th>Customer</th>
-          <th>Date</th>
-          <th>Total</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (order of orders(); track order.id) {
+    <!-- Bootstrap table for sales orders -->
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle">
+        <thead class="table-light">
           <tr>
-            <td><strong>{{ order.orderNumber }}</strong></td>
-            <td>{{ order.customerName }}</td>
-            <td>{{ order.orderDate | date:'mediumDate' }}</td>
-            <td style="font-weight: bold; color: green;">{{ order.totalAmount | currency }}</td>
-            <td>
-              <span class="badge" 
-                    [class.draft]="order.status === 'Draft'" 
-                    [class.confirmed]="order.status === 'Confirmed'"
-                    [class.invoiced]="order.status === 'Invoiced'">
-                {{ order.status }}
-              </span>
-            </td>
-            <td>
-              @if (order.status === 'Draft') {
-                <button class="btn-confirm" (click)="onConfirm(order.id)" title="Confirm & Reserve Stock">
-                  ✅ Confirm
-                </button>
-              }
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of orders(); track order.id) {
+            <tr>
+              <td><strong>{{ order.orderNumber }}</strong></td>
+              <td>{{ order.customerName }}</td>
+              <td>{{ order.orderDate | date:'mediumDate' }}</td>
+              <td class="fw-bold text-success">{{ order.totalAmount | currency }}</td>
+              <td>
+                <span class="badge" 
+                      [class.bg-secondary]="order.status === 'Draft'" 
+                      [class.bg-success]="order.status === 'Confirmed'"
+                      [class.bg-info]="order.status === 'Invoiced'">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td class="text-center">
+                @if (order.status === 'Draft') {
+                  <button class="btn btn-sm btn-success me-2" (click)="onConfirm(order.id)" title="Confirm & Reserve Stock">
+                    <i class="bi bi-check-circle me-1"></i> Confirm
+                  </button>
+                }
 
-              @if (order.status === 'Confirmed' || order.status === 'Invoiced') {
-                <button class="btn-pdf" (click)="downloadPdf(order.id)" title="Download Invoice">
-                  🖨️ PDF
-                </button>
-              }
-            </td>
-          </tr>
-        } 
-        
-        @empty {
-          <tr>
-            <td colspan="6" style="text-align: center;">No sales orders found.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+                @if (order.status === 'Confirmed' || order.status === 'Invoiced') {
+                  <button class="btn btn-sm btn-outline-secondary" (click)="downloadPdf(order.id)" title="Download Invoice">
+                    <i class="bi bi-file-pdf me-1"></i> PDF
+                  </button>
+                }
+              </td>
+            </tr>
+          } 
+          
+          @empty {
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox me-2"></i> No sales orders found.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

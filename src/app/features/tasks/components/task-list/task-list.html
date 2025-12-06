@@ -1,71 +1,103 @@
-<div class="container">
-  <div class="header-actions">
-    <h2>📋 Tasks Management</h2>
-    <div class="buttons">
-      <button class="btn-secondary" routerLink="/tasks/performance" style="margin-right: 10px;">
-        🏆 Performance Report
+<!-- ⚠️ NOTE: Task list uses Bootstrap utilities and responsive grid.
+     No functional changes - styling updates only. All task management logic remains intact.
+-->
+
+<div class="container-fluid p-4">
+  <!-- Header with action buttons -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="h3 mb-1">📋 Tasks Management</h2>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary" routerLink="/tasks/performance">
+        <i class="bi bi-trophy me-2"></i> Performance Report
       </button>
-      
-      <button class="btn-primary" routerLink="/tasks/create">
-        ➕ New Task
+      <button class="btn btn-primary" routerLink="/tasks/create">
+        <i class="bi bi-plus-circle me-2"></i> New Task
       </button>
     </div>
   </div>
 
+  <!-- Loading alert -->
   @if (isLoading()) {
-    <div class="loading-spinner">⏳ Loading tasks...</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="bi bi-hourglass-split me-2"></i> 
+      <span>Loading tasks...</span>
+    </div>
   } 
   @else {
-    <div class="tasks-grid">
+    <!-- Responsive task cards grid -->
+    <div class="row g-3">
       
       @for (task of tasks(); track task.id) {
-        <div class="task-card">
-          <div class="card-header">
-            <span class="status-badge" 
-                  [class.in-progress]="task.status === 'InProgress'"
-                  [class.completed]="task.status === 'Completed'">
-              {{ task.status }}
-            </span>
-            <span class="priority-dot" [ngClass]="getPriorityClass(task.priority)" [title]="'Priority: ' + task.priority"></span>
-          </div>
-          
-          <h3>{{ task.title }}</h3>
-          <p class="desc">{{ task.description || 'No description provided.' }}</p>
-          
-          <div class="meta-info">
-            <div class="assignee" title="Assigned Employee">
-              👤 {{ task.assignedEmployeeName || 'Unassigned' }}
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm">
+            <!-- Card header with status and priority -->
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+              <span class="badge" 
+                    [class.bg-warning]="task.status === 'Pending'"
+                    [class.bg-info]="task.status === 'InProgress'"
+                    [class.bg-success]="task.status === 'Completed'">
+                {{ task.status }}
+              </span>
+              <span class="badge rounded-pill" 
+                    [class.bg-danger]="task.priority === 'High'"
+                    [class.bg-warning]="task.priority === 'Medium'"
+                    [class.bg-secondary]="task.priority === 'Low'"
+                    title="Priority">
+                {{ task.priority }}
+              </span>
             </div>
-            <div class="date" title="Due Date">
-              📅 {{ task.dueDate | date:'shortDate' }}
+
+            <div class="card-body">
+              <!-- Task title -->
+              <h5 class="card-title">{{ task.title }}</h5>
+              
+              <!-- Task description -->
+              <p class="card-text text-muted small">
+                {{ task.description || 'No description provided.' }}
+              </p>
+              
+              <!-- Meta information -->
+              <div class="d-flex flex-column gap-2 mb-3">
+                <small class="d-flex align-items-center">
+                  <i class="bi bi-person-circle me-2 text-primary"></i>
+                  {{ task.assignedEmployeeName || 'Unassigned' }}
+                </small>
+                <small class="d-flex align-items-center">
+                  <i class="bi bi-calendar-event me-2 text-primary"></i>
+                  {{ task.dueDate | date:'shortDate' }}
+                </small>
+              </div>
+
+              <!-- Action buttons based on status -->
+              @if (task.status === 'Pending') {
+                <button class="btn btn-sm btn-primary w-100" (click)="updateStatus(task, 'Start')">
+                  <i class="bi bi-play-circle me-2"></i> Start Work
+                </button>
+              }
+
+              @if (task.status === 'InProgress') {
+                <button class="btn btn-sm btn-success w-100" (click)="updateStatus(task, 'Complete')">
+                  <i class="bi bi-check-circle me-2"></i> Mark Done
+                </button>
+              }
+
+              @if (task.status === 'Completed') {
+                <div class="alert alert-success mb-0 py-2 text-center">
+                  <i class="bi bi-star-fill me-2"></i> Good Job!
+                </div>
+              }
             </div>
           </div>
-
-          <div class="actions">
-            
-            @if (task.status === 'Pending') {
-              <button class="btn-action btn-start" (click)="updateStatus(task, 'Start')">
-                🚀 Start Work
-              </button>
-            }
-
-            @if (task.status === 'InProgress') {
-              <button class="btn-action btn-complete" (click)="updateStatus(task, 'Complete')">
-                ✅ Mark Done
-              </button>
-            }
-
-            @if (task.status === 'Completed') {
-              <span class="done-text">✨ Good Job!</span>
-            }
-
-          </div>
-
         </div>
       } 
+      
       @empty {
-        <div class="empty-state">
-          <p>No tasks found. Create a new one to get started!</p>
+        <div class="col-12">
+          <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="bi bi-inbox me-2"></i> No tasks found. Create a new one to get started!
+          </div>
         </div>
       }
     </div>

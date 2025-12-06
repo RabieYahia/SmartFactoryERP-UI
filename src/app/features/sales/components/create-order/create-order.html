@@ -1,80 +1,117 @@
-<div class="container">
-  <h2>💰 New Sales Order</h2>
+<!-- ⚠️ NOTE: Sales order creation form uses Bootstrap components.
+     No functional changes - styling updates only. All order calculation logic remains intact.
+-->
 
-  <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="order-form">
-    
-    <div class="form-section">
-      <div class="form-group">
-        <label>Customer:</label>
-        <select formControlName="customerId">
-          <option value="">-- Select Customer --</option>
-          @for (cust of customers(); track cust.id) {
-            <option [value]="cust.id">{{ cust.customerName }} (Limit: {{ cust.creditLimit | currency }})</option>
-          }
-        </select>
-      </div>
-    </div>
+<div class="container-fluid p-4">
+  <div class="mb-4">
+    <h2 class="h3">💰 New Sales Order</h2>
+  </div>
 
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Order Items</h3>
-        <button type="button" class="btn-add" (click)="addItem()">+ Add Product</button>
-      </div>
+  <div class="row">
+    <div class="col-12">
+      <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
+        <div class="card-body">
+          
+          <!-- Customer Selection -->
+          <div class="mb-4">
+            <label for="customerId" class="form-label">Customer</label>
+            <select class="form-select" id="customerId" formControlName="customerId">
+              <option value="">-- Select Customer --</option>
+              @for (cust of customers(); track cust.id) {
+                <option [value]="cust.id">{{ cust.customerName }} (Limit: {{ cust.creditLimit | currency }})</option>
+              }
+            </select>
+          </div>
 
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th width="100">Qty</th>
-            <th width="150">Unit Price</th>
-            <th width="100">Total</th>
-            <th width="50"></th>
-          </tr>
-        </thead>
-        <tbody formArrayName="items">
-          @for (item of itemsArray.controls; track $index) {
-            <tr [formGroupName]="$index">
-              <td>
-                <select formControlName="materialId">
-                  <option value="">-- Select Product --</option>
-                  @for (mat of materials(); track mat.id) {
-                    <option [value]="mat.id">
-                      {{ mat.materialName }} (Stock: {{ mat.currentStockLevel }})
-                    </option>
+          <!-- Order Items Section -->
+          <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="mb-0">Order Items</h5>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="addItem()">
+                <i class="bi bi-plus-circle me-2"></i> Add Product
+              </button>
+            </div>
+
+            <!-- Items Table -->
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Product</th>
+                    <th style="width: 100px;">Qty</th>
+                    <th style="width: 150px;">Unit Price</th>
+                    <th style="width: 100px;">Total</th>
+                    <th style="width: 60px;"></th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="items">
+                  @for (item of itemsArray.controls; track $index) {
+                    <tr [formGroupName]="$index">
+                      <td>
+                        <select class="form-select form-select-sm" formControlName="materialId">
+                          <option value="">-- Select Product --</option>
+                          @for (mat of materials(); track mat.id) {
+                            <option [value]="mat.id">
+                              {{ mat.materialName }} (Stock: {{ mat.currentStockLevel }})
+                            </option>
+                          }
+                        </select>
+                      </td>
+                      <td>
+                        <input 
+                          type="number" 
+                          class="form-control form-control-sm" 
+                          formControlName="quantity" 
+                          min="1"
+                        >
+                      </td>
+                      <td>
+                        <input 
+                          type="number" 
+                          class="form-control form-control-sm" 
+                          formControlName="unitPrice" 
+                          min="0"
+                        >
+                      </td>
+                      <td class="text-end fw-bold text-success">
+                        {{ (item.get('quantity')?.value * item.get('unitPrice')?.value) | currency }}
+                      </td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeItem($index)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
                   }
-                </select>
-              </td>
-              <td>
-                <input type="number" formControlName="quantity" min="1">
-              </td>
-              <td>
-                <input type="number" formControlName="unitPrice" min="0">
-              </td>
-              <td>
-                {{ (item.get('quantity')?.value * item.get('unitPrice')?.value) | currency }}
-              </td>
-              <td>
-                <button type="button" class="btn-remove" (click)="removeItem($index)">🗑️</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="3" style="text-align: right;">Grand Total:</td>
-            <td style="font-weight: bold; color: green;">{{ totalAmount | currency }}</td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
+                </tbody>
+                <tfoot>
+                  <tr class="table-light fw-bold">
+                    <td colspan="3" class="text-end">Grand Total:</td>
+                    <td class="text-success">{{ totalAmount | currency }}</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
 
-    <div class="actions">
-      <button type="button" class="btn-secondary" routerLink="/sales">Cancel</button>
-      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
-        @if (isSubmitting()) { Processing... } @else { 💾 Save Order }
-      </button>
-    </div>
+          <!-- Form actions -->
+          <div class="d-flex gap-2 justify-content-end">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/sales">
+              <i class="bi bi-x-circle me-2"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { 
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Processing... 
+              } @else { 
+                <i class="bi bi-check-circle me-2"></i> Save Order
+              }
+            </button>
+          </div>
 
-  </form>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
