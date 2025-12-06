@@ -17,3 +17,17 @@
 .card.h-100 {
   min-height: 200px;
 }
+/* إصلاح لمحاذاة الرسوم البيانية */
+.ngx-charts {
+  float: left;
+  overflow: visible;
+}
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+text {
+  font-family: 'Segoe UI', sans-serif !important;
+}

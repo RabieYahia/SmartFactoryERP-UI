@@ -37,7 +37,8 @@ import { ExpenseListComponent } from './features/expenses/components/expense-lis
 import { PerformanceDashboardComponent } from './features/tasks/components/performance-dashboard/performance-dashboard';
 import { TaskListComponent } from './features/tasks/components/task-list/task-list';
 import { CreateTaskComponent } from './features/tasks/components/create-task/create-task';
-
+import { MachineDashboardComponent } from './features/iot/components/machine-dashboard/machine-dashboard';
+import { AttendanceListComponent } from './features/hr/components/attendance-list/attendance-list';
 export const routes: Routes = [
   // 1. صفحة الدخول (بدون حماية)
   { path: 'login', component: LoginComponent },
@@ -75,7 +76,7 @@ export const routes: Routes = [
   { path: 'hr', component: EmployeeListComponent, canActivate: [authGuard] },
   { path: 'hr/create-department', component: CreateDepartmentComponent, canActivate: [authGuard] },
   { path: 'hr/create-employee', component: CreateEmployeeComponent, canActivate: [authGuard] },
-
+{ path: 'hr/attendance', component: AttendanceListComponent },
   // --- Expenses ---
   { path: 'expenses', component: ExpenseListComponent, canActivate: [authGuard] },
   { path: 'expenses/create', component: CreateExpenseComponent, canActivate: [authGuard] },
@@ -88,7 +89,9 @@ export const routes: Routes = [
   // 3. التوجيه الافتراضي (Default Route)
   // يذهب للداشبورد (والحارس سيقرر: لو مسجل يدخل، لو لا يروح login)
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  
+    //---iot
+    { path: 'iot', component: MachineDashboardComponent }, 
+
   // 4. (اختياري) أي رابط خطأ يذهب للرئيسية
   { path: '**', redirectTo: 'dashboard' }
 ];

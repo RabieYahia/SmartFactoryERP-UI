@@ -1,0 +1,60 @@
+<div class="container">
+  
+  <div class="action-card">
+    <h3>⏱️ Quick Attendance Action</h3>
+    <div class="action-row">
+      <div class="form-group">
+        <select [(ngModel)]="selectedEmployeeId" class="emp-select">
+          <option [ngValue]="null">-- Select Employee --</option>
+          @for (emp of employees(); track emp.id) {
+            <option [value]="emp.id">{{ emp.fullName }} ({{ emp.jobTitle }})</option>
+          }
+        </select>
+      </div>
+      
+      <button class="btn-primary" (click)="onToggle()" [disabled]="!selectedEmployeeId || isLoading()">
+        @if (isLoading()) { ⏳ Processing... } 
+        @else { 🔄 Check In / Out }
+      </button>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="table-section">
+    <h3>📅 Today's Log ({{ attendanceLogs().length }} Records)</h3>
+    
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Check In</th>
+          <th>Check Out</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of attendanceLogs(); track log.employeeId) {
+          <tr>
+            <td style="font-weight: bold;">{{ log.employeeName }}</td>
+            
+            <td>{{ log.checkIn ? (log.checkIn | date:'shortTime') : '-' }}</td>
+            <td>{{ log.checkOut ? (log.checkOut | date:'shortTime') : '-' }}</td>
+            
+            <td>
+              <span class="badge" 
+                    [class.present]="log.status.includes('Present')"
+                    [class.left]="log.status.includes('Left')">
+                {{ log.status }}
+              </span>
+            </td>
+          </tr>
+        } 
+        @empty {
+          <tr><td colspan="4" style="text-align: center;">No attendance records for today.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+</div>

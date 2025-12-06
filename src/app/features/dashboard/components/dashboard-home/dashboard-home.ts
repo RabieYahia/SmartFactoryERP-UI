@@ -1,64 +1,76 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgxChartsModule } from '@swimlane/ngx-charts'; // 👈 استيراد المكتبة
 import { DashboardService } from '../../services/dashboard';
-import { DashboardStats } from '../../models/dashboard-stats.model';
+import { DashboardStats } from '../../../../core/models/dashboard-stats.model';
 
-/**
- * COMPONENT: DashboardHomeComponent
- * 
- * Purpose:
- * - Display key performance indicators (KPIs) and business metrics
- * - Show factory production statistics with trends
- * - Provide quick insights into operational performance
- * 
- * Displayed Metrics:
- * - Total Production (revenue or quantity)
- * - Active Machines (count of operational equipment)
- * - Orders in Progress (active work)
- * - Efficiency Rating (performance metric)
- * 
- * Features:
- * - Real-time data fetching from dashboard service
- * - Responsive card grid layout
- * - Trend indicators (up/down arrows with percentage)
- * - Loading spinner while fetching data
- * - Color-coded trend indicators (green for increase, red for decrease)
- * 
- * No functional changes - styling and layout only.
- */
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgxChartsModule], // 👈 لا تنسَ إضافتها هنا
   templateUrl: './dashboard-home.html',
-  styleUrl: './dashboard-home.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './dashboard-home.css'
 })
 export class DashboardHomeComponent implements OnInit {
-  // ===== DEPENDENCY INJECTION =====
-  // Service for fetching dashboard statistics and KPIs
   private dashboardService = inject(DashboardService);
 
-  // ===== STATE SIGNALS =====
-  // Dashboard statistics data (null until loaded)
+  // Stats Signals (القديم)
   stats = signal<DashboardStats | null>(null);
   
-  // Loading indicator while fetching data
+  // Charts Data Signals (الجديد)
+  salesChartData = signal<any[]>([]);
+  productsChartData = signal<any[]>([]);
+  statusChartData = signal<any[]>([]);
+
   isLoading = signal<boolean>(true);
 
-  /**
-   * ANGULAR LIFECYCLE HOOK
-   * Called when component is initialized
-   * Triggers data fetching from backend
-   */
+  // خيارات الرسوم البيانية (Config)
+  colorScheme: any = { domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5'] };
+  view: [number, number] = [700, 300]; // الأبعاد الافتراضية
+
   ngOnInit() {
-    this.loadStats();
+    this.loadAllData();
   }
 
-  loadStats() {
+  loadAllData() {
+    this.isLoading.set(true);
+
+    // 1. تحميل الإحصائيات الرقمية
     this.dashboardService.getStats().subscribe({
+      next: (data) => this.stats.set(data)
+    });
+
+    // 2. تحميل بيانات الرسوم البيانية
+    this.dashboardService.getChartsData().subscribe({
       next: (data) => {
-        this.stats.set(data);
+        // تحويل البيانات لتناسب NGX-Charts
+
+        // أ) Line Chart (Sales Trend)
+        const trend = [
+          {
+            name: "Sales",
+            series: data.salesTrend.map(d => ({
+              name: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }), // يحول التاريخ لـ Mon, Tue
+              value: d.totalAmount
+            }))
+          }
+        ];
+        this.salesChartData.set(trend);
+
+        // ب) Bar Chart (Top Products)
+        const products = data.topProducts.map(p => ({
+          name: p.productName,
+          value: p.quantitySold
+        }));
+        this.productsChartData.set(products);
+
+        // ج) Pie Chart (Order Status)
+        const statuses = data.ordersStatus.map(s => ({
+          name: s.status,
+          value: s.count
+        }));
+        this.statusChartData.set(statuses);
+
         this.isLoading.set(false);
       },
       error: (err) => {

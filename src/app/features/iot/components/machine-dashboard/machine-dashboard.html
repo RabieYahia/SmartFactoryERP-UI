@@ -1,0 +1,53 @@
+<div class="container">
+  
+  <div class="header-section">
+    <h1>🏭 IoT Simulation Dashboard</h1>
+    <div class="connection-badge" 
+         [class.connected]="signalR.connectionStatus().includes('Active')"
+         [class.disconnected]="!signalR.connectionStatus().includes('Active')">
+      {{ signalR.connectionStatus() }}
+    </div>
+  </div>
+
+  @if (signalR.currentAlert()) {
+    <div class="alert-box">
+      ⚠️ ALERT: {{ signalR.currentAlert()?.alertMessage }}
+    </div>
+  }
+
+  <div class="grid">
+    @for (machine of signalR.machines(); track machine.machineID) {
+      
+      <div class="card" [ngClass]="getStatusClass(machine.status)">
+        
+        <div class="card-header">
+          <span class="machine-title">Machine #{{ machine.machineID }}</span>
+          <span class="status-badge" [ngClass]="getStatusClass(machine.status)">
+            {{ getStatusLabel(machine.status) }}
+          </span>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <span>⚡ Speed:</span>
+            <span class="value">{{ machine.speed }} rpm</span>
+          </div>
+
+          <div class="metric">
+            <span>🌡️ Temp:</span>
+            <span class="value" [style.color]="machine.temperature > 80 ? '#c62828' : '#333'">
+              {{ machine.temperature }} °C
+            </span>
+          </div>
+
+          <div class="metric">
+            <span>📦 Production:</span>
+            <span class="value">{{ machine.productionCount }}</span>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+
+</div>

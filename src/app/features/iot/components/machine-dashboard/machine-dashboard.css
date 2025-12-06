@@ -1,0 +1,74 @@
+.container { padding: 20px; font-family: 'Segoe UI', sans-serif; background: #f5f5f5; min-height: 100vh; }
+
+.header-section { text-align: center; margin-bottom: 30px; }
+h1 { color: #333; margin: 0 0 10px 0; }
+
+.connection-badge {
+  display: inline-block; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;
+}
+.connection-badge.connected { background: #d4edda; color: #155724; }
+.connection-badge.disconnected { background: #f8d7da; color: #721c24; }
+
+/* الشبكة */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* الكارت */
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  border-top: 5px solid #ccc; /* Default */
+}
+.card:hover { transform: translateY(-5px); }
+
+/* ألوان الحالة (تستخدم للبوردر وللبادج) */
+.status-running { border-top-color: #4CAF50 !important; background-color: #4CAF50; color: white; }
+.status-idle { border-top-color: #FFC107 !important; background-color: #FFC107; color: black; }
+.status-stopped { border-top-color: #F44336 !important; background-color: #F44336; color: white; }
+
+/* الهيدر داخل الكارت */
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
+}
+.machine-title { font-weight: bold; font-size: 1.1rem; }
+
+.status-badge {
+  padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;
+  /* الألوان بتتحدد بالـ class فوق */
+}
+/* تعديل خاص للبادج عشان الخلفية متغطيش على الكارت كله */
+.card .status-badge.status-running { background-color: #4CAF50; }
+.card .status-badge.status-idle { background-color: #FFC107; }
+.card .status-badge.status-stopped { background-color: #F44336; }
+/* نرجع خلفية الكارت بيضاء */
+.card { background-color: white !important; color: black !important; }
+
+
+.metrics .metric {
+  display: flex; justify-content: space-between; margin: 10px 0; font-size: 0.95rem;
+}
+.value { font-weight: bold; font-family: monospace; font-size: 1.1em; }
+
+/* التنبيهات */
+.alert-box {
+  background: #ffebee; color: #c62828; padding: 15px;
+  margin: 0 auto 20px auto; max-width: 600px;
+  border-radius: 8px; border: 1px solid #ef9a9a;
+  text-align: center; font-weight: bold;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
