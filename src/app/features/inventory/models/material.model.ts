@@ -1,4 +1,8 @@
 export interface Material {
+name: any;
+code: any;
+unit: any;
+  materialType: number;
   id: number;
   materialCode: string;
   materialName: string;

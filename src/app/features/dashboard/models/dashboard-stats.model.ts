@@ -1,4 +1,5 @@
 export interface DashboardStats {
+  criticalRawMaterials: never[];
   totalMaterialsCount: number;
   lowStockItemsCount: number;
   pendingSalesOrders: number;

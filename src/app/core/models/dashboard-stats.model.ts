@@ -14,6 +14,15 @@ export interface OrderStatus {
   count: number;
 }
 
+export interface LowStockMaterial {
+  materialId: number;
+  name: string;
+  currentStock: number;
+  reorderLevel: number;
+  unit: string;
+  shortage: number;
+}
+
 export interface DashboardCharts {
   salesTrend: DailySales[];
   topProducts: TopProduct[];
@@ -26,5 +35,6 @@ export interface DashboardStats {
   totalExpenses: number;
   netProfit: number;
   activeProductionOrders: number;
+  criticalRawMaterials: LowStockMaterial[];
   // ... باقي الخصائص القديمة
 }

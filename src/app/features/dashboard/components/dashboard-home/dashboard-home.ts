@@ -37,7 +37,13 @@ export class DashboardHomeComponent implements OnInit {
 
     // 1. تحميل الإحصائيات الرقمية
     this.dashboardService.getStats().subscribe({
-      next: (data) => this.stats.set(data)
+      next: (data) => {
+        const mappedStats: DashboardStats = {
+          ...data,
+          criticalRawMaterials: data.criticalRawMaterials || []
+        };
+        this.stats.set(mappedStats);
+      }
     });
 
     // 2. تحميل بيانات الرسوم البيانية
