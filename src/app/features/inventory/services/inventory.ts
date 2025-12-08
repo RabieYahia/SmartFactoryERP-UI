@@ -38,6 +38,17 @@ export class InventoryService {
   }
 
   // 5. حذف مادة (Delete)
+  // ... (if implemented)
+
+  // 6. جلب المنتجات النهائية فقط
+  getFinishedGoods(): Observable<Material[]> {
+    return this.http.get<Material[]>(`${this.apiUrl}/materials/finished-goods`);
+  }
+
+  // 7. جلب المواد الخام فقط
+  getRawMaterials(): Observable<Material[]> {
+    return this.http.get<Material[]>(`${this.apiUrl}/materials/raw-materials`);
+  }
   deleteMaterial(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/materials/${id}`);
   }

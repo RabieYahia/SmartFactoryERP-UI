@@ -3,14 +3,32 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 /**
+ * INTERFACE: BomComponentDto
+ * Represents a single component in the BOM
+ */
+export interface BomComponentDto {
+  componentId: number;  // Raw material ID
+  quantity: number;     // Quantity needed
+}
+
+/**
  * INTERFACE: CreateBOMCommand
  * Defines the structure for creating Bill of Materials (BOM) entries
  * A BOM specifies which raw materials are needed to create a finished product
  */
 export interface CreateBOMCommand {
   productId: number;    // Finished product (target item being manufactured)
-  componentId: number;  // Raw material required for the product
-  quantity: number;     // How many units of the raw material needed per product
+  components: BomComponentDto[];  // List of raw materials with quantities
+}
+
+/**
+ * INTERFACE: CreateBOMCommandSingle (Legacy - for single component)
+ * Used for backward compatibility with old API endpoint
+ */
+export interface CreateBOMCommandSingle {
+  productId: number;
+  componentId: number;
+  quantity: number;
 }
 
 /**
@@ -74,8 +92,8 @@ export class ProductionService {
    * CREATE BILL OF MATERIALS
    * Defines which raw materials (components) are needed to create a finished product
    * 
-   * @param command - BOM data: productId, componentId, quantity
-   * @returns Observable<number> - BOM ID created in database
+   * @param command - BOM data: productId, components array
+   * @returns Observable<number> - Number of components added
    */
   createBOM(command: CreateBOMCommand): Observable<number> {
     return this.http.post<number>(`${this.apiUrl}/bom`, command);

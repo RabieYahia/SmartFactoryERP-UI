@@ -83,13 +83,20 @@ export class CreateMaterialComponent {
    * @returns void
    */
   onSubmit() {
+    console.log('🔵 Submit button clicked!');
+    console.log('📋 Form Valid:', this.materialForm.valid);
+    console.log('📦 Form Data:', this.materialForm.value);
+    
     // First validation: Check if form has errors
     if (this.materialForm.invalid) {
+      console.log('❌ Form is INVALID. Errors:', this.materialForm.errors);
       // Mark all fields as touched to display red borders + error messages
       this.materialForm.markAllAsTouched();
       return;
     }
 
+    console.log('✅ Form is VALID. Submitting to backend...');
+    
     // Prevent duplicate submission by disabling submit button
     this.isSubmitting.set(true);
 
@@ -97,13 +104,14 @@ export class CreateMaterialComponent {
     this.inventoryService.createMaterial(this.materialForm.value).subscribe({
       next: (res) => {
         // ✅ SUCCESS: Material created with ID returned from backend
+        console.log('✅ SUCCESS! Material created with ID:', res);
         alert('✅ Material Created Successfully! ID: ' + res);
         // Navigate back to inventory list
         this.router.navigate(['/inventory']);
       },
       error: (err) => {
         // ❌ ERROR: Backend validation or network error
-        console.error(err);
+        console.error('❌ Backend Error:', err);
         // Show user-friendly error message
         alert('❌ Error creating material. Check console for details.');
         // Re-enable submit button for retry

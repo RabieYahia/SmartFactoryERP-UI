@@ -2,7 +2,15 @@ import { Routes } from '@angular/router';
 
 // --- Auth & Core ---
 import { LoginComponent } from './features/auth/login/login';
-import { authGuard } from './core/guards/auth-guard'; // 👈 تأكد من مسار الجارد
+import { authGuard } from './core/guards/auth-guard';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
+import { ChangePasswordComponent } from './features/auth/change-password/change-password.component';
+import { ProfileSecurityComponent } from './features/auth/profile-security/profile-security.component';
+
+// --- Shared Components ---
+import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
 
 // --- Inventory Components ---
 import { MaterialListComponent } from './features/inventory/components/material-list/material-list';
@@ -40,8 +48,18 @@ import { CreateTaskComponent } from './features/tasks/components/create-task/cre
 import { MachineDashboardComponent } from './features/iot/components/machine-dashboard/machine-dashboard';
 import { AttendanceListComponent } from './features/hr/components/attendance-list/attendance-list';
 export const routes: Routes = [
-  // 1. صفحة الدخول (بدون حماية)
+  // === Auth Routes (Public) ===
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
+  
+  // === Auth Routes (Protected) ===
+  { path: 'change-password', component: ChangePasswordComponent, canActivate: [authGuard] },
+  { path: 'profile-security', component: ProfileSecurityComponent, canActivate: [authGuard] },
+  
+  // === Shared Routes ===
+  { path: 'unauthorized', component: UnauthorizedComponent },
 
   // 2. باقي الصفحات (محمية بـ authGuard)
   // 👇 لاحظ إضافة canActivate: [authGuard] لكل الصفحات
@@ -86,12 +104,12 @@ export const routes: Routes = [
   { path: 'tasks/create', component: CreateTaskComponent, canActivate: [authGuard] },
   { path: 'tasks/performance', component: PerformanceDashboardComponent, canActivate: [authGuard] },
 
-  // 3. التوجيه الافتراضي (Default Route)
-  // يذهب للداشبورد (والحارس سيقرر: لو مسجل يدخل، لو لا يروح login)
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    //---iot
-    { path: 'iot', component: MachineDashboardComponent }, 
+  //---iot
+  { path: 'iot', component: MachineDashboardComponent }, 
 
-  // 4. (اختياري) أي رابط خطأ يذهب للرئيسية
-  { path: '**', redirectTo: 'dashboard' }
+  // 3. التوجيه الافتراضي (Default Route)
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // 4. أي رابط خطأ يذهب للـ login
+  { path: '**', redirectTo: 'login' }
 ];

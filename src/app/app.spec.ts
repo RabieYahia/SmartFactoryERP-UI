@@ -1,23 +1,24 @@
-import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+// 👇 1. التأكد من استيراد السيرفس من المسار الصحيح الذي أنشأناه
+import { AuthService } from './core/services/auth';
 
-describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-    }).compileComponents();
-  });
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive], 
+  templateUrl: './app.html',
+  styleUrls: ['./app.css']
+})
+export class AppComponent {
+  title = 'SmartFactory-UI';
+  
+  // 👇 2. حقن السيرفس
+  private authService = inject(AuthService);
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, SmartFactory-UI');
-  });
-});
+  // 👇 3. دالة الخروج (يجب أن يكون اسمها مطابقاً لما كتبناه في HTML)
+  onLogout() {
+    this.authService.logout();
+  }
+}

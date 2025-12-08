@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from './core/services/auth';
 
 /**
  * COMPONENT: AppComponent (Root Component)
@@ -31,18 +32,31 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
  * 1. app.html: Contains top navbar + sidebar + router-outlet
  * 2. app.css: Minimal overrides for responsive design
  * 3. styles.css: Global Bootstrap theme and utilities
- * 
- * No functional changes - styling and layout only.
  */
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
-  styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './app.css'
 })
 export class AppComponent {
+[x: string]: any;
+  authService = inject(AuthService);
+  
   // Application title (used in browser tab and metadata)
   title = 'SmartFactory-UI';
+
+  /**
+   * Logout current user
+   */
+  logout(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    console.log('🔵 Logout button clicked');
+    this.authService.logout();
+    console.log('✅ Logout method called');
+  }
 }

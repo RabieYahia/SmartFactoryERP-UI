@@ -27,10 +27,36 @@ export class AuthService {
     );
   }
 
-  logout() {
+  /**
+   * دالة تسجيل الخروج (محدثة)
+   * تبلغ السيرفر لإبطال الـ Refresh Token ثم تمسح البيانات المحلية
+   */
+  logout(): void {
+    console.log('🚪 Logging out user...');
+    
+    // مسح البيانات المحلية أولاً
+    this.clearLocalData();
+    
+    // إبلاغ السيرفر (في الخلفية، بدون انتظار)
+    this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
+      next: () => {
+        console.log('✅ Server notified of logout');
+      },
+      error: (err) => {
+        console.warn('⚠️ Server logout failed (already cleared locally)', err);
+      }
+    });
+  }
+
+  /**
+   * دالة مساعدة لمسح الداتا والتوجيه
+   */
+  private clearLocalData(): void {
+    console.log('🧹 Clearing local data...');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.isLoggedIn.set(false);
+    console.log('🔄 Navigating to /login');
     this.router.navigate(['/login']);
   }
 

@@ -1,0 +1,212 @@
+<div class="register-container">
+  <div class="register-card">
+    <!-- Header -->
+    <div class="register-header">
+      <div class="logo">
+        <i class="bi bi-person-plus"></i>
+      </div>
+      <h1 class="title">Create Account</h1>
+      <p class="subtitle">Join Smart Factory ERP</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (errorMessage()) {
+      <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Registration Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      
+      <!-- Full Name Field -->
+      <div class="form-group">
+        <label for="fullName" class="form-label">
+          <i class="bi bi-person me-2"></i>Full Name
+        </label>
+        <input 
+          type="text" 
+          id="fullName"
+          class="form-control" 
+          formControlName="fullName"
+          placeholder="Enter your full name"
+          [class.is-invalid]="hasError('fullName')"
+        >
+        @if (hasError('fullName', 'required')) {
+          <div class="invalid-feedback">Full name is required</div>
+        }
+        @if (hasError('fullName', 'minlength')) {
+          <div class="invalid-feedback">Full name must be at least 3 characters</div>
+        }
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="bi bi-envelope me-2"></i>Email Address
+        </label>
+        <input 
+          type="email" 
+          id="email"
+          class="form-control" 
+          formControlName="email"
+          placeholder="Enter your email"
+          [class.is-invalid]="hasError('email')"
+        >
+        @if (hasError('email', 'required')) {
+          <div class="invalid-feedback">Email is required</div>
+        }
+        @if (hasError('email', 'email')) {
+          <div class="invalid-feedback">Please enter a valid email address</div>
+        }
+      </div>
+
+      <!-- Password Field with Strength Indicator -->
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="bi bi-lock me-2"></i>Password
+        </label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="hidePassword() ? 'password' : 'text'" 
+            id="password"
+            class="form-control" 
+            formControlName="password"
+            placeholder="Create a strong password"
+            [class.is-invalid]="hasError('password')"
+          >
+          <button 
+            type="button" 
+            class="password-toggle-btn"
+            (click)="togglePasswordVisibility()"
+            tabindex="-1"
+          >
+            <i [class]="hidePassword() ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
+          </button>
+        </div>
+
+        <!-- Password Strength Meter -->
+        @if (registerForm.get('password')?.value) {
+          <div class="password-strength-meter mt-2">
+            <div class="strength-bar">
+              <div 
+                class="strength-bar-fill" 
+                [class.weak]="passwordStrengthColor() === 'danger'"
+                [class.medium]="passwordStrengthColor() === 'warning'"
+                [class.strong]="passwordStrengthColor() === 'success'"
+                [style.width.%]="passwordStrength()"
+              ></div>
+            </div>
+            <small 
+              class="strength-text"
+              [class.text-danger]="passwordStrengthColor() === 'danger'"
+              [class.text-warning]="passwordStrengthColor() === 'warning'"
+              [class.text-success]="passwordStrengthColor() === 'success'"
+            >
+              {{ passwordStrengthText() }}
+            </small>
+          </div>
+        }
+
+        <!-- Password Requirements -->
+        <div class="password-requirements mt-2">
+          <small class="text-muted d-block mb-1">Password must contain:</small>
+          <ul class="requirements-list">
+            <li [class.valid]="!hasError('password', 'minLength')">
+              <i class="bi" [class.bi-check-circle-fill]="!hasError('password', 'minLength')" 
+                 [class.bi-circle]="hasError('password', 'minLength')"></i>
+              At least 8 characters
+            </li>
+            <li [class.valid]="!hasError('password', 'uppercase')">
+              <i class="bi" [class.bi-check-circle-fill]="!hasError('password', 'uppercase')" 
+                 [class.bi-circle]="hasError('password', 'uppercase')"></i>
+              One uppercase letter
+            </li>
+            <li [class.valid]="!hasError('password', 'lowercase')">
+              <i class="bi" [class.bi-check-circle-fill]="!hasError('password', 'lowercase')" 
+                 [class.bi-circle]="hasError('password', 'lowercase')"></i>
+              One lowercase letter
+            </li>
+            <li [class.valid]="!hasError('password', 'digit')">
+              <i class="bi" [class.bi-check-circle-fill]="!hasError('password', 'digit')" 
+                 [class.bi-circle]="hasError('password', 'digit')"></i>
+              One number
+            </li>
+            <li [class.valid]="!hasError('password', 'special')">
+              <i class="bi" [class.bi-check-circle-fill]="!hasError('password', 'special')" 
+                 [class.bi-circle]="hasError('password', 'special')"></i>
+              One special character
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">
+          <i class="bi bi-lock-fill me-2"></i>Confirm Password
+        </label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="hideConfirmPassword() ? 'password' : 'text'" 
+            id="confirmPassword"
+            class="form-control" 
+            formControlName="confirmPassword"
+            placeholder="Re-enter your password"
+            [class.is-invalid]="hasError('confirmPassword') || hasFormError('passwordMismatch')"
+          >
+          <button 
+            type="button" 
+            class="password-toggle-btn"
+            (click)="toggleConfirmPasswordVisibility()"
+            tabindex="-1"
+          >
+            <i [class]="hideConfirmPassword() ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
+          </button>
+        </div>
+        @if (hasError('confirmPassword', 'required')) {
+          <div class="invalid-feedback d-block">Please confirm your password</div>
+        }
+        @if (hasFormError('passwordMismatch')) {
+          <div class="invalid-feedback d-block">Passwords do not match</div>
+        }
+      </div>
+
+      <!-- Employee ID (Optional) -->
+      <div class="form-group">
+        <label for="employeeId" class="form-label">
+          <i class="bi bi-badge-ad me-2"></i>Employee ID <small class="text-muted">(Optional)</small>
+        </label>
+        <input 
+          type="number" 
+          id="employeeId"
+          class="form-control" 
+          formControlName="employeeId"
+          placeholder="Enter your employee ID"
+        >
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn btn-primary btn-block"
+        [disabled]="isLoading()"
+      >
+        @if (isLoading()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Creating account...
+        } @else {
+          <i class="bi bi-check-circle me-2"></i>
+          Create Account
+        }
+      </button>
+    </form>
+
+    <!-- Login Link -->
+    <div class="login-link">
+      Already have an account? 
+      <a routerLink="/login">Sign in</a>
+    </div>
+  </div>
+</div>
