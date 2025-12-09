@@ -34,6 +34,7 @@ import { OrderListComponent as PurchasingOrderList } from './features/purchasing
 import { CreateReceiptComponent } from './features/purchasing/components/create-receipt/create-receipt';
 
 // --- Sales ---
+import { SalesDashboardComponent } from './features/sales/components/sales-dashboard/sales-dashboard';
 import { CustomerListComponent } from './features/sales/components/customer-list/customer-list';
 import { CreateCustomerComponent } from './features/sales/components/create-customer/create-customer';
 import { CreateOrderComponent as SalesCreateOrder } from './features/sales/components/create-order/create-order';
@@ -114,7 +115,8 @@ export const routes: Routes = [
       { path: 'purchasing/receive/:id', component: CreateReceiptComponent },
 
       // --- Sales ---
-      { path: 'sales', component: CustomerListComponent },
+      { path: 'sales', component: SalesDashboardComponent },
+      { path: 'sales/customers', component: CustomerListComponent },
       { path: 'sales/create-customer', component: CreateCustomerComponent },
       { path: 'sales/orders', component: SalesOrderList },
       { path: 'sales/create-order', component: SalesCreateOrder },

@@ -14,6 +14,42 @@
   color: #dc3545 !important;
 }
 
+/* Submenu styling */
+.submenu {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.submenu-link {
+  padding: 0.6rem 1rem !important;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.submenu-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: #fff;
+  padding-left: 1.2rem !important;
+}
+
+.submenu-link.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-left-color: #ffc107;
+  font-weight: 500;
+}
+
+.nav-link i.bi-chevron-down {
+  font-size: 0.8rem;
+  transition: transform 0.3s;
+}
+
+.nav-link[aria-expanded="true"] i.bi-chevron-down {
+  transform: rotate(180deg);
+}
+
 /* keep previous app-specific small utilities */
 .content { padding: 20px; }
 .content-area.full-width {
