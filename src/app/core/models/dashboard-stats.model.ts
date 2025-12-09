@@ -29,12 +29,14 @@ export interface DashboardCharts {
   ordersStatus: OrderStatus[];
 }
 
-// (الموديل القديم كما هو)
 export interface DashboardStats {
+  totalMaterialsCount: number;
+  lowStockItemsCount: number;
+  pendingSalesOrders: number;
+  potentialRevenue: number;
+  activeProductionOrders: number;
   totalRevenue: number;
   totalExpenses: number;
   netProfit: number;
-  activeProductionOrders: number;
   criticalRawMaterials: LowStockMaterial[];
-  // ... باقي الخصائص القديمة
 }

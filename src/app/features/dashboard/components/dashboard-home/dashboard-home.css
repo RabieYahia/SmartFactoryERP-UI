@@ -1,33 +1,255 @@
-/* ⚠️ NOTE: Dashboard styling now uses Bootstrap classes.
-   Custom styles below support Bootstrap components only.
-   Do NOT add new custom CSS here - use Bootstrap utilities instead.
-*/
+/* Dashboard Animations & Enhanced Styles */
 
-/* Optional: Add hover effect to cards (Bootstrap cards only) */
-.card {
+.dashboard-container {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* KPI Cards with Border Animation */
+.kpi-cards .card {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.kpi-cards .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.kpi-cards .card:nth-child(1):hover {
+  border-left-color: #198754;
+}
+
+.kpi-cards .card:nth-child(2):hover {
+  border-left-color: #dc3545;
+}
+
+.kpi-cards .card:nth-child(3):hover {
+  border-left-color: #0d6efd;
+}
+
+.kpi-cards .card:nth-child(4):hover {
+  border-left-color: #198754;
+}
+
+.icon-box {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .icon-box {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Quick Actions */
+.quick-action-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.quick-action-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  border-color: currentColor;
+}
+
+.hover-lift {
   transition: all 0.3s ease;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Ensure cards maintain consistent height on all screen sizes */
-.card.h-100 {
-  min-height: 200px;
+/* Timeline */
+.timeline {
+  position: relative;
 }
-/* إصلاح لمحاذاة الرسوم البيانية */
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 1.5rem;
+  animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 40px;
+  width: 2px;
+  height: calc(100% - 20px);
+  background: linear-gradient(to bottom, #e9ecef, transparent);
+}
+
+.timeline-badge {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.timeline-item:hover .timeline-badge {
+  transform: scale(1.15);
+}
+
+/* Charts */
 .ngx-charts {
   float: left;
   overflow: visible;
 }
 
+text {
+  font-family: 'Segoe UI', sans-serif !important;
+}
+
+.card-body:has(ngx-charts-line-chart),
+.card-body:has(ngx-charts-pie-chart),
+.card-body:has(ngx-charts-bar-horizontal) {
+  padding: 1rem;
+}
+
+/* Loading Skeleton */
+.placeholder {
+  display: inline-block;
+  min-height: 1em;
+  vertical-align: middle;
+  cursor: wait;
+  background-color: currentColor;
+  opacity: 0.5;
+  border-radius: 0.25rem;
+}
+
+.placeholder-glow .placeholder {
+  animation: placeholder-glow 2s ease-in-out infinite;
+}
+
+@keyframes placeholder-glow {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* Refresh Button Animation */
+button .bi-arrow-clockwise {
+  transition: transform 0.3s ease;
+}
+
+button:not(:disabled):hover .bi-arrow-clockwise {
+  transform: rotate(180deg);
+}
+
+button .bi-hourglass-split {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Critical Materials Alert */
+.border-start.border-warning {
+  border-width: 4px !important;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    border-color: #ffc107;
+  }
+  50% {
+    border-color: #ff9800;
+  }
+}
+
+/* Smooth Scroll */
+.overflow-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #dee2e6 transparent;
+}
+
+.overflow-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+  background-color: #dee2e6;
+  border-radius: 3px;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+  background-color: #adb5bd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kpi-cards .h3 {
+    font-size: 1.5rem;
+  }
+  
+  .quick-action-card {
+    padding: 1rem !important;
+  }
+  
+  .quick-action-card i {
+    font-size: 2rem !important;
+  }
+  
+  .timeline-item {
+    padding-bottom: 1rem;
+  }
+}
+
+/* Card Ensure Height */
+.card.h-100 {
+  min-height: 200px;
+}
+
 .card {
   border-radius: 12px;
   overflow: hidden;
-}
-
-text {
-  font-family: 'Segoe UI', sans-serif !important;
+  transition: all 0.3s ease;
 }

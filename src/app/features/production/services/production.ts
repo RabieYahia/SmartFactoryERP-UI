@@ -40,6 +40,7 @@ export interface CreateProductionOrderCommand {
   quantity: number;          // How many units to produce
   startDate: string;         // When production should begin (ISO format)
   notes: string;             // Additional notes or requirements
+  priority?: 'High' | 'Medium' | 'Low';  // Order priority (default: Medium)
 }
 
 /**
@@ -49,11 +50,17 @@ export interface CreateProductionOrderCommand {
  */
 export interface ProductionOrderDto {
   id: number;              // Unique order identifier
-  orderNumber: string;     // Human-readable order reference number
+  orderNumber: string;     // Human-readable order reference (e.g., "PO-001")
+  productId: number;       // Product being manufactured
   productName: string;     // Name of the product being manufactured
   quantity: number;        // Quantity to produce
   status: string;          // Planned, Started, or Completed
   startDate: string;       // When production was/should be started
+  endDate?: string | null; // When production should end
+  notes?: string;          // Additional notes
+  createdDate?: string;    // When order was created
+  priority?: 'High' | 'Medium' | 'Low';  // Order priority (Frontend only)
+  progress?: number;       // Production progress percentage (Frontend only)
 }
 
 /**

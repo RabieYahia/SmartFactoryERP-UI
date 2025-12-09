@@ -1,15 +1,15 @@
 export interface Material {
-name: any;
-code: any;
-unit: any;
-  materialType: number;
   id: number;
   materialCode: string;
   materialName: string;
-  currentStockLevel: number;
+  materialType: number;
+  unitOfMeasure: string;
   unitPrice: number;
-  minimumStockLevel: number;
-
-  // 👇 أضف هذا السطر ليختفي الخطأ
-  unitOfMeasure: string; 
+  currentStockLevel: number;  // ✅ يدعم decimal من Backend
+  minimumStockLevel: number;  // ✅ يدعم decimal من Backend
+  
+  // Aliases for backward compatibility
+  name?: any;
+  code?: any;
+  unit?: any;
 }

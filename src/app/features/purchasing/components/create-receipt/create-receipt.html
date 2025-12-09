@@ -29,15 +29,22 @@
               </div>
             </div>
 
-            <!-- Received By field -->
+            <!-- Received By Employee Dropdown -->
             <div class="mb-3">
-              <label for="receivedBy" class="form-label">Received By</label>
-              <input 
-                type="text" 
-                class="form-control" 
-                id="receivedBy"
-                formControlName="receivedBy"
+              <label for="receivedById" class="form-label">Received By <span class="text-danger">*</span></label>
+              <select 
+                class="form-select" 
+                id="receivedById"
+                formControlName="receivedById"
               >
+                <option value="">-- Select Employee --</option>
+                @for (emp of employees(); track emp.id) {
+                  <option [value]="emp.id">{{ emp.fullName }}</option>
+                }
+              </select>
+              @if (receiptForm.get('receivedById')?.invalid && receiptForm.get('receivedById')?.touched) {
+                <div class="text-danger small mt-1">Please select who received the goods</div>
+              }
             </div>
 
             <!-- Notes field -->

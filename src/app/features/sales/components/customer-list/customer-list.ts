@@ -28,7 +28,22 @@ export class CustomerListComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error(err);
+        console.error('❌ Load Customers Error:', err);
+        console.error('📄 Error Details:', err.error);
+        
+        let errorMsg = 'Failed to load customers.';
+        if (typeof err.error === 'string') {
+          const exceptionMatch = err.error.match(/Exception:\s*(.+?)(?:\r?\n|$)/);
+          if (exceptionMatch) {
+            errorMsg = exceptionMatch[1].trim();
+          } else {
+            errorMsg = err.error.split('\n')[0];
+          }
+        } else if (err.error?.message) {
+          errorMsg = err.error.message;
+        }
+        
+        alert(`❌ ${errorMsg}`);
         this.isLoading.set(false);
       }
     });

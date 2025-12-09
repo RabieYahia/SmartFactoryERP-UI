@@ -44,15 +44,18 @@ body{
 
 /* Sidebar */
 .sidebar{
-	width:260px;background:var(--surface);border-right:1px solid rgba(20,20,30,0.04);padding:1.25rem;overflow:auto;
+	width:260px;background:var(--surface);border-right:1px solid rgba(20,20,30,0.04);padding:1.25rem;overflow:auto;display:flex;flex-direction:column;
 }
-.sidebar .nav{display:flex;flex-direction:column;gap:.35rem;padding:0}
+.sidebar .nav{display:flex;flex-direction:column;gap:.35rem;padding:0;flex:1}
 .sidebar .nav-link{
 	display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:.6rem;color:#465560;text-decoration:none;font-weight:600;
 }
 .sidebar .nav-link i{color:var(--accent);min-width:24px}
 .sidebar .nav-link:hover{background:rgba(108,79,255,0.06);color:#2a3746}
 .sidebar .nav-link.active{background:linear-gradient(90deg, rgba(124,77,255,0.12), rgba(124,77,255,0.06));box-shadow:inset 0 0 0 1px rgba(124,77,255,0.04);color:var(--accent-600)}
+.sidebar .nav-link.text-danger{color:#dc3545 !important}
+.sidebar .nav-link.text-danger:hover{background:rgba(220,53,69,0.08);color:#c82333 !important}
+.sidebar .nav-link.text-danger i{color:#dc3545}
 
 /* Content area */
 .content-area{flex:1;padding:1.25rem;overflow:auto}

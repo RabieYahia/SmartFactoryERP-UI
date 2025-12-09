@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+// تأكد من استيراد الموديلات الصحيحة
+import { AuthResponse, ChangePasswordRequest, LoginRequest, RegisterRequest } from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -9,62 +11,121 @@ import { Observable, tap } from 'rxjs';
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = 'https://localhost:7093/api/v1/auth'; // تأكد من البورت
+  private apiUrl = 'https://localhost:7093/api/v1/auth';
 
   // إشارة لمعرفة هل المستخدم مسجل دخول أم لا
   isLoggedIn = signal<boolean>(this.hasToken());
+  
+  // إشارة لتخزين بيانات المستخدم الحالية
+  currentUser = signal<AuthResponse | null>(this.getCurrentUser());
 
-  login(credentials: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+  // ✅ تسجيل الدخول
+  login(credentials: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
-        // عند نجاح الدخول، نحفظ التوكن
         if (response && response.token) {
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user', JSON.stringify(response)); // حفظ بيانات المستخدم
+          // حفظ البيانات بمفتاح موحد 'user_data' عشان الـ Interceptor يشوفها
+          localStorage.setItem('user_data', JSON.stringify(response));
+          
           this.isLoggedIn.set(true);
+          this.currentUser.set(response);
         }
       })
     );
   }
 
-  /**
-   * دالة تسجيل الخروج (محدثة)
-   * تبلغ السيرفر لإبطال الـ Refresh Token ثم تمسح البيانات المحلية
-   */
+  // ✅ تسجيل مستخدم جديد
+  register(request: RegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
+      tap(response => {
+        if (response && response.token) {
+          localStorage.setItem('user_data', JSON.stringify(response));
+          this.isLoggedIn.set(true);
+          this.currentUser.set(response);
+        }
+      })
+    );
+  }
+
+  // ✅ جلب بيانات أمان الحساب
+  getAccountSecurity(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/account-security`);
+  }
+
+  // ✅ تغيير كلمة المرور
+  changePassword(data: ChangePasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, data);
+  }
+
+  // ✅ نسيت كلمة المرور
+  forgotPassword(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/forgot-password`, request);
+  }
+
+  // ✅ إعادة تعيين كلمة المرور
+  resetPassword(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/reset-password`, request);
+  }
+
+  // ✅ تسجيل الخروج
   logout(): void {
     console.log('🚪 Logging out user...');
     
-    // مسح البيانات المحلية أولاً
-    this.clearLocalData();
-    
-    // إبلاغ السيرفر (في الخلفية، بدون انتظار)
+    // 1. إبلاغ السيرفر (محاولة)
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
-      next: () => {
-        console.log('✅ Server notified of logout');
-      },
-      error: (err) => {
-        console.warn('⚠️ Server logout failed (already cleared locally)', err);
-      }
+      next: () => console.log('✅ Server notified of logout'),
+      error: (err) => console.warn('⚠️ Server logout warning', err),
+      complete: () => this.clearLocalData() // التنظيف في كل الأحوال
     });
+
+    // احتياطي: لو السيرفر مردش، نظف وامشي
+    this.clearLocalData();
   }
 
-  /**
-   * دالة مساعدة لمسح الداتا والتوجيه
-   */
+  // 🧹 دالة التنظيف
   private clearLocalData(): void {
-    console.log('🧹 Clearing local data...');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('user_data'); // مفتاح واحد شامل
     this.isLoggedIn.set(false);
-    console.log('🔄 Navigating to /login');
+    this.currentUser.set(null);
     this.router.navigate(['/login']);
   }
 
+  // 🛠️ دوال مساعدة
   getToken(): string | null {
-    return localStorage.getItem('token');
+    const user = this.getCurrentUser();
+    return user ? user.token : null;
   }
 
   private hasToken(): boolean {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('user_data');
+  }
+
+  getCurrentUser(): AuthResponse | null {
+    const userStr = localStorage.getItem('user_data');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  // ✅ التحقق من دور المستخدم
+  hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    return user?.roles?.includes(role) || false;
+  }
+
+  // ✅ التحقق من أي من الأدوار
+  hasAnyRole(roles: string[]): boolean {
+    const user = this.getCurrentUser();
+    return roles.some(role => user?.roles?.includes(role)) || false;
+  }
+
+  // ✅ التحقق من جميع الأدوار
+  hasAllRoles(roles: string[]): boolean {
+    const user = this.getCurrentUser();
+    return roles.every(role => user?.roles?.includes(role)) || false;
+  }
+
+  // ✅ الحصول على أدوار المستخدم
+  getUserRoles(): string[] {
+    const user = this.getCurrentUser();
+    return user?.roles || [];
   }
 }

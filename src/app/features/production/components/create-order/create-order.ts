@@ -26,6 +26,7 @@ export class CreateOrderComponent implements OnInit {
     productId: ['', Validators.required],
     quantity: [1, [Validators.required, Validators.min(1)]],
     startDate: [new Date().toISOString().split('T')[0], Validators.required],
+    priority: ['Medium', Validators.required],
     notes: ['']
   });
 
@@ -47,6 +48,7 @@ export class CreateOrderComponent implements OnInit {
       productId: Number(val.productId),
       quantity: Number(val.quantity),
       startDate: new Date(val.startDate).toISOString(),
+      priority: val.priority,
       notes: val.notes
     };
 

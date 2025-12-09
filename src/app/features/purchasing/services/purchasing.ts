@@ -26,7 +26,7 @@ export interface CreateGoodsReceiptItemDto {
 
 export interface CreateGoodsReceiptCommand {
   purchaseOrderId: number;
-  receivedBy: number;
+  receivedById: number;
   notes: string;
   items: CreateGoodsReceiptItemDto[];
 }

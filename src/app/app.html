@@ -1,6 +1,7 @@
 <div class="app-container">
 
-  <header class="topbar d-flex">
+  <!-- 👇 إخفاء Header في صفحة Login -->
+  <header class="topbar d-flex"*ngIf="showLayout">
     <div class="brand" routerLink="/dashboard">
       <i class="bi bi-building"></i>
       <div>Digital Factory</div>
@@ -20,12 +21,16 @@
             <i class="bi bi-person-circle text-muted" style="font-size:1.2rem"></i>
           </div>
           <div style="margin-left:.55rem">
-            <div style="font-weight:700">Admin User</div>
-            <div class="role">System Administrator</div>
+            <div style="font-weight:700">{{ userName }}</div>
+            <div class="role">{{ primaryRole }}</div>
           </div>
         </div>
 
         <ul class="dropdown-menu dropdown-menu-end">
+          <li class="px-3 py-2 border-bottom">
+            <div class="small text-muted mb-1">Roles:</div>
+            <div class="fw-semibold">{{ userRoles }}</div>
+          </li>
           <li><a class="dropdown-item" routerLink="/profile-security"><i class="bi bi-person me-2"></i> Profile</a></li>
           <li><a class="dropdown-item" routerLink="/change-password"><i class="bi bi-key me-2"></i> Change Password</a></li>
           <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Settings</a></li>
@@ -43,8 +48,9 @@
 
   <div class="app-body">
 
-    <aside class="sidebar">
-      <ul class="nav">
+    <!-- 👇 إخفاء Sidebar في صفحة Login -->
+<aside class="sidebar" *ngIf="showLayout">
+        <ul class="nav">
         
         <li>
           <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
@@ -71,7 +77,7 @@
         </li>
 
         <li>
-          <a routerLink="/production/bom" routerLinkActive="active" class="nav-link">
+          <a routerLink="/production" routerLinkActive="active" class="nav-link">
             <i class="bi bi-gear"></i> <span>Production</span>
           </a>
         </li>
@@ -112,11 +118,27 @@
           </a>
         </li>
 
+        <!-- Admin Only Section -->
+        @if (isAdmin) {
+          <li class="mt-3" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+            <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">
+              <i class="bi bi-shield-lock"></i> <span>User Management</span>
+            </a>
+          </li>
+        }
+
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+          <a (click)="logout($event)" class="nav-link text-danger" style="cursor: pointer;">
+            <i class="bi bi-box-arrow-right"></i> <span>Logout</span>
+          </a>
+        </li>
+
       </ul>
     </aside>
 
-    <main class="content-area">
-      <router-outlet></router-outlet>
+    <!-- 👇 إضافة class حسب الصفحة -->
+<main class="content-area" [class.full-width]="!showLayout">
+        <router-outlet></router-outlet>
     </main>
 
   </div>

@@ -1,0 +1,25 @@
+.avatar-sm {
+  flex-shrink: 0;
+}
+
+.table > :not(caption) > * > * {
+  padding: 1rem;
+}
+
+.dropdown-menu {
+  min-width: 200px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.btn-group {
+  gap: 0.25rem;
+}

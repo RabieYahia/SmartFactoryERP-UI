@@ -1,0 +1,52 @@
+<div class="d-flex align-items-center justify-content-center vh-100 bg-light">
+  <div class="card shadow-lg border-0" style="max-width: 450px; width: 100%;">
+    <div class="card-body p-4">
+      
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-success">🆕 New Account</h2>
+        <p class="text-muted">Join Smart Factory ERP today.</p>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="alert alert-danger text-center p-2 mb-3">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Full Name</label>
+          <input type="text" class="form-control" [(ngModel)]="data.fullName" name="fullName" required placeholder="John Doe">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email Address</label>
+          <input type="email" class="form-control" [(ngModel)]="data.email" name="email" required placeholder="john@factory.com">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Password</label>
+          <input type="password" class="form-control" [(ngModel)]="data.password" name="password" required placeholder="••••••••">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Employee ID (Optional)</label>
+          <input type="number" class="form-control" [(ngModel)]="data.employeeId" name="employeeId" placeholder="101">
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 py-2 fw-bold" [disabled]="isLoading()">
+          @if (isLoading()) { 
+            <span class="spinner-border spinner-border-sm me-2"></span> Creating Account... 
+          } @else { 
+            ✅ Register 
+          }
+        </button>
+      </form>
+
+      <div class="text-center mt-3">
+        <small class="text-muted">Already have an account? <a routerLink="/login" class="text-decoration-none">Login here</a></small>
+      </div>
+
+    </div>
+  </div>
+</div>

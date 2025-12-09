@@ -1,66 +1,216 @@
-<div class="container-fluid p-4">
-  <div class="mb-4">
-    <h2 class="h3 mb-1">📊 Dashboard Overview</h2>
-    <p class="text-muted mb-0">Real-time production monitoring and business intelligence</p>
+<div class="container-fluid p-4 dashboard-container">
+  <!-- Header with Refresh -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="h3 mb-1 fw-bold">📊 Dashboard Overview</h2>
+      <p class="text-muted mb-0">
+        Real-time production monitoring and business intelligence
+        <span class="badge bg-light text-secondary ms-2">
+          <i class="bi bi-clock me-1"></i>
+          Updated: {{ lastUpdated() | date:'short' }}
+        </span>
+      </p>
+    </div>
+    <button 
+      class="btn btn-outline-primary btn-sm" 
+      (click)="refreshData()"
+      [disabled]="isRefreshing()">
+      <i class="bi" [class.bi-arrow-clockwise]="!isRefreshing()" [class.bi-hourglass-split]="isRefreshing()"></i>
+      {{ isRefreshing() ? 'Refreshing...' : 'Refresh' }}
+    </button>
   </div>
 
+  <!-- Error Alert -->
+  @if (hasError()) {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <strong>Error!</strong> {{ errorMessage() }}
+      <button type="button" class="btn-close" (click)="hasError.set(false)"></button>
+    </div>
+  }
+
+  <!-- Loading Skeleton -->
   @if (isLoading()) {
-    <div class="alert alert-info d-flex align-items-center" role="alert">
-      <i class="bi bi-hourglass-split me-2"></i> 
-      <span>Loading dashboard data...</span>
+    <div class="row g-3 mb-4">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <div class="placeholder-glow">
+                <span class="placeholder col-6"></span>
+                <span class="placeholder col-8 bg-primary"></span>
+                <span class="placeholder col-4"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   } 
   @else {
     
+    <!-- KPI Cards Row 1 -->
+    <div class="row g-3 mb-3 kpi-cards">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Total Revenue</h6>
+              <div class="icon-box bg-success-subtle rounded-circle p-2">
+                <i class="bi bi-cash-coin text-success fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold">{{ stats()?.totalRevenue | currency }}</p>
+            <small class="text-success">
+              <i class="bi bi-arrow-up-short"></i> Sales Income
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Total Expenses</h6>
+              <div class="icon-box bg-danger-subtle rounded-circle p-2">
+                <i class="bi bi-wallet2 text-danger fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold">{{ stats()?.totalExpenses | currency }}</p>
+            <small class="text-danger">
+              <i class="bi bi-arrow-down-short"></i> Operational Costs
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Net Profit</h6>
+              <div class="icon-box bg-success-subtle rounded-circle p-2">
+                <i class="bi bi-graph-up-arrow text-success fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold text-success">{{ stats()?.netProfit | currency }}</p>
+            <small class="text-muted">
+              Revenue - Expenses
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Potential Revenue</h6>
+              <div class="icon-box bg-info-subtle rounded-circle p-2">
+                <i class="bi bi-piggy-bank text-info fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold text-info">{{ stats()?.potentialRevenue | currency }}</p>
+            <small class="text-muted">
+              <i class="bi bi-hourglass-half"></i> Pending Sales
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Cards Row 2 -->
+    <div class="row g-3 mb-4 kpi-cards">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Active Production</h6>
+              <div class="icon-box bg-primary-subtle rounded-circle p-2">
+                <i class="bi bi-gear-wide-connected text-primary fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold">{{ stats()?.activeProductionOrders }}</p>
+            <small class="text-muted">
+              <i class="bi bi-hourglass-split"></i> Orders in progress
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Pending Sales Orders</h6>
+              <div class="icon-box bg-warning-subtle rounded-circle p-2">
+                <i class="bi bi-cart-check text-warning fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold">{{ stats()?.pendingSalesOrders }}</p>
+            <small class="text-muted">
+              <i class="bi bi-clock-history"></i> Awaiting confirmation
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Total Materials</h6>
+              <div class="icon-box bg-secondary-subtle rounded-circle p-2">
+                <i class="bi bi-box-seam text-secondary fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold">{{ stats()?.totalMaterialsCount }}</p>
+            <small class="text-muted">
+              <i class="bi bi-archive"></i> In inventory
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="card-title mb-0 text-muted fw-normal">Low Stock Items</h6>
+              <div class="icon-box bg-danger-subtle rounded-circle p-2">
+                <i class="bi bi-exclamation-triangle text-danger fs-5"></i>
+              </div>
+            </div>
+            <p class="h3 mb-2 fw-bold text-danger">{{ stats()?.lowStockItemsCount }}</p>
+            <small class="text-danger">
+              <i class="bi bi-arrow-down-circle"></i> Needs reorder
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
     <div class="row g-3 mb-4">
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
           <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <h5 class="card-title mb-0">Total Revenue</h5>
-              <i class="bi bi-cash-coin text-success fs-4"></i>
+            <h5 class="card-title fw-bold mb-3">
+              <i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick Actions
+            </h5>
+            <div class="row g-3">
+              @for (action of quickActions(); track action.route) {
+                <div class="col-6 col-md-3">
+                  <a [routerLink]="action.route" class="text-decoration-none">
+                    <div class="quick-action-card p-3 rounded-3 text-center hover-lift h-100" [class]="action.bgColor">
+                      <i class="bi fs-1 mb-2" [class]="action.icon + ' ' + action.color"></i>
+                      <p class="mb-0 fw-semibold" [class]="action.color">{{ action.label }}</p>
+                    </div>
+                  </a>
+                </div>
+              }
             </div>
-            <p class="h4 mb-2 fw-bold">{{ stats()?.totalRevenue | currency }}</p>
-            <small class="text-success">Sales Income</small>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <h5 class="card-title mb-0">Total Expenses</h5>
-              <i class="bi bi-wallet2 text-danger fs-4"></i>
-            </div>
-            <p class="h4 mb-2 fw-bold">{{ stats()?.totalExpenses | currency }}</p>
-            <small class="text-danger">Operational Costs</small>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <h5 class="card-title mb-0">Active Production</h5>
-              <i class="bi bi-gear-wide-connected text-primary fs-4"></i>
-            </div>
-            <p class="h4 mb-2 fw-bold">{{ stats()?.activeProductionOrders }}</p>
-            <small class="text-muted">Orders in progress</small>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <h5 class="card-title mb-0">Net Profit</h5>
-              <i class="bi bi-graph-up-arrow text-primary fs-4"></i>
-            </div>
-            <p class="h4 mb-2 fw-bold">{{ stats()?.netProfit | currency }}</p>
-            <small class="text-success">Revenue - Expenses</small>
           </div>
         </div>
       </div>
@@ -121,21 +271,25 @@
 
     <div class="row g-4">
       
+      <!-- Charts Section -->
       <div class="col-12 col-lg-8">
         <div class="card border-0 shadow-sm h-100">
           <div class="card-header bg-white border-0 pt-4 px-4">
-            <h5 class="card-title fw-bold">📈 Sales Trend (Last 7 Days)</h5>
+            <h5 class="card-title fw-bold">
+              <i class="bi bi-graph-up text-primary me-2"></i>Sales Trend (Last 7 Days)
+            </h5>
           </div>
           <div class="card-body" style="height: 350px;">
             <ngx-charts-line-chart
               [results]="salesChartData()"
-              [view]="[800, 300]" 
+              [view]="chartView()"
               [scheme]="colorScheme"
               [legend]="true"
               [showXAxisLabel]="true"
               [showYAxisLabel]="true"
               [xAxis]="true"
               [yAxis]="true"
+              [animations]="true"
               xAxisLabel="Day"
               yAxisLabel="Revenue ($)">
             </ngx-charts-line-chart>
@@ -143,41 +297,82 @@
         </div>
       </div>
 
+      <!-- Recent Activities -->
       <div class="col-12 col-lg-4">
         <div class="card border-0 shadow-sm h-100">
           <div class="card-header bg-white border-0 pt-4 px-4">
-            <h5 class="card-title fw-bold">🍕 Order Status</h5>
+            <h5 class="card-title fw-bold">
+              <i class="bi bi-activity text-info me-2"></i>Recent Activities
+            </h5>
           </div>
-          <div class="card-body" style="height: 350px;">
+          <div class="card-body overflow-auto" style="max-height: 350px;">
+            <div class="timeline">
+              @for (activity of recentActivities(); track activity.title) {
+                <div class="timeline-item mb-3">
+                  <div class="d-flex">
+                    <div class="flex-shrink-0">
+                      <div class="timeline-badge rounded-circle p-2" [class]="getActivityBadgeClass(activity.type)">
+                        <i [class]="'bi ' + activity.icon"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1 fw-semibold">{{ activity.title }}</h6>
+                      <p class="text-muted small mb-1">{{ activity.description }}</p>
+                      <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>{{ activity.time }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Status Pie Chart -->
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <h5 class="card-title fw-bold">
+              <i class="bi bi-pie-chart-fill text-warning me-2"></i>Order Status Distribution
+            </h5>
+          </div>
+          <div class="card-body d-flex align-items-center justify-content-center" style="height: 350px;">
             <ngx-charts-pie-chart
               [results]="statusChartData()"
               [view]="[400, 300]"
               [scheme]="colorScheme"
               [doughnut]="true"
               [labels]="true"
-              [legend]="false">
+              [legend]="true"
+              [animations]="true">
             </ngx-charts-pie-chart>
           </div>
         </div>
       </div>
 
-      <div class="col-12">
-        <div class="card border-0 shadow-sm">
+      <!-- Top Products Bar Chart -->
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
           <div class="card-header bg-white border-0 pt-4 px-4">
-            <h5 class="card-title fw-bold">🏆 Top Selling Products</h5>
+            <h5 class="card-title fw-bold">
+              <i class="bi bi-trophy-fill text-warning me-2"></i>Top Selling Products
+            </h5>
           </div>
-          <div class="card-body" style="height: 400px;">
-            <ngx-charts-bar-vertical
+          <div class="card-body" style="height: 350px;">
+            <ngx-charts-bar-horizontal
               [results]="productsChartData()"
-              [view]="[1200, 350]"
+              [view]="[550, 300]"
               [scheme]="colorScheme"
               [xAxis]="true"
               [yAxis]="true"
               [showXAxisLabel]="true"
               [showYAxisLabel]="true"
-              xAxisLabel="Product"
-              yAxisLabel="Quantity Sold">
-            </ngx-charts-bar-vertical>
+              [animations]="true"
+              xAxisLabel="Quantity Sold"
+              yAxisLabel="Product">
+            </ngx-charts-bar-horizontal>
           </div>
         </div>
       </div>

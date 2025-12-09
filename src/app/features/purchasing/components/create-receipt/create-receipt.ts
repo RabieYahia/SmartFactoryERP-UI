@@ -26,8 +26,7 @@ export class CreateReceiptComponent implements OnInit {
   poId: number = 0;
 
   receiptForm: FormGroup = this.fb.group({
-    // 👈 3. تغيير الاسم والقيمة الافتراضية
-    receivedById: ['', Validators.required], 
+    receivedById: ['', Validators.required],
     notes: [''],
     items: this.fb.array([])
   });
@@ -37,18 +36,17 @@ export class CreateReceiptComponent implements OnInit {
     if (this.poId) {
       this.loadOrderDetails();
     }
-    this.loadEmployees(); // 👈 4. تحميل الموظفين عند البدء
+    this.loadEmployees();
   }
 
   get itemsArray(): FormArray {
     return this.receiptForm.get('items') as FormArray;
   }
 
-  // تحميل قائمة الموظفين للـ Dropdown
   loadEmployees() {
     this.hrService.getEmployees().subscribe({
       next: (res) => this.employees.set(res),
-      error: (err) => console.error('Error loading employees', err)
+      error: (err) => console.error('❌ Error loading employees', err)
     });
   }
 
@@ -86,11 +84,8 @@ export class CreateReceiptComponent implements OnInit {
 
     const command: CreateGoodsReceiptCommand = {
       purchaseOrderId: this.poId,
-      
-      // 👈 5. إرسال رقم الموظف (تحويل لنص لرقم)
-      receivedBy: Number(formValue.receivedById), 
-      
-      notes: formValue.notes,
+      receivedById: Number(formValue.receivedById),
+      notes: formValue.notes || '',
       items: formValue.items.map((i: any) => ({
         poItemId: i.poItemId,
         receivedQuantity: Number(i.receivedQuantity),
@@ -98,7 +93,8 @@ export class CreateReceiptComponent implements OnInit {
       }))
     };
 
-    console.log('Sending Receipt:', command);
+    console.log('📤 Sending Receipt:', command);
+    console.log('📋 Full Details:', JSON.stringify(command, null, 2));
 
     this.purchasingService.createGoodsReceipt(command).subscribe({
       next: () => {
@@ -106,8 +102,9 @@ export class CreateReceiptComponent implements OnInit {
         this.router.navigate(['/inventory']);
       },
       error: (err) => {
-        console.error(err);
-        const msg = err.error?.message || 'Unknown Error';
+        console.error('❌ Receipt Error:', err);
+        console.error('📄 Error Details:', err.error);
+        const msg = err.error?.message || err.error?.title || 'Unknown Error';
         alert(`❌ Error receiving goods: ${msg}`);
         this.isSubmitting.set(false);
       }

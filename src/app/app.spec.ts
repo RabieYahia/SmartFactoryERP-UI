@@ -1,24 +1,30 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-// 👇 1. التأكد من استيراد السيرفس من المسار الصحيح الذي أنشأناه
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from './core/services/auth';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive], 
-  templateUrl: './app.html',
-  styleUrls: ['./app.css']
+  templateUrl: './app.html', 
+  styleUrl: './app.css'
 })
 export class AppComponent {
   title = 'SmartFactory-UI';
   
-  // 👇 2. حقن السيرفس
   private authService = inject(AuthService);
+  private router = inject(Router); // 👈 إضافة Router
 
-  // 👇 3. دالة الخروج (يجب أن يكون اسمها مطابقاً لما كتبناه في HTML)
-  onLogout() {
+  logout(event?: Event) {
+    if (event) {
+      event.preventDefault();
+    }
     this.authService.logout();
+  }
+
+  // 👇 دالة للتحقق من صفحة Login
+  isLoginPage(): boolean {
+    return this.router.url === '/login' || this.router.url === '/register';
   }
 }

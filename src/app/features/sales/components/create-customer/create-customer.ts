@@ -41,8 +41,22 @@ export class CreateCustomerComponent {
         this.router.navigate(['/sales']);
       },
       error: (err) => {
-        console.error(err);
-        const errorMsg = err.error?.message || 'Error creating customer. Email might be duplicate.';
+        console.error('❌ Create Customer Error:', err);
+        console.error('📄 Error Details:', err.error);
+        
+        let errorMsg = 'Error creating customer.';
+        if (typeof err.error === 'string') {
+          // Extract exception message from stack trace
+          const exceptionMatch = err.error.match(/Exception:\s*(.+?)(?:\r?\n|$)/);
+          if (exceptionMatch) {
+            errorMsg = exceptionMatch[1].trim();
+          } else {
+            errorMsg = err.error.split('\n')[0];
+          }
+        } else if (err.error?.message) {
+          errorMsg = err.error.message;
+        }
+        
         alert(`❌ Failed: ${errorMsg}`);
         this.isSubmitting.set(false);
       }

@@ -129,10 +129,51 @@ export class OrderListComponent implements OnInit {
       },
       error: (err) => {
         // ❌ ERROR: Failed to start production
-        console.error(err);
-        // Extract error message from backend if available
-        const msg = err.error?.message || 'Failed to start. Check that raw materials are in stock.';
-        alert(`❌ Error: ${msg}`);
+        console.error('❌ Start Production Error:', err);
+        console.error('📄 Error Details:', err.error);
+        
+        // Extract error message - Backend returns plain text in err.error
+        let msg = 'Failed to start production. Check raw materials availability.';
+        
+        if (typeof err.error === 'string') {
+          // Backend returns exception message with stack trace
+          const fullError = err.error;
+          
+          // Extract just the exception message (after "System.Exception: ")
+          let errorMessage = fullError;
+          const exceptionMatch = fullError.match(/System\.Exception:\s*(.+?)(?:\r?\n|$)/);
+          if (exceptionMatch) {
+            errorMessage = exceptionMatch[1].trim();
+          }
+          
+          console.log('📄 Error Details:', fullError);
+          console.log('📝 Extracted Message:', errorMessage);
+          
+          // Check for insufficient stock error
+          if (errorMessage.includes('Insufficient stock')) {
+            // Pattern: "Insufficient stock for material 'MaterialName'. Required: X, Available: Y"
+            const match = errorMessage.match(/material '(.+?)'\.\s*Required:\s*([\d.]+),\s*Available:\s*([\d.]+)/i);
+            
+            if (match) {
+              const [, material, required, available] = match;
+              msg = `❌ Insufficient Stock!\n\n` +
+                    `Material: ${material}\n` +
+                    `Required: ${required}\n` +
+                    `Available: ${available}\n\n` +
+                    `💡 Solution: Purchase more "${material}" from Purchasing module.`;
+            } else {
+              msg = `❌ ${errorMessage}\n\n💡 Solution: Purchase raw materials from Purchasing module.`;
+            }
+          } else if (errorMessage.includes('No BOM found')) {
+            msg = `❌ BOM Not Found!\n\n` +
+                  `This product doesn't have a Bill of Materials defined.\n\n` +
+                  `💡 Solution: Create BOM first using the Production Wizard.`;
+          } else {
+            msg = errorMessage;
+          }
+        }
+        
+        alert(msg);
         // Hide spinner for retry
         this.isLoading.set(false);
       }

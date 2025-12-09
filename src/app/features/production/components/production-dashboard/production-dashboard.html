@@ -1,0 +1,198 @@
+<div class="container-fluid p-4">
+  <!-- Header with Actions -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="h3 mb-1">🏭 Production Management</h2>
+      <p class="text-muted mb-0">Monitor production orders and real-time progress</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary" routerLink="/production/bom">
+        <i class="bi bi-diagram-3 me-2"></i>Manage BOM
+      </button>
+      <button class="btn btn-primary" routerLink="/production/wizard">
+        <i class="bi bi-plus-circle me-2"></i>Create Production Order
+      </button>
+    </div>
+  </div>
+
+  <!-- Metrics Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Active Orders</p>
+              <h3 class="mb-0">{{ metrics().activeOrders }}</h3>
+            </div>
+            <div class="bg-primary bg-opacity-10 p-3 rounded">
+              <i class="bi bi-clipboard-check text-primary fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">In Progress</p>
+              <h3 class="mb-0">{{ metrics().inProgress }}</h3>
+            </div>
+            <div class="bg-warning bg-opacity-10 p-3 rounded">
+              <i class="bi bi-gear-fill text-warning fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Completed Today</p>
+              <h3 class="mb-0">{{ metrics().completedToday }}</h3>
+            </div>
+            <div class="bg-success bg-opacity-10 p-3 rounded">
+              <i class="bi bi-check-circle-fill text-success fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Efficiency</p>
+              <h3 class="mb-0">{{ metrics().efficiency }}%</h3>
+            </div>
+            <div class="bg-info bg-opacity-10 p-3 rounded">
+              <i class="bi bi-graph-up text-info fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Quick Actions</h5>
+      <div class="row g-2">
+        <div class="col-md-12">
+          <button class="btn btn-outline-secondary w-100" routerLink="/production/orders">
+            <i class="bi bi-list-ul me-2"></i>All Orders
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Production Orders List -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="card-title mb-0">Production Orders</h5>
+    </div>
+    <div class="card-body">
+      @if (isLoading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted mt-2">Loading production orders...</p>
+        </div>
+      } @else if (orders().length === 0) {
+        <div class="text-center py-5">
+          <i class="bi bi-inbox fs-1 text-muted"></i>
+          <p class="text-muted mt-2">No production orders found</p>
+          <button class="btn btn-primary mt-2" routerLink="/production/wizard">
+            <i class="bi bi-plus-circle me-2"></i>Create First Order
+          </button>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Order ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Priority</th>
+                <th>Start Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of orders(); track order.id) {
+                <tr>
+                  <td>
+                    <span class="badge bg-secondary">#{{ order.id }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-box-seam me-2 text-primary"></i>
+                      <span class="fw-medium">{{ order.productName }}</span>
+                    </div>
+                  </td>
+                  <td>{{ order.quantity }} units</td>
+                  <td>
+                    <span [class]="getStatusBadgeClass(order.status)">
+                      {{ order.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="progress flex-grow-1" style="height: 8px; min-width: 100px;">
+                        <div 
+                          class="progress-bar" 
+                          [style.width.%]="getProgressPercentage(order)"
+                          [class.bg-success]="order.status === 'Completed'"
+                          [class.bg-warning]="order.status === 'Started'"
+                          [class.bg-info]="order.status === 'Planned'"
+                        ></div>
+                      </div>
+                      <small class="text-muted">{{ getProgressPercentage(order) }}%</small>
+                    </div>
+                  </td>
+                  <td>
+                    <span [class]="getPriorityClass(order.priority || 'Medium')">
+                      {{ order.priority || 'Medium' }}
+                    </span>
+                  </td>
+                  <td>{{ order.startDate | date: 'short' }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      @if (order.status === 'Planned') {
+                        <button class="btn btn-success btn-sm" title="Start Production">
+                          <i class="bi bi-play-fill"></i>
+                        </button>
+                      }
+                      @if (order.status === 'Started') {
+                        <button class="btn btn-primary btn-sm" title="Complete Production">
+                          <i class="bi bi-check-circle"></i>
+                        </button>
+                      }
+                      <button class="btn btn-info btn-sm" title="View Details">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>

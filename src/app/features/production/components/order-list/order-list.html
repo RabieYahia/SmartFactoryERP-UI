@@ -13,11 +13,11 @@
     </div>
     <!-- Action Buttons: Define BOM and Create New Order -->
     <div class="d-flex gap-2">
-      <button class="btn btn-outline-secondary" routerLink="/production/bom" title="Define Product Recipes (Bill of Materials)">
-        <i class="bi bi-file-earmark me-2"></i> Define Recipe (BOM)
+      <button class="btn btn-outline-secondary" routerLink="/production" title="Back to Dashboard">
+        <i class="bi bi-arrow-left me-2"></i> Dashboard
       </button>
-      <button class="btn btn-primary" routerLink="/production/create-order" title="Create new production order">
-        <i class="bi bi-calendar-plus me-2"></i> Plan New Order
+      <button class="btn btn-primary" routerLink="/production/wizard" title="Create new production order">
+        <i class="bi bi-plus-circle me-2"></i> New Order
       </button>
     </div>
   </div>
@@ -48,7 +48,7 @@
           @for (order of orders(); track order.id) {
             <tr>
               <!-- Order Number: Unique reference displayed in bold -->
-              <td><strong>{{ order.orderNumber }}</strong></td>
+              <td><strong>{{ order.orderNumber || '#' + order.id }}</strong></td>
               
               <!-- Product Name: What is being manufactured -->
               <td>{{ order.productName }}</td>

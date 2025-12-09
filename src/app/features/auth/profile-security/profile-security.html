@@ -1,0 +1,83 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      
+      <h3 class="mb-4 fw-bold"><i class="bi bi-shield-lock me-2"></i> Account Security</h3>
+
+      @if (isLoading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary"></div>
+          <p class="mt-2 text-muted">Loading account details...</p>
+        </div>
+      } 
+      @else if (accountData(); as user) {
+        
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-4">
+              <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                <i class="bi bi-person fs-2 text-primary"></i>
+              </div>
+              <div class="flex-grow-1">
+                <h5 class="mb-1 fw-bold">{{ user.userName }}</h5>
+                <small class="text-muted d-block mb-2">{{ user.email }}</small>
+                <div>
+                  @for (role of getUserRoles(); track role) {
+                    <span class="badge me-1" [ngClass]="{
+                      'bg-danger': role === 'Admin',
+                      'bg-primary': role === 'Manager',
+                      'bg-info': role === 'Employee',
+                      'bg-secondary': role === 'Viewer'
+                    }">
+                      <i class="bi bi-shield-check me-1"></i>{{ role }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="text-muted small">Email Status</label>
+                <div>
+                  @if (user.emailConfirmed) {
+                    <span class="badge bg-success-subtle text-success border border-success"><i class="bi bi-check-circle"></i> Verified</span>
+                  } @else {
+                    <span class="badge bg-warning-subtle text-warning border border-warning"><i class="bi bi-exclamation-circle"></i> Unverified</span>
+                  }
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="text-muted small">Account Status</label>
+                <div>
+                  @if (user.isLocked) {
+                    <span class="badge bg-danger"><i class="bi bi-lock-fill"></i> Locked</span>
+                  } @else {
+                    <span class="badge bg-success"><i class="bi bi-unlock-fill"></i> Active</span>
+                  }
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="text-muted small">Two-Factor Auth</label>
+                <div class="fw-bold">
+                  {{ user.twoFactorEnabled ? 'Enabled' : 'Disabled' }}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="text-muted small">Failed Login Attempts</label>
+                <div class="fw-bold text-danger">{{ user.accessFailedCount }}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      }
+    </div>
+  </div>
+</div>

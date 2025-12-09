@@ -1,0 +1,130 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  max-width: 800px;
+  width: 90%;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Steps Progress */
+.steps-progress {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.step.active {
+  opacity: 1;
+}
+
+.step.completed {
+  opacity: 1;
+}
+
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.step.active .step-circle {
+  background: var(--bs-primary);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+}
+
+.step.completed .step-circle {
+  background: var(--bs-success);
+  color: white;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: #dee2e6;
+  margin: 0 8px;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Step Content Animation */
+.step-content {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-label {
+    font-size: 0.7rem;
+  }
+  
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+}
