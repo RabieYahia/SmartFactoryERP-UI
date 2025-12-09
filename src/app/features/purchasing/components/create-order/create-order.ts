@@ -7,6 +7,7 @@ import { InventoryService } from '../../../inventory/services/inventory';
 import { Supplier } from '../../models/supplier.model';
 import { Material } from '../../../inventory/models/material.model';
 import { CreatePurchaseOrderCommand } from '../../models/purchase-order.model';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-order',
@@ -20,6 +21,7 @@ export class CreateOrderComponent implements OnInit {
   private purchasingService = inject(PurchasingService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   // Signals للداتا اللي هنملا بيها الـ Dropdowns
   suppliers = signal<Supplier[]>([]);
@@ -109,7 +111,7 @@ export class CreateOrderComponent implements OnInit {
 
   this.purchasingService.createPurchaseOrder(command).subscribe({
     next: (res) => {
-      alert(`✅ Order Created Successfully! ID: ${res}`);
+      this.alertService.success(`Order Created Successfully! ID: ${res}`);
       this.router.navigate(['/purchasing']);
     },
     error: (err) => {
@@ -119,7 +121,7 @@ export class CreateOrderComponent implements OnInit {
                        ? JSON.stringify(err.error.errors) 
                        : (err.error?.message || 'Unknown Error');
                        
-      alert(`❌ Failed: ${errorMsg}`);
+      this.alertService.error(`Failed: ${errorMsg}`);
       this.isSubmitting.set(false);
     }
   });

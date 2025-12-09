@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SalesService, SalesOrderListDto } from '../../services/sales';
+import { AlertService } from '../../../../core/services/alert.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-sales-order-list',
@@ -12,6 +14,8 @@ import { SalesService, SalesOrderListDto } from '../../services/sales';
 })
 export class OrderListComponent implements OnInit {
   private salesService = inject(SalesService);
+  private alertService = inject(AlertService);
+  private confirmService = inject(ConfirmService);
 
   orders = signal<SalesOrderListDto[]>([]);
   isLoading = signal<boolean>(true);
@@ -23,13 +27,13 @@ export class OrderListComponent implements OnInit {
   loadOrders() {
     this.salesService.getOrders().subscribe({
       next: (data) => {
-        console.log('📦 Sales Orders Response:', data);
+        console.log('Sales Orders Response:', data);
         console.log('First Order:', data[0]);
         this.orders.set(data);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('❌ Error loading orders:', err);
+        console.error('Error loading orders:', err);
         this.isLoading.set(false);
       }
     });
@@ -66,15 +70,20 @@ export class OrderListComponent implements OnInit {
 
   // إنشاء فاتورة وتحميلها
   generateAndDownloadInvoice(orderId: number) {
-    if (!confirm('Generate invoice for this order?')) return;
+    this.confirmService.info('Generate invoice for this order?', () => {
+      this.proceedGenerateInvoice(orderId);
+    });
+  }
+
+  private proceedGenerateInvoice(orderId: number) {
 
     this.isLoading.set(true);
     
     // 1. إنشاء الفاتورة أولاً
     this.salesService.generateInvoice({ salesOrderId: orderId }).subscribe({
       next: (invoiceId) => {
-        console.log('✅ Invoice created with ID:', invoiceId);
-        alert(`✅ Invoice #${invoiceId} generated successfully!`);
+        console.log('Invoice created with ID:', invoiceId);
+        this.alertService.success(`Invoice #${invoiceId} generated successfully!`);
         
         // 2. إعادة تحميل القائمة لتحديث الـ Status
         this.loadOrders();
@@ -85,7 +94,7 @@ export class OrderListComponent implements OnInit {
         }, 500);
       },
       error: (err) => {
-        console.error('❌ Generate Invoice Error:', err);
+        console.error('Generate Invoice Error:', err);
         
         // استخراج رسالة الخطأ
         let errorMsg = 'Failed to generate invoice.';
@@ -97,7 +106,7 @@ export class OrderListComponent implements OnInit {
           errorMsg = err.message;
         }
         
-        alert(`❌ Error: ${errorMsg}`);
+        this.alertService.error(errorMsg);
         this.isLoading.set(false);
       }
     });
@@ -105,11 +114,11 @@ export class OrderListComponent implements OnInit {
 
   // تحميل PDF لفاتورة موجودة
   downloadInvoicePdf(invoiceId: number) {
-    console.log('📥 Downloading PDF for invoice:', invoiceId);
+    console.log('Downloading PDF for invoice:', invoiceId);
     
     this.salesService.downloadInvoice(invoiceId).subscribe({
       next: (blob) => {
-        console.log('✅ PDF received, size:', blob.size);
+        console.log('PDF received, size:', blob.size);
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -119,8 +128,8 @@ export class OrderListComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('❌ Download PDF Error:', err);
-        alert(`❌ Error downloading PDF. Invoice #${invoiceId} was created but PDF generation failed.`);
+        console.error('Download PDF Error:', err);
+        this.alertService.error(`Error downloading PDF. Invoice #${invoiceId} was created but PDF generation failed.`);
         this.isLoading.set(false);
       }
     });
@@ -128,24 +137,31 @@ export class OrderListComponent implements OnInit {
 
   // تحميل PDF لطلب (يبحث عن الفاتورة المرتبطة)
   downloadPdf(invoiceId: number) {
-    if (!confirm('Download invoice PDF?')) return;
-    this.isLoading.set(true);
-    this.downloadInvoicePdf(invoiceId);
+    this.confirmService.info('Download invoice PDF?', () => {
+      this.isLoading.set(true);
+      this.downloadInvoicePdf(invoiceId);
+    });
   }
   onConfirm(id: number) {
-    if (!confirm('Confirming this order will DEDUCT stock immediately. Continue?')) return;
+    this.confirmService.warning(
+      'Confirming this order will DEDUCT stock immediately. Continue?',
+      () => this.proceedConfirm(id)
+    );
+  }
+
+  private proceedConfirm(id: number) {
 
     this.isLoading.set(true);
     this.salesService.confirmOrder(id).subscribe({
       next: () => {
-        alert('✅ Order Confirmed! Stock Reserved.');
+        this.alertService.success('Order Confirmed! Stock Reserved.');
         this.loadOrders(); // تحديث القائمة
       },
       error: (err) => {
         console.error(err);
         // عرض رسالة الخطأ من السيرفر (مهم جداً هنا عشان لو الرصيد غير كافي)
         const msg = err.error?.message || 'Failed to confirm. Check stock levels.';
-        alert(`❌ Error: ${msg}`);
+        this.alertService.error(msg);
         this.isLoading.set(false);
       }
     });

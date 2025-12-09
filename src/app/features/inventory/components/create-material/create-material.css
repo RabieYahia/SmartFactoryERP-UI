@@ -5,7 +5,7 @@
 }
 
 .material-form {
-  background: #fff;
+  background: var(--surface); color: var(--text-primary);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);

@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HrService } from '../../../../core/services/hr.service';
 import { Department } from '../../../../core/models/hr.model';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-employee',
@@ -16,6 +17,7 @@ export class CreateEmployeeComponent implements OnInit {
   private fb = inject(FormBuilder);
   private hrService = inject(HrService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   departments = signal<Department[]>([]); // 👈 عشان الـ Dropdown
   isSubmitting = signal(false);
@@ -45,12 +47,12 @@ export class CreateEmployeeComponent implements OnInit {
 
     this.hrService.createEmployee(payload).subscribe({
       next: () => {
-        alert('✅ Employee Created!');
+        this.alertService.success('Employee Created!');
         this.router.navigate(['/hr/employees']);
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Error creating employee');
+        this.alertService.error('Error creating employee');
         this.isSubmitting.set(false);
       }
     });

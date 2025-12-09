@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TasksService } from '../../services/tasks';
 import { HrService, Employee } from '../../../../core/services/hr.service';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-task',
@@ -17,6 +18,7 @@ export class CreateTaskComponent implements OnInit {
   private tasksService = inject(TasksService);
   private hrService = inject(HrService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   employees = signal<Employee[]>([]);
   isSubmitting = signal(false);
@@ -46,12 +48,12 @@ export class CreateTaskComponent implements OnInit {
 
     this.tasksService.createTask(payload).subscribe({
       next: () => {
-        alert('✅ Task Assigned Successfully!');
+        this.alertService.success('Task Assigned Successfully!');
         this.router.navigate(['/tasks']);
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Error creating task');
+        this.alertService.error('Error creating task');
         this.isSubmitting.set(false);
       }
     });

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SalesService } from '../../services/sales';
-import { InventoryService } from '../../../inventory/services/inventory'; // 👈 استيراد خدمة المخزون
+import { InventoryService } from '../../../inventory/services/inventory';
 import { Customer } from '../../models/customer.model';
 import { Material } from '../../../inventory/models/material.model';
 import { CreateSalesOrderCommand } from '../../models/sales-order.model';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-order',
@@ -20,6 +21,7 @@ export class CreateOrderComponent implements OnInit {
   private salesService = inject(SalesService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   // Signals للقوائم المنسدلة
   customers = signal<Customer[]>([]);
@@ -105,12 +107,12 @@ itemGroup.get('materialId')?.valueChanges.subscribe(val => {
 
     this.salesService.createSalesOrder(command).subscribe({
       next: (res) => {
-        alert(`✅ Sales Order Created! ID: ${res}\n(Don't forget to CONFIRM it to reserve stock)`);
+        this.alertService.success(`Sales Order Created! ID: ${res}. Don't forget to CONFIRM it to reserve stock`);
         this.router.navigate(['/sales']);
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Failed to create order.');
+        this.alertService.error('Failed to create order.');
         this.isSubmitting.set(false);
       }
     });

@@ -1,7 +1,7 @@
 .container { max-width: 600px; margin: 40px auto; font-family: sans-serif; }
 
 .prod-form {
-  background: #fff;
+  background: var(--surface); color: var(--text-primary);
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.1);

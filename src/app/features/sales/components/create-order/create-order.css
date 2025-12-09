@@ -1,5 +1,5 @@
 .container { max-width: 900px; margin: 20px auto; font-family: sans-serif; }
-.order-form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6f42c1; }
+.order-form { background: var(--surface); padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6f42c1; color: var(--text-primary); }
 .form-group { margin-bottom: 15px; }
 label { font-weight: bold; display: block; margin-bottom: 5px; }
 select, input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
@@ -14,4 +14,4 @@ select, input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radiu
 
 .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 .btn-primary { background: #6f42c1; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
-.btn-secondary { background: #eee; color: #333; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+.btn-secondary { background: var(--surface-hover); color: var(--text-primary); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer; transition: all 0.3s ease; }

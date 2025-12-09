@@ -2,7 +2,7 @@
 .subtitle { color: #666; margin-bottom: 20px; }
 
 .bom-card {
-  background: #fff;
+  background: var(--surface); color: var(--text-primary);
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);

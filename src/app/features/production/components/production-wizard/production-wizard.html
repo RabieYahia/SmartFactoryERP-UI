@@ -15,7 +15,7 @@
     </div>
 
     <!-- Progress Steps -->
-    <div class="steps-progress px-4 pt-3 pb-2 bg-light">
+    <div class="steps-progress px-4 pt-3 pb-2" style="background: var(--surface); color: var(--text-primary);">
       <div class="d-flex justify-content-between align-items-center">
         <div class="step" [class.active]="currentStep() === 'select-product'" [class.completed]="getStepNumber() > 1">
           <div class="step-circle">

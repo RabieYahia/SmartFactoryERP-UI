@@ -1,6 +1,6 @@
 .container { max-width: 900px; margin: 20px auto; font-family: sans-serif; }
 
-.order-form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.order-form { background: var(--surface); color: var(--text-primary); padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
 .form-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed #ccc; }
 .form-section h3 { margin-top: 0; color: #2c3e50; }

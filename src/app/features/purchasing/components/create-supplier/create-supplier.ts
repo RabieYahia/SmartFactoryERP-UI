@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { PurchasingService } from '../../services/purchasing';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-supplier',
@@ -16,6 +17,7 @@ export class CreateSupplierComponent {
   private fb = inject(FormBuilder);
   private purchasingService = inject(PurchasingService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   isSubmitting = signal<boolean>(false);
 
@@ -39,12 +41,12 @@ export class CreateSupplierComponent {
 
     this.purchasingService.createSupplier(this.supplierForm.value).subscribe({
       next: (res) => {
-        alert('✅ Supplier Added Successfully!');
+        this.alertService.success('Supplier Added Successfully!');
         this.router.navigate(['/purchasing']); // الرجوع للقائمة
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Error creating supplier. Code might be duplicate.');
+        this.alertService.error('Error creating supplier. Code might be duplicate.');
         this.isSubmitting.set(false);
       }
     });

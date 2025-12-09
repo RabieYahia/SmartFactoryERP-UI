@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductionService, ProductionOrderDto } from '../../services/production';
+import { AlertService } from '../../../../core/services/alert.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 /**
  * COMPONENT: OrderListComponent (Production Order List)
@@ -43,6 +45,8 @@ export class OrderListComponent implements OnInit {
   // ===== DEPENDENCY INJECTION =====
   // Service for production-related API calls
   private productionService = inject(ProductionService);
+  private alertService = inject(AlertService);
+  private confirmService = inject(ConfirmService);
 
   // ===== STATE SIGNALS =====
   // Complete array of all production orders from backend
@@ -112,10 +116,13 @@ export class OrderListComponent implements OnInit {
    */
   onStart(id: number) {
     // Step 1: Confirm user really wants to start production
-    if (!confirm('Start production? This will DEDUCT raw materials from inventory.')) {
-      return; // User cancelled, don't proceed
-    }
+    this.confirmService.warning(
+      'Start production? This will DEDUCT raw materials from inventory.',
+      () => this.proceedStartProduction(id)
+    );
+  }
 
+  private proceedStartProduction(id: number) {
     // Step 2: Show loading spinner
     this.isLoading.set(true);
 
@@ -123,14 +130,14 @@ export class OrderListComponent implements OnInit {
     this.productionService.startProduction(id).subscribe({
       next: () => {
         // ✅ SUCCESS: Production started, materials deducted
-        alert('🚀 Production Started! Materials deducted from inventory.');
+        this.alertService.success('Production Started! Materials deducted from inventory.');
         // Reload orders to show updated status
         this.loadOrders();
       },
       error: (err) => {
         // ❌ ERROR: Failed to start production
-        console.error('❌ Start Production Error:', err);
-        console.error('📄 Error Details:', err.error);
+        console.error('Start Production Error:', err);
+        console.error('Error Details:', err.error);
         
         // Extract error message - Backend returns plain text in err.error
         let msg = 'Failed to start production. Check raw materials availability.';
@@ -146,8 +153,8 @@ export class OrderListComponent implements OnInit {
             errorMessage = exceptionMatch[1].trim();
           }
           
-          console.log('📄 Error Details:', fullError);
-          console.log('📝 Extracted Message:', errorMessage);
+          console.log('Error Details:', fullError);
+          console.log('Extracted Message:', errorMessage);
           
           // Check for insufficient stock error
           if (errorMessage.includes('Insufficient stock')) {
@@ -156,24 +163,18 @@ export class OrderListComponent implements OnInit {
             
             if (match) {
               const [, material, required, available] = match;
-              msg = `❌ Insufficient Stock!\n\n` +
-                    `Material: ${material}\n` +
-                    `Required: ${required}\n` +
-                    `Available: ${available}\n\n` +
-                    `💡 Solution: Purchase more "${material}" from Purchasing module.`;
+              msg = `Insufficient Stock! Material: ${material}. Required: ${required}, Available: ${available}. Purchase more from Purchasing module.`;
             } else {
-              msg = `❌ ${errorMessage}\n\n💡 Solution: Purchase raw materials from Purchasing module.`;
+              msg = `${errorMessage}. Purchase raw materials from Purchasing module.`;
             }
           } else if (errorMessage.includes('No BOM found')) {
-            msg = `❌ BOM Not Found!\n\n` +
-                  `This product doesn't have a Bill of Materials defined.\n\n` +
-                  `💡 Solution: Create BOM first using the Production Wizard.`;
+            msg = `BOM Not Found! This product doesn't have a Bill of Materials defined. Create BOM first using the Production Wizard.`;
           } else {
             msg = errorMessage;
           }
         }
         
-        alert(msg);
+        this.alertService.error(msg);
         // Hide spinner for retry
         this.isLoading.set(false);
       }
@@ -204,10 +205,13 @@ export class OrderListComponent implements OnInit {
    */
   onComplete(id: number) {
     // Step 1: Confirm user really wants to complete production
-    if (!confirm('Complete production? This will ADD finished goods to inventory.')) {
-      return; // User cancelled, don't proceed
-    }
+    this.confirmService.warning(
+      'Complete production? This will ADD finished goods to inventory.',
+      () => this.proceedCompleteProduction(id)
+    );
+  }
 
+  private proceedCompleteProduction(id: number) {
     // Step 2: Show loading spinner
     this.isLoading.set(true);
 
@@ -215,14 +219,14 @@ export class OrderListComponent implements OnInit {
     this.productionService.completeProduction(id).subscribe({
       next: () => {
         // ✅ SUCCESS: Production completed, finished goods added
-        alert('✅ Production Completed! Finished goods added to stock.');
+        this.alertService.success('Production Completed! Finished goods added to stock.');
         // Reload orders to show updated status
         this.loadOrders();
       },
       error: (err) => {
         // ❌ ERROR: Failed to complete production
         console.error(err);
-        alert('❌ Error completing production. Please try again.');
+        this.alertService.error('Error completing production. Please try again.');
         // Hide spinner for retry
         this.isLoading.set(false);
       }

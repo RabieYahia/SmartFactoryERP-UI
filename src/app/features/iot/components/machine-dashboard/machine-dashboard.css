@@ -20,7 +20,7 @@ h1 { color: #333; margin: 0 0 10px 0; }
 
 /* الكارت */
 .card {
-  background: white;
+  background: var(--surface); color: var(--text-primary);
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);

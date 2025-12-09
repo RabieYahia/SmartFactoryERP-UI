@@ -44,7 +44,7 @@
 }
 
 .module-card {
-  background: white;
+  background: var(--surface);
   border-radius: 16px;
   padding: 2rem;
   display: flex;

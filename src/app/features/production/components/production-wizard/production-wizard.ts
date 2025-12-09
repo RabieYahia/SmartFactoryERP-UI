@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ProductionService, CreateProductionOrderCommand, CreateBOMCommand, BomComponentDto } from '../../services/production';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Material } from '../../../inventory/models/material.model';
+import { AlertService } from '../../../../core/services/alert.service';
 
 type WizardStep = 'select-product' | 'check-bom' | 'create-bom' | 'order-details';
 
@@ -20,6 +21,7 @@ export class ProductionWizardComponent implements OnInit {
   private productionService = inject(ProductionService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   // Wizard state
   currentStep = signal<WizardStep>('select-product');
@@ -58,16 +60,16 @@ export class ProductionWizardComponent implements OnInit {
 
   loadMaterials() {
     this.inventoryService.getMaterials().subscribe(res => {
-      console.log('📦 All Materials:', res);
-      console.log('📦 First Material Type:', res[0]?.materialType, 'Type:', typeof res[0]?.materialType);
+      console.log('All Materials:', res);
+      console.log('First Material Type:', res[0]?.materialType, 'Type:', typeof res[0]?.materialType);
       
       // For now, show ALL materials in both lists until we know the correct filter
       // This is temporary to debug the issue
       const finished = res; // Show all for finished products selection
       const raw = res; // Show all for raw materials selection
       
-      console.log('🏭 Finished Products COUNT:', finished.length);
-      console.log('🪵 Raw Materials COUNT:', raw.length);
+      console.log('Finished Products COUNT:', finished.length);
+      console.log('Raw Materials COUNT:', raw.length);
       
       this.finishedProducts.set(finished);
       this.rawMaterials.set(raw);
@@ -149,8 +151,8 @@ export class ProductionWizardComponent implements OnInit {
         this.currentStep.set('order-details');
       },
       error: (err) => {
-        console.error('❌ Error creating BOM', err);
-        alert('Failed to create BOM. Please try again.');
+        console.error('Error creating BOM', err);
+        this.alertService.error('Failed to create BOM. Please try again.');
         this.isSubmitting.set(false);
       }
     });
@@ -173,12 +175,12 @@ export class ProductionWizardComponent implements OnInit {
 
     this.productionService.createOrder(command).subscribe({
       next: (orderId) => {
-        alert(`✅ Production Order #${orderId} Created Successfully!`);
+        this.alertService.success(`Production Order #${orderId} Created Successfully!`);
         this.router.navigate(['/production']);
       },
       error: (err) => {
-        console.error('❌ Error creating order', err);
-        alert('Failed to create production order.');
+        console.error('Error creating order', err);
+        this.alertService.error('Failed to create production order.');
         this.isSubmitting.set(false);
       }
     });

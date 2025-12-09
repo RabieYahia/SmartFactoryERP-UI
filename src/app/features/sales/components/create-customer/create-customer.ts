@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SalesService } from '../../services/sales';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-customer',
@@ -15,6 +16,7 @@ export class CreateCustomerComponent {
   private fb = inject(FormBuilder);
   private salesService = inject(SalesService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   isSubmitting = signal<boolean>(false);
 
@@ -37,12 +39,12 @@ export class CreateCustomerComponent {
 
     this.salesService.createCustomer(this.customerForm.value).subscribe({
       next: (res) => {
-        alert('✅ Customer Added Successfully!');
+        this.alertService.success('Customer Added Successfully!');
         this.router.navigate(['/sales']);
       },
       error: (err) => {
-        console.error('❌ Create Customer Error:', err);
-        console.error('📄 Error Details:', err.error);
+        console.error('Create Customer Error:', err);
+        console.error('Error Details:', err.error);
         
         let errorMsg = 'Error creating customer.';
         if (typeof err.error === 'string') {
@@ -57,7 +59,7 @@ export class CreateCustomerComponent {
           errorMsg = err.error.message;
         }
         
-        alert(`❌ Failed: ${errorMsg}`);
+        this.alertService.error(errorMsg);
         this.isSubmitting.set(false);
       }
     });

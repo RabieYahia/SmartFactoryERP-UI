@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AlertService } from '../../../core/services/alert.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 interface User {
   id: string;
@@ -20,6 +22,8 @@ interface User {
 })
 export class UserManagementComponent implements OnInit {
   private http = inject(HttpClient);
+  private alertService = inject(AlertService);
+  private confirmService = inject(ConfirmService);
   private apiUrl = 'https://localhost:7093/api/v1/users';
 
   users = signal<User[]>([]);
@@ -54,11 +58,12 @@ export class UserManagementComponent implements OnInit {
     this.http.post(`${this.apiUrl}/${userId}/roles`, { role }).subscribe({
       next: () => {
         console.log(`✅ Role ${role} added to user ${userId}`);
+        this.alertService.success(`Role ${role} added successfully`);
         this.loadUsers(); // إعادة تحميل القائمة
       },
       error: (err) => {
         console.error('Error adding role:', err);
-        alert('Failed to add role');
+        this.alertService.error('Failed to add role');
       }
     });
   }
@@ -67,18 +72,22 @@ export class UserManagementComponent implements OnInit {
    * حذف دور من مستخدم
    */
   removeRole(userId: string, role: string): void {
-    if (!confirm(`Are you sure you want to remove ${role} role?`)) {
-      return;
-    }
+    this.confirmService.danger(
+      `Are you sure you want to remove ${role} role?`,
+      () => this.proceedRemoveRole(userId, role)
+    );
+  }
 
+  private proceedRemoveRole(userId: string, role: string): void {
     this.http.delete(`${this.apiUrl}/${userId}/roles/${role}`).subscribe({
       next: () => {
         console.log(`✅ Role ${role} removed from user ${userId}`);
+        this.alertService.success(`Role ${role} removed successfully`);
         this.loadUsers();
       },
       error: (err) => {
         console.error('Error removing role:', err);
-        alert('Failed to remove role');
+        this.alertService.error('Failed to remove role');
       }
     });
   }

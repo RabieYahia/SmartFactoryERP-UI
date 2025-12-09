@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ProductionService, CreateProductionOrderCommand } from '../../services/production';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Material } from '../../../inventory/models/material.model';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-production-order',
@@ -18,6 +19,7 @@ export class CreateOrderComponent implements OnInit {
   private productionService = inject(ProductionService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   products = signal<Material[]>([]);
   isSubmitting = signal<boolean>(false);
@@ -54,13 +56,13 @@ export class CreateOrderComponent implements OnInit {
 
     this.productionService.createOrder(command).subscribe({
       next: (res) => {
-        alert(`✅ Production Order Created! ID: ${res}`);
+        this.alertService.success(`Production Order Created! ID: ${res}`);
         // سنقوم بتوجيهه لقائمة الإنتاج (التي سنبنيها الخطوة القادمة)
         this.router.navigate(['/production/orders']); 
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Failed to create order.');
+        this.alertService.error('Failed to create order.');
         this.isSubmitting.set(false);
       }
     });

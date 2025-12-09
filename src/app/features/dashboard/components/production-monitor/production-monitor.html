@@ -25,11 +25,11 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm bg-white h-100">
+      <div class="card border-0 shadow-sm h-100" style="background: var(--surface); color: var(--text-primary);">
         <div class="card-body d-flex align-items-center justify-content-between">
           <div>
             <h6 class="text-muted">Active Orders</h6>
-            <h2 class="fw-bold mb-0 text-dark">{{ activeOrders().length }}</h2>
+            <h2 class="fw-bold mb-0">{{ activeOrders().length }}</h2>
           </div>
           <i class="bi bi-box-seam fs-1 text-warning"></i>
         </div>
@@ -37,11 +37,11 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm bg-white h-100">
+      <div class="card border-0 shadow-sm h-100" style="background: var(--surface); color: var(--text-primary);">
         <div class="card-body d-flex align-items-center justify-content-between">
           <div>
             <h6 class="text-muted">Machines Online</h6>
-            <h2 class="fw-bold mb-0 text-success">
+            <h2 class="fw-bold mb-0">
               {{ signalR.machines().length }}
             </h2>
           </div>
@@ -56,7 +56,7 @@
     @for (machine of signalR.machines(); track machine.machineID) {
       <div class="col-md-3">
         <div class="card border-0 shadow-sm machine-card" 
-             [class.stopped]="machine.status !== 0"> <div class="card-body">
+             [class.stopped]="machine.status !== 0"> <div class="card-body" style="background: var(--surface); color: var(--text-primary);">
             <div class="d-flex justify-content-between mb-2">
               <span class="fw-bold">Machine #{{ machine.machineID }}</span>
               <span class="badge" [class.bg-success]="machine.status === 0" [class.bg-danger]="machine.status !== 0">
@@ -69,7 +69,7 @@
               <span>⚡ {{ machine.speed }} rpm</span>
             </div>
             
-            <div class="text-center mt-2 p-1 bg-light rounded">
+            <div class="text-center mt-2 p-1 rounded" style="background: var(--surface-hover); color: var(--text-primary);">
               <small class="text-muted d-block">Produced</small>
               <strong class="fs-5">{{ machine.productionCount }}</strong>
             </div>

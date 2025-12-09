@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { ProductionService, CreateBOMCommand } from '../../services/production';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Material } from '../../../inventory/models/material.model';
+import { AlertService } from '../../../../core/services/alert.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-create-bom',
@@ -18,6 +20,8 @@ export class CreateBomComponent implements OnInit {
   private productionService = inject(ProductionService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
+  private confirmService = inject(ConfirmService);
 
   materials = signal<Material[]>([]);
   isSubmitting = signal<boolean>(false);
@@ -61,7 +65,7 @@ export class CreateBomComponent implements OnInit {
     const productId = this.bomForm.get('productId')?.value;
     
     if (!productId) {
-      alert('⚠️ Please select a finished product first!');
+      this.alertService.warning('Please select a finished product first!');
       return;
     }
 
@@ -96,7 +100,7 @@ export class CreateBomComponent implements OnInit {
   // معالج تغيير اختيار المكون
   onComponentSelected(index: number, componentId: number) {
     if (this.isComponentAlreadyAdded(componentId, index)) {
-      alert('⚠️ This component is already added!');
+      this.alertService.warning('This component is already added!');
       this.componentsArr.at(index).get('componentId')?.reset();
     }
   }
@@ -109,12 +113,12 @@ export class CreateBomComponent implements OnInit {
 
     if (this.bomForm.invalid) {
       this.bomForm.markAllAsTouched();
-      alert('⚠️ Please complete all required fields!');
+      this.alertService.warning('Please complete all required fields!');
       return;
     }
 
     if (this.componentsArr.length === 0) {
-      alert('⚠️ Please add at least one component!');
+      this.alertService.warning('Please add at least one component!');
       return;
     }
 
@@ -126,7 +130,7 @@ export class CreateBomComponent implements OnInit {
     );
 
     if (hasSelfReference) {
-      alert('❌ A product cannot be a component of itself!');
+      this.alertService.error('A product cannot be a component of itself!');
       return;
     }
 
@@ -137,12 +141,13 @@ export class CreateBomComponent implements OnInit {
       return `  • ${c.quantity}x ${material?.materialName}`;
     }).join('\n');
 
-    const confirmed = confirm(
-      `📋 Create Recipe for "${productName}"?\n\nComponents:\n${componentsList}\n\nClick OK to confirm.`
+    this.confirmService.warning(
+      `Create Recipe for "${productName}"?\n\nComponents:\n${componentsList}\n\nClick OK to confirm.`,
+      () => this.proceedCreateBom(productId)
     );
+  }
 
-    if (!confirmed) return;
-
+  private proceedCreateBom(productId: number) {
     this.isSubmitting.set(true);
 
     const command: CreateBOMCommand = {
@@ -158,7 +163,7 @@ export class CreateBomComponent implements OnInit {
     this.productionService.createBOM(command).subscribe({
       next: (componentsAdded: number) => {
         console.log('✅ Success:', componentsAdded);
-        alert(`✅ Recipe Created Successfully! ${componentsAdded} component(s) added.`);
+        this.alertService.success(`Recipe Created Successfully! ${componentsAdded} component(s) added.`);
         this.bomForm.reset();
         this.componentsArr.clear();
         this.isSubmitting.set(false);
@@ -166,7 +171,7 @@ export class CreateBomComponent implements OnInit {
       error: (err) => {
         console.error('❌ Backend Error:', err);
         const errorMessage = err.error?.message || err.message || 'Unknown error';
-        alert(`❌ Error: ${errorMessage}`);
+        this.alertService.error(`Error: ${errorMessage}`);
         this.isSubmitting.set(false);
       }
     });
