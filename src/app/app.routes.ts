@@ -56,6 +56,8 @@ import { TaskListComponent } from './features/tasks/components/task-list/task-li
 import { CreateTaskComponent } from './features/tasks/components/create-task/create-task';
 import { MachineDashboardComponent } from './features/iot/components/machine-dashboard/machine-dashboard';
 
+// --- AI ---
+import { AiDashboardComponent } from './features/ai/components/ai-dashboard/ai-dashboard';
 
 export const routes: Routes = [
   // 1️⃣ المسارات العامة
@@ -141,6 +143,9 @@ export const routes: Routes = [
 
       // --- IoT ---
       { path: 'iot', component: MachineDashboardComponent },
+
+      // --- AI ---
+      { path: 'ai', component: AiDashboardComponent },
     ]
   },
 

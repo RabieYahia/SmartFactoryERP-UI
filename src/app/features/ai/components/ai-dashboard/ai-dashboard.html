@@ -1,0 +1,146 @@
+<div class="ai-container">
+  <div class="header-section">
+    <h1>
+      <i class="bi bi-robot"></i>
+      AI-Powered Sales Forecast
+    </h1>
+    <p class="subtitle">Get intelligent predictions for product sales based on historical data</p>
+  </div>
+
+  <div class="forecast-form">
+    <div class="form-card">
+      <h3>Enter Product Details</h3>
+      
+      <div class="input-group">
+        <label for="productId">
+          <i class="bi bi-box-seam"></i>
+          Product ID
+        </label>
+        <input 
+          type="number" 
+          id="productId"
+          class="form-control"
+          [(ngModel)]="productId"
+          placeholder="Enter product ID..."
+          min="1"
+          (keyup.enter)="getForecast()"
+        />
+      </div>
+
+      <button 
+        class="btn-forecast"
+        [disabled]="isLoading()"
+        (click)="getForecast()"
+      >
+        @if (isLoading()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Analyzing...
+        } @else {
+          <i class="bi bi-graph-up-arrow me-2"></i>
+          Generate Forecast
+        }
+      </button>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger alert-dismissible fade show">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ errorMessage() }}
+      <button type="button" class="btn-close" (click)="errorMessage.set(null)"></button>
+    </div>
+  }
+
+  @if (forecast()) {
+    <div class="forecast-results animate-in">
+      <div class="result-card">
+        <div class="card-icon success">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h3>✨ AI Forecast Generated Successfully</h3>
+        
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <div class="metric-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="metric-content">
+              <span class="metric-label">Product ID</span>
+              <span class="metric-value">{{ forecast()!.productId }}</span>
+            </div>
+          </div>
+
+          <div class="metric-box highlight">
+            <div class="metric-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="metric-content">
+              <span class="metric-label">Predicted Sales (Next Month)</span>
+              <span class="metric-value">{{ forecast()!.predictedSalesQuantity }} units</span>
+            </div>
+          </div>
+
+          <div class="metric-box demand-level" 
+               [style.border-color]="getDemandLevel(forecast()!.predictedSalesQuantity).color">
+            <div class="metric-icon" 
+                 [style.color]="getDemandLevel(forecast()!.predictedSalesQuantity).color">
+              <i [class]="getDemandLevel(forecast()!.predictedSalesQuantity).icon"></i>
+            </div>
+            <div class="metric-content">
+              <span class="metric-label">Demand Level</span>
+              <span class="metric-value" 
+                    [style.color]="getDemandLevel(forecast()!.predictedSalesQuantity).color">
+                {{ getDemandLevel(forecast()!.predictedSalesQuantity).label }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="advice-section" [ngClass]="getAdviceClass(forecast()!.advice)">
+          <div class="advice-header">
+            <i [class]="'bi ' + getAdviceIcon(forecast()!.advice)"></i>
+            <h4>🤖 AI Recommendation</h4>
+          </div>
+          <p class="advice-text">{{ forecast()!.advice }}</p>
+          
+          <div class="action-tips">
+            <h5>📋 Suggested Actions:</h5>
+            <ul>
+              @if (forecast()!.predictedSalesQuantity > 30) {
+                <li>✅ Increase inventory levels to meet high demand</li>
+                <li>✅ Notify suppliers for potential bulk orders</li>
+                <li>✅ Consider promotional campaigns to maximize sales</li>
+              } @else if (forecast()!.predictedSalesQuantity > 15) {
+                <li>✅ Maintain current stock levels</li>
+                <li>✅ Monitor sales trends closely</li>
+                <li>✅ Prepare for moderate demand fluctuations</li>
+              } @else {
+                <li>✅ Optimize inventory to avoid overstocking</li>
+                <li>✅ Focus on other high-demand products</li>
+                <li>✅ Consider marketing strategies to boost sales</li>
+              }
+            </ul>
+          </div>
+        </div>
+
+        <div class="forecast-info">
+          <p>
+            <i class="bi bi-info-circle"></i>
+            This forecast is generated using <strong>ML.NET Time Series Analysis (SSA Algorithm)</strong> 
+            based on historical sales data with 95% confidence level.
+          </p>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!forecast() && !isLoading() && !errorMessage()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="bi bi-cpu"></i>
+      </div>
+      <h3>No Forecast Yet</h3>
+      <p>Enter a product ID above to generate an AI-powered sales forecast</p>
+    </div>
+  }
+</div>
