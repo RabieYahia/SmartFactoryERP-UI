@@ -1,0 +1,26 @@
+<div class="dashboard-container">
+  <div class="header-section">
+    <h1>
+      <i class="bi bi-cash-coin"></i>
+      Sales Management
+    </h1>
+    <p class="subtitle">Manage customers, orders, and invoices</p>
+  </div>
+
+  <div class="cards-grid">
+    @for (module of modules; track module.route) {
+      <a [routerLink]="module.route" class="module-card">
+        <div class="card-icon" [style.background]="module.color">
+          <i [class]="'bi ' + module.icon"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ module.title }}</h3>
+          <p>{{ module.description }}</p>
+        </div>
+        <div class="card-arrow">
+          <i class="bi bi-arrow-right"></i>
+        </div>
+      </a>
+    }
+  </div>
+</div>

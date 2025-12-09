@@ -53,7 +53,18 @@ export class SalesService {
   confirmOrder(id: number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/orders/${id}/confirm`, {});
   }
+
+  // =========================
+  // Invoices Methods
+  // =========================
+  
+  // إنشاء فاتورة من طلب مؤكد
+  generateInvoice(command: { salesOrderId: number }): Observable<number> {
+    return this.http.post<number>(`${this.apiUrl}/invoices`, command);
+  }
+
+  // تحميل الفاتورة كـ PDF
   downloadInvoice(id: number): Observable<Blob> {
-  return this.http.get(`${this.apiUrl}/invoices/${id}/pdf`, { responseType: 'blob' });
-}
+    return this.http.get(`${this.apiUrl}/invoices/${id}/pdf`, { responseType: 'blob' });
+  }
 }
