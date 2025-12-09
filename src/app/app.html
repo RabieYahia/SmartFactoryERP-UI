@@ -7,8 +7,41 @@
       <div>Digital Factory</div>
     </div>
 
-    <div class="top-search d-flex">
-      <input type="search" placeholder="Search modules, orders, materials..." />
+    <div class="top-search d-flex position-relative">
+      <i class="bi bi-search search-icon"></i>
+      <input 
+        type="search" 
+        placeholder="Search modules, orders, materials..." 
+        [(ngModel)]="searchTerm"
+        (input)="onSearchInput($event)"
+        (focus)="showSearchResults = searchResults.length > 0"
+        (blur)="onSearchBlur()"
+      />
+      @if (isSearching) {
+        <div class="spinner-border spinner-border-sm search-spinner"></div>
+      }
+      
+      <!-- Search Results Dropdown -->
+      @if (showSearchResults) {
+        <div class="search-results-dropdown">
+          <div class="search-results-header">
+            <small class="text-muted">Search Results ({{ searchResults.length }})</small>
+          </div>
+          @for (result of searchResults; track result.route) {
+            <div class="search-result-item" (click)="navigateToResult(result)">
+              <i class="bi bi-{{ result.icon }} me-2"></i>
+              <span>{{ result.name }}</span>
+              <i class="bi bi-arrow-right ms-auto"></i>
+            </div>
+          }
+          @empty {
+            <div class="search-result-item text-muted">
+              <i class="bi bi-inbox me-2"></i>
+              No results found
+            </div>
+          }
+        </div>
+      }
     </div>
 
     <div class="top-actions ms-auto">

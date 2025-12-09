@@ -23,8 +23,7 @@ export class OrderListComponent implements OnInit {
   loadOrders() {
     this.salesService.getOrders().subscribe({
       next: (data) => {
-        console.log('📦 Sales Orders Response:', data);
-        console.log('First Order:', data[0]);
+        console.log('✅ Sales Orders loaded:', data.length, 'orders');
         this.orders.set(data);
         this.isLoading.set(false);
       },

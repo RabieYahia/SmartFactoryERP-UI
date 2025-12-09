@@ -13,6 +13,7 @@ import { ChangePasswordComponent } from './features/auth/change-password/change-
 
 // --- Admin ---
 import { UserManagementComponent } from './features/admin/user-management/user-management';
+import { UserListComponent } from './features/admin/components/user-list/user-list';
 
 // --- Dashboard & HR ---
 import { DashboardHomeComponent } from './features/dashboard/components/dashboard-home/dashboard-home';
@@ -79,12 +80,12 @@ export const routes: Routes = [
       { path: 'profile-security', component: ProfileSecurityComponent },
       { path: 'change-password', component: ChangePasswordComponent },
 
-      // --- Admin (Admin only) ---
+      // --- Admin (Admin & SuperAdmin only) ---
       { 
         path: 'admin/users', 
-        component: UserManagementComponent,
+        component: UserListComponent,
         canActivate: [roleGuard],
-        data: { roles: ['Admin'] }
+        data: { roles: ['Admin', 'SuperAdmin'] }
       },
 
       // --- Inventory (Admin & Manager only) ---
