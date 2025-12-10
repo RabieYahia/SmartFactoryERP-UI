@@ -1,90 +1,186 @@
-<!-- ⚠️ NOTE: Production order planning form uses Bootstrap form components.
-     No functional changes - styling updates only. All scheduling logic remains intact.
--->
-
 <div class="container-fluid p-4">
+
   <div class="mb-4">
-    <h2 class="h3">🏭 Plan New Production</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h3 fw-bold text-primary">🏭 Create Production Order</h2>
+    </div>
+
+    <div class="position-relative m-4">
+      <div class="progress" style="height: 2px;">
+        <div class="progress-bar" [style.width]="currentStep() === 1 ? '50%' : '100%'"></div>
+      </div>
+      <div class="position-absolute top-0 start-0 translate-middle btn btn-sm rounded-pill"
+           [class]="currentStep() >= 1 ? 'btn-primary' : 'btn-secondary'" style="width: 2rem; height:2rem;">1</div>
+      <div class="position-absolute top-0 start-50 translate-middle btn btn-sm rounded-pill"
+           [class]="currentStep() >= 2 ? 'btn-primary' : 'btn-secondary'" style="width: 2rem; height:2rem;">2</div>
+      <div class="position-absolute top-0 start-100 translate-middle btn btn-sm rounded-pill btn-secondary" style="width: 2rem; height:2rem;">3</div>
+    </div>
+    <div class="d-flex justify-content-between px-2 small fw-bold text-muted">
+      <span>Product & BOM</span>
+      <span>Qty & Stock Check</span>
+      <span>Finish</span>
+    </div>
   </div>
 
-  <div class="row">
-    <div class="col-12 col-md-8 col-lg-6">
-      <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
-        <div class="card-body">
-          
-          <!-- Product selection field -->
-          <div class="mb-3">
-            <label for="productId" class="form-label">📦 What to produce?</label>
-            <select class="form-select" id="productId" formControlName="productId">
-              <option value="">-- Select Finished Product --</option>
-              @for (prod of products(); track prod.id) {
-                <option [value]="prod.id">{{ prod.materialName }}</option>
-              }
-            </select>
-          </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
 
-          <!-- Quantity field -->
-          <div class="mb-3">
-            <label for="quantity" class="form-label">🔢 Quantity</label>
-            <input 
-              type="number" 
-              class="form-control" 
-              id="quantity"
-              formControlName="quantity" 
-              min="1"
-            >
+      @if (currentStep() === 1) {
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white p-3">
+            <h5 class="mb-0">Step 1: What are we making?</h5>
           </div>
+          <div class="card-body p-4" [formGroup]="bomForm">
 
-          <!-- Start Date field -->
-          <div class="mb-3">
-            <label for="startDate" class="form-label">📅 Start Date</label>
-            <input 
-              type="date" 
-              class="form-control" 
-              id="startDate"
-              formControlName="startDate"
-            >
+            <div class="mb-4">
+              <label class="form-label">Select Finished Product</label>
+              <select class="form-select form-select-lg" formControlName="productId" (change)="onProductSelect()">
+                <option value="" disabled selected>-- Choose Product --</option>
+                @for (prod of finishedProducts(); track prod.id) {
+                  <option [value]="prod.id">{{ prod.materialName }}</option>
+                }
+              </select>
+            </div>
+
+            @if (isBomMissing()) {
+              <div class="alert alert-warning d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>
+                  <strong>No Recipe Found!</strong> Please define the raw materials (BOM) for this product now.
+                </div>
+              </div>
+
+              <div class="p-3 bg-light rounded border mb-3">
+                <h6 class="fw-bold mb-3">Add Raw Materials (Recipe)</h6>
+                <div formArrayName="components">
+                  @for (comp of componentsArr.controls; track $index) {
+                    <div class="row g-2 mb-2" [formGroupName]="$index">
+                      <div class="col-7">
+                        <select class="form-select" formControlName="componentId">
+                          <option [value]="null">Select Material</option>
+                          @for (raw of rawMaterials(); track raw.id) {
+                            <option [value]="raw.id">{{ raw.materialName }}</option>
+                          }
+                        </select>
+                      </div>
+                      <div class="col-3">
+                        <input type="number" class="form-control" formControlName="quantity" placeholder="Qty">
+                      </div>
+                      <div class="col-2">
+                        <button type="button" class="btn btn-outline-danger w-100" (click)="removeComponent($index)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" (click)="addComponent()">
+                  <i class="bi bi-plus-lg"></i> Add Material
+                </button>
+              </div>
+
+              <div class="text-end">
+                <button class="btn btn-success" (click)="goToStep2()" [disabled]="bomForm.invalid || componentsArr.length === 0">
+    Save Recipe & Continue <i class="bi bi-arrow-right"></i>
+</button>
+              </div>
+            } @else {
+               @if (bomForm.get('productId')?.value && !isBomMissing()) {
+                 <div class="alert alert-success">
+                   <i class="bi bi-check-circle-fill me-2"></i> Recipe (BOM) exists for this product.
+                 </div>
+                 <div class="text-end">
+                   <button class="btn btn-primary px-4" (click)="nextStep()">
+                     Next Step <i class="bi bi-arrow-right"></i>
+                   </button>
+                 </div>
+               }
+            }
+
           </div>
-
-          <!-- Priority field -->
-          <div class="mb-3">
-            <label for="priority" class="form-label">⚡ Priority</label>
-            <select class="form-select" id="priority" formControlName="priority">
-              <option value="High">🔴 High - Urgent</option>
-              <option value="Medium">🟡 Medium - Normal</option>
-              <option value="Low">🟢 Low - When Available</option>
-            </select>
-          </div>
-
-          <!-- Notes field -->
-          <div class="mb-4">
-            <label for="notes" class="form-label">📝 Notes</label>
-            <textarea 
-              class="form-control" 
-              id="notes"
-              formControlName="notes" 
-              rows="3" 
-              placeholder="e.g. Urgent order..."
-            ></textarea>
-          </div>
-
-          <!-- Form actions -->
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-secondary" routerLink="/production/bom">
-              <i class="bi bi-x-circle me-2"></i> Cancel
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
-              @if (isSubmitting()) { 
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Planning... 
-              } @else { 
-                <i class="bi bi-check-circle me-2"></i> Plan Order
-              }
-            </button>
-          </div>
-
         </div>
-      </form>
+      }
+
+      @if (currentStep() === 2) {
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white p-3">
+            <h5 class="mb-0">Step 2: Order Details & Stock Check</h5>
+          </div>
+          <div class="card-body p-4" [formGroup]="orderForm">
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Quantity to Produce</label>
+                <input type="number" class="form-control form-control-lg fw-bold text-primary"
+                       formControlName="quantity" (input)="onQuantityChange()">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Start Date</label>
+                <input type="date" class="form-control form-control-lg" formControlName="startDate">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Priority</label>
+              <select class="form-select" formControlName="priority">
+                <option value="High">🔴 High</option>
+                <option value="Medium">🟡 Medium</option>
+                <option value="Low">🟢 Low</option>
+              </select>
+            </div>
+
+            <div class="card bg-light border-0">
+              <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-box-seam me-2"></i>Stock Availability Check</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-borderless mb-0">
+                    <thead>
+                      <tr class="text-muted small text-uppercase">
+                        <th>Raw Material</th>
+                        <th class="text-center">Required</th>
+                        <th class="text-center">In Stock</th>
+                        <th class="text-end">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (status of stockStatus(); track status.name) {
+                        <tr class="border-bottom">
+                          <td class="py-2 fw-bold">{{ status.name }}</td>
+                          <td class="text-center py-2">{{ status.required }}</td>
+                          <td class="text-center py-2">{{ status.available }}</td>
+                          <td class="text-end py-2">
+                            @if (status.isSufficient) {
+                              <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                <i class="bi bi-check-lg"></i> Available
+                              </span>
+                            } @else {
+                              <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                <i class="bi bi-x-lg"></i> Shortage
+                              </span>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              <button class="btn btn-light border" (click)="currentStep.set(1)">Back</button>
+              <button class="btn btn-lg btn-primary px-5" (click)="submitOrder()" [disabled]="isSubmitting()">
+                @if (isSubmitting()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                Confirm & Create Order
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+
     </div>
   </div>
 </div>

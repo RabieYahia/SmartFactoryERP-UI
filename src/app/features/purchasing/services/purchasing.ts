@@ -8,13 +8,39 @@ import { CreatePurchaseOrderCommand } from '../models/purchase-order.model';
 // 1. Interfaces Definitions
 // ==========================================
 
+// ✅ 1. واجهة القائمة المختصرة (موجودة عندك)
 export interface PurchaseOrderListDto {
   id: number;
   poNumber: string;
   supplierName: string;
   orderDate: string;
+  expectedDeliveryDate: string; // ضفت دي عشان بنحتاجها في العرض
   totalAmount: number;
   status: string;
+}
+
+// ✅ 2. واجهة تفاصيل الصنف (للصفحة الجديدة)
+export interface PurchaseOrderItemDto {
+  id: number;
+  materialId: number;
+  materialName: string;
+  materialCode: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+// ✅ 3. واجهة تفاصيل الطلب بالكامل (Header + Items)
+export interface PurchaseOrderDetailDto {
+  id: number;
+  poNumber: string;
+  supplierId: number;
+  supplierName: string;
+  orderDate: string;
+  expectedDeliveryDate: string;
+  status: string;
+  totalAmount: number;
+  items: PurchaseOrderItemDto[]; // القائمة اللي هنعرضها في الجدول
 }
 
 // DTOs for Goods Receipt
@@ -26,7 +52,7 @@ export interface CreateGoodsReceiptItemDto {
 
 export interface CreateGoodsReceiptCommand {
   purchaseOrderId: number;
-  receivedById: number;
+  receivedById: string; // عدلتها لـ string لأن الـ User ID في الـ Identity بيكون string عادة
   notes: string;
   items: CreateGoodsReceiptItemDto[];
 }
@@ -39,10 +65,9 @@ export interface CreateGoodsReceiptCommand {
   providedIn: 'root'
 })
 export class PurchasingService {
-  // حقن الـ HttpClient
   private http = inject(HttpClient);
-  
-  // رابط الـ Backend
+
+  // رابط الباك إند
   private apiUrl = 'https://localhost:7093/api/v1/purchasing';
 
   // -------------------------
@@ -67,13 +92,14 @@ export class PurchasingService {
     return this.http.get<PurchaseOrderListDto[]>(`${this.apiUrl}/orders`);
   }
 
-  confirmOrder(id: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/orders/${id}/confirm`, {});
+  // ✅ جلب تفاصيل الطلب بالكامل (استخدمنا Interface الجديد هنا)
+  // لاحظ: سميتها getOrderById زي ما هي عندك، بس غيرت النوع لـ PurchaseOrderDetailDto
+  getOrderById(id: number): Observable<PurchaseOrderDetailDto> {
+    return this.http.get<PurchaseOrderDetailDto>(`${this.apiUrl}/orders/${id}`);
   }
 
-  // جلب تفاصيل الطلب (عشان صفحة الاستلام)
-  getOrderById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/orders/${id}`);
+  confirmOrder(id: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/orders/${id}/confirm`, {});
   }
 
   // -------------------------

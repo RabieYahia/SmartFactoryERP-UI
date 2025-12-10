@@ -1,36 +1,26 @@
-<!-- ⚠️ COMPONENT: Production Order List
-     - Purpose: Display and manage production orders (Planned → Started → Completed)
-     - No functional changes - styling updates only using Bootstrap classes
-     - All order status transitions and inventory updates remain intact
--->
-
 <div class="container-fluid p-4">
-  <!-- Header Section with Page Title and Action Buttons -->
   <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
       <h2 class="h3 mb-1">🏭 Production Orders</h2>
       <p class="text-muted small">Manage production work orders and track manufacturing status</p>
     </div>
-    <!-- Action Buttons: Define BOM and Create New Order -->
     <div class="d-flex gap-2">
       <button class="btn btn-outline-secondary" routerLink="/production" title="Back to Dashboard">
         <i class="bi bi-arrow-left me-2"></i> Dashboard
       </button>
-      <button class="btn btn-primary" routerLink="/production/wizard" title="Create new production order">
+      <button class="btn btn-primary" routerLink="/production/create-order" title="Create new production order">
         <i class="bi bi-plus-circle me-2"></i> New Order
       </button>
     </div>
   </div>
 
-  <!-- Loading Alert: Display spinner while fetching production orders -->
   @if (isLoading()) {
     <div class="alert alert-info d-flex align-items-center" role="alert">
-      <i class="bi bi-hourglass-split me-2"></i> 
+      <i class="bi bi-hourglass-split me-2"></i>
       <span>⏳ Loading production orders... Please wait.</span>
     </div>
-  } 
+  }
   @else {
-    <!-- Production Orders Table Section: Responsive Bootstrap table with order details -->
     <div class="table-responsive">
       <table class="table table-hover table-striped align-middle">
         <thead class="table-light">
@@ -40,57 +30,55 @@
             <th>Quantity</th>
             <th>Start Date</th>
             <th>Status</th>
-            <th class="text-center">Actions</th>
+            <th class="text-end pe-4">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Loop through all production orders -->
           @for (order of orders(); track order.id) {
             <tr>
-              <!-- Order Number: Unique reference displayed in bold -->
               <td><strong>{{ order.orderNumber || '#' + order.id }}</strong></td>
-              
-              <!-- Product Name: What is being manufactured -->
               <td>{{ order.productName }}</td>
-              
-              <!-- Quantity: How many units to produce -->
               <td class="fw-bold">{{ order.quantity }}</td>
-              
-              <!-- Start Date: When production should begin -->
               <td>{{ order.startDate | date:'mediumDate' }}</td>
-              
-              <!-- Order Status: Color-coded badge showing current state (Planned/Started/Completed) -->
               <td>
-                <span class="badge" 
-                      [class.bg-secondary]="order.status === 'Planned'"
-                      [class.bg-info]="order.status === 'Started'"
+                <span class="badge"
+                      [class.bg-secondary]="order.status === 'Planned' || order.status === 'Scheduled'"
+                      [class.bg-info]="order.status === 'Started' || order.status === 'InProgress'"
                       [class.bg-success]="order.status === 'Completed'">
                   {{ order.status }}
                 </span>
               </td>
-              <td class="text-center">
-                @if (order.status === 'Planned') {
-                  <button class="btn btn-sm btn-warning" (click)="onStart(order.id)">
-                    <i class="bi bi-play-circle me-1"></i> Start
-                  </button>
-                }
-                
-                @else if (order.status === 'Started') {
-                  <button class="btn btn-sm btn-success" (click)="onComplete(order.id)">
-                    <i class="bi bi-check-circle me-1"></i> Complete
-                  </button>
-                }
+              <td class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-2">
 
-                @else if (order.status === 'Completed') {
-                  <span class="text-muted small">Stored in Warehouse</span>
-                }
+                  <a class="btn btn-sm btn-outline-primary" [routerLink]="['/production/orders', order.id]" title="View Details & Edit BOM">
+                    <i class="bi bi-eye me-1"></i> View / Edit
+                  </a>
+
+                  @if (order.status === 'Planned' || order.status === 'Scheduled') {
+                    <button class="btn btn-sm btn-warning" (click)="onStart(order.id)" title="Start Production Immediately">
+                      <i class="bi bi-play-circle"></i> Start
+                    </button>
+                  }
+
+                  @else if (order.status === 'Started' || order.status === 'InProgress') {
+                    <button class="btn btn-sm btn-success" (click)="onComplete(order.id)" title="Complete Production">
+                      <i class="bi bi-check-circle"></i> Complete
+                    </button>
+                  }
+
+                  @else if (order.status === 'Completed') {
+                    <span class="text-muted small fst-italic">Stored</span>
+                  }
+                </div>
               </td>
             </tr>
-          } 
+          }
           @empty {
             <tr>
-              <td colspan="6" class="text-center py-4 text-muted">
-                <i class="bi bi-inbox me-2"></i> No production orders found.
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                No production orders found. Create one to get started!
               </td>
             </tr>
           }

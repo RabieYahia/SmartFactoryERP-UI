@@ -2,7 +2,7 @@
 
 <div class="modal-dialog modal-dialog-centered modal-lg">
   <div class="modal-content shadow-lg border-0">
-    
+
     <!-- Modal Header -->
     <div class="modal-header bg-primary text-white">
       <div>
@@ -96,7 +96,7 @@
           </div>
 
           <h6 class="mb-3">🧩 Define Components (Raw Materials Needed)</h6>
-          
+
           <form [formGroup]="bomForm">
             <div formArrayName="components" class="mb-3">
               @for (control of componentsArray.controls; track control; let i = $index) {
@@ -130,7 +130,7 @@
             <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
               <i class="bi bi-arrow-left me-1"></i> Back
             </button>
-            <button type="button" class="btn btn-success" (click)="onSaveBOM()" [disabled]="bomForm.invalid || isSubmitting()">
+            <button type="button" class="btn btn-success" (click)="onNextToOrderDetails()" [disabled]="bomForm.invalid || isSubmitting()">
               @if (isSubmitting()) {
                 <span class="spinner-border spinner-border-sm me-2"></span>
               }

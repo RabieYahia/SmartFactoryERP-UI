@@ -1,23 +1,53 @@
-.container { max-width: 600px; margin: 40px auto; font-family: sans-serif; }
-
-.prod-form {
-  background: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-  border-top: 5px solid #ff9800; /* برتقالي للإنتاج */
+/* تنسيق يملأ الشاشة ومتجاوب */
+.container-fluid {
+  max-width: 100%;
+  padding-bottom: 3rem;
 }
 
-.form-group { margin-bottom: 20px; }
-label { font-weight: bold; display: block; margin-bottom: 8px; color: #333; }
-select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-select:focus, input:focus { border-color: #ff9800; outline: none; }
+/* تحسين شكل الكارد */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
 
-.actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px; }
+.card-header {
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fff;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 1.5rem;
+}
 
+/* تحسين حقول الإدخال */
+.form-label {
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+  padding: 0.6rem 1rem;
+  border-color: #dee2e6;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #0d6efd; /* لون أزرق للتركيز بدل البرتقالي لتوحيد الستايل */
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+
+/* تنسيق الأزرار */
 .btn-primary {
-  background-color: #ff9800; color: white; padding: 12px 25px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;
+  padding: 0.6rem 2rem;
+  font-weight: 500;
+  border-radius: 6px;
 }
-.btn-secondary {
-  background-color: #eee; color: #333; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer;
+
+/* تنسيق رسائل الخطأ */
+.text-danger {
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
 }

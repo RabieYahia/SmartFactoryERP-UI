@@ -13,18 +13,18 @@
     <div class="alert alert-info">
       <i class="bi bi-hourglass-split me-2"></i> Loading inventory...
     </div>
-  } 
+  }
   @else {
-    
+
     <ul class="nav nav-tabs mb-4">
       <li class="nav-item">
-        <button class="nav-link" [class.active]="activeTab() === 'raw'" 
+        <button class="nav-link" [class.active]="activeTab() === 'raw'"
                 (click)="setActiveTab('raw')">
           🪵 Raw Materials <span class="badge bg-secondary ms-1">{{ rawMaterials().length }}</span>
         </button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" [class.active]="activeTab() === 'finished'" 
+        <button class="nav-link" [class.active]="activeTab() === 'finished'"
                 (click)="setActiveTab('finished')">
           🛋️ Finished Goods <span class="badge bg-success ms-1">{{ finishedGoods().length }}</span>
         </button>
@@ -50,7 +50,7 @@
               <tr>
                 <td class="fw-bold">{{ item.materialName }}</td>
                 <td><small class="text-muted">{{ item.materialCode }}</small></td>
-                
+
                 <td>
                   @if (item.currentStockLevel <= item.minimumStockLevel) {
                     <span class="text-danger fw-bold" title="Low Stock!">
@@ -60,17 +60,21 @@
                     <span class="text-success fw-bold">{{ item.currentStockLevel }}</span>
                   }
                 </td>
-                
+
                 <td>{{ item.unit }}</td>
                 <td>{{ item.unitPrice | currency }}</td>
                 <td>{{ item.currentStockLevel * item.unitPrice | currency }}</td>
-                
+
                 <td>
-                  <button class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/inventory/edit-material', item.id]">
+                  <!-- <button class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/inventory/edit-material', item.id]"> -->
+                    <button class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/inventory/edit', item.id]">
                     <i class="bi bi-pencil"></i>
                   </button>
-                  <button class="btn btn-sm btn-outline-danger">
+                  <!-- <button class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-trash"></i>
+                  </button> -->
+                  <button class="btn btn-sm btn-outline-danger" (click)="onDelete(item.id, item.materialName)">
+                  <i class="bi bi-trash"></i>
                   </button>
                 </td>
               </tr>

@@ -1,28 +1,93 @@
-.container { max-width: 900px; margin: 20px auto; font-family: sans-serif; }
+/* 1. إعطاء مساحة للتنفس (General Layout) */
+.container-fluid {
+  max-width: 100%; /* استغلال كامل العرض */
+  padding-bottom: 3rem;
+}
 
-.order-form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+/* 2. تحسين شكل الكروت (Cards) */
+.card {
+  border: none;
+  border-radius: 12px; /* زوايا دائرية ناعمة */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); /* ظل خفيف جداً */
+  transition: all 0.3s ease;
+}
 
-.form-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed #ccc; }
-.form-section h3 { margin-top: 0; color: #2c3e50; }
+.card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* تأثير عند الوقوف عليه */
+}
 
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.form-group { margin-bottom: 15px; }
-label { display: block; margin-bottom: 5px; font-weight: bold; }
-select, input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;}
+.card-header {
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fff;
+  border-radius: 12px 12px 0 0 !important;
+}
 
-/* جدول الأصناف */
-.items-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-.items-table th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #ddd; }
-.items-table td { padding: 10px; border-bottom: 1px solid #eee; }
-.items-table input, .items-table select { border: 1px solid #eee; }
-.items-table input:focus, .items-table select:focus { border-color: #0055ff; outline: none; }
+/* 3. تنسيق الجدول (Table Styling) - أهم جزء */
+.table-responsive {
+  border-radius: 0 0 12px 12px;
+}
 
-/* الأزرار */
-.section-header { display: flex; justify-content: space-between; align-items: center; }
-.btn-add { background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-.btn-remove { background: transparent; border: none; cursor: pointer; font-size: 1.2rem; }
-.btn-remove:hover { transform: scale(1.2); }
+.table thead th {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
 
-.actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-.btn-primary { background: #0055ff; color: white; padding: 10px 25px; border: none; border-radius: 4px; cursor: pointer; }
-.btn-secondary { background: #eee; color: #333; padding: 10px 25px; border: none; border-radius: 4px; cursor: pointer; }
+.table tbody td {
+  vertical-align: middle;
+  padding: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 4. تحسين حقول الإدخال داخل الجدول */
+.table .form-control,
+.table .form-select {
+  border-color: #e2e5e8;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.table .form-control:focus,
+.table .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+/* 5. أيقونة الحذف */
+.btn-link.text-danger {
+  transition: transform 0.2s;
+}
+.btn-link.text-danger:hover {
+  transform: scale(1.2);
+  color: #dc3545 !important;
+}
+
+/* 6. شريط الإجمالي (Grand Total) */
+.fw-bold.fs-4.text-success {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* 7. تنسيق المدخلات العامة في المعلومات الأساسية */
+label.form-label {
+  color: #495057;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border-color: #ced4da;
+  color: #6c757d;
+}
+
+/* 8. زر الإضافة (+ Add Item) */
+.btn-primary.btn-sm {
+  padding: 0.4rem 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+}

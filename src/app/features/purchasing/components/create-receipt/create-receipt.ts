@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } fr
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PurchasingService, CreateGoodsReceiptCommand } from '../../services/purchasing';
 // 👇 تأكد من صحة المسار الخاص بـ HrService عندك
-import { HrService, Employee } from '../../../../core/services/hr.service'; 
+import { HrService, Employee } from '../../../../core/services/hr.service';
 
 @Component({
   selector: 'app-create-receipt',
@@ -54,7 +54,7 @@ export class CreateReceiptComponent implements OnInit {
     this.purchasingService.getOrderById(this.poId).subscribe({
       next: (order) => {
         this.orderData.set(order);
-        
+
         // مسح العناصر القديمة (لتجنب التكرار لو حصل reload)
         this.itemsArray.clear();
 
@@ -84,7 +84,7 @@ export class CreateReceiptComponent implements OnInit {
 
     const command: CreateGoodsReceiptCommand = {
       purchaseOrderId: this.poId,
-      receivedById: Number(formValue.receivedById),
+      receivedById: String(formValue.receivedById),
       notes: formValue.notes || '',
       items: formValue.items.map((i: any) => ({
         poItemId: i.poItemId,

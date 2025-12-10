@@ -32,6 +32,7 @@ import { CreateSupplierComponent } from './features/purchasing/components/create
 import { CreateOrderComponent as PurchasingCreateOrder } from './features/purchasing/components/create-order/create-order';
 import { OrderListComponent as PurchasingOrderList } from './features/purchasing/components/order-list/order-list';
 import { CreateReceiptComponent } from './features/purchasing/components/create-receipt/create-receipt';
+import { OrderDetailsComponent as PurchasingOrderDetails } from './features/purchasing/components/order-details/order-details';
 
 // --- Sales ---
 import { CustomerListComponent } from './features/sales/components/customer-list/customer-list';
@@ -41,10 +42,11 @@ import { OrderListComponent as SalesOrderList } from './features/sales/component
 
 // --- Production ---
 import { ProductionDashboardComponent } from './features/production/components/production-dashboard/production-dashboard';
-import { ProductionWizardComponent } from './features/production/components/production-wizard/production-wizard';
 import { CreateBomComponent } from './features/production/components/create-bom/create-bom';
 import { CreateOrderComponent as ProductionCreateOrder } from './features/production/components/create-order/create-order';
 import { OrderListComponent as ProductionOrderList } from './features/production/components/order-list/order-list';
+// ✅ Import الجديد (باسم مستعار لتجنب التعارض)
+import { OrderDetailsComponent as ProductionOrderDetails } from './features/production/components/order-details/order-details';
 
 // --- Expenses ---
 import { CreateExpenseComponent } from './features/expenses/components/create-expense/create-expense';
@@ -64,7 +66,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'unauthorized', component: UnauthorizedComponent },
-  
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   // 2️⃣ المسارات المحمية
@@ -74,36 +76,36 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardHomeComponent },
 
-      // ✅ المسارات الخاصة بالملف الشخصي (كل المستخدمين)
+      // ✅ المسارات الخاصة بالملف الشخصي
       { path: 'profile-security', component: ProfileSecurityComponent },
       { path: 'change-password', component: ChangePasswordComponent },
 
-      // --- Admin (Admin only) ---
-      { 
-        path: 'admin/users', 
+      // --- Admin ---
+      {
+        path: 'admin/users',
         component: UserManagementComponent,
         canActivate: [roleGuard],
-        data: { roles: ['Admin'] }
+        data: { roles: ['SuperAdmin', 'Admin'] }
       },
 
-      // --- Inventory (Admin & Manager only) ---
-      { 
-        path: 'inventory', 
+      // --- Inventory ---
+      {
+        path: 'inventory',
         component: MaterialListComponent,
         canActivate: [roleGuard],
-        data: { roles: ['Admin', 'Manager', 'Employee'] }
+        data: { roles: ['SuperAdmin', 'Admin', 'Manager', 'Employee'] }
       },
-      { 
-        path: 'inventory/create', 
+      {
+        path: 'inventory/create',
         component: CreateMaterialComponent,
         canActivate: [roleGuard],
-        data: { roles: ['Admin', 'Manager'] }
+        data: { roles: ['SuperAdmin', 'Admin', 'Manager'] }
       },
-      { 
-        path: 'inventory/edit/:id', 
+      {
+        path: 'inventory/edit/:id',
         component: EditMaterialComponent,
         canActivate: [roleGuard],
-        data: { roles: ['Admin', 'Manager'] }
+        data: { roles: ['SuperAdmin', 'Admin', 'Manager'] }
       },
 
       // --- Purchasing ---
@@ -112,6 +114,7 @@ export const routes: Routes = [
       { path: 'purchasing/orders', component: PurchasingOrderList },
       { path: 'purchasing/create-order', component: PurchasingCreateOrder },
       { path: 'purchasing/receive/:id', component: CreateReceiptComponent },
+      { path: 'purchasing/orders/:id', component: PurchasingOrderDetails},
 
       // --- Sales ---
       { path: 'sales', component: CustomerListComponent },
@@ -121,10 +124,11 @@ export const routes: Routes = [
 
       // --- Production ---
       { path: 'production', component: ProductionDashboardComponent },
-      { path: 'production/wizard', component: ProductionWizardComponent },
-      { path: 'production/bom', component: CreateBomComponent },
       { path: 'production/create-order', component: ProductionCreateOrder },
+      { path: 'production/bom', component: CreateBomComponent },
       { path: 'production/orders', component: ProductionOrderList },
+      // ✅ المسار الجديد للتفاصيل
+      { path: 'production/orders/:id', component: ProductionOrderDetails },
 
       // --- HR ---
       { path: 'hr', component: EmployeeListComponent },

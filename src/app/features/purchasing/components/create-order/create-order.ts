@@ -6,7 +6,6 @@ import { PurchasingService } from '../../services/purchasing';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Supplier } from '../../models/supplier.model';
 import { Material } from '../../../inventory/models/material.model';
-import { CreatePurchaseOrderCommand } from '../../models/purchase-order.model';
 
 @Component({
   selector: 'app-create-order',
@@ -21,54 +20,65 @@ export class CreateOrderComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
 
-  // Signals للداتا اللي هنملا بيها الـ Dropdowns
+  // Signals
   suppliers = signal<Supplier[]>([]);
   materials = signal<Material[]>([]);
-  
   isSubmitting = signal<boolean>(false);
 
-  // الفورم الرئيسي
+  // تعريف الفورم
   orderForm: FormGroup = this.fb.group({
     supplierId: ['', Validators.required],
-    expectedDeliveryDate: [new Date().toISOString().split('T')[0], Validators.required], // تاريخ اليوم
-    // 👇 هذا هو المصفوفة الديناميكية للأصناف
-    items: this.fb.array([]) 
+    expectedDeliveryDate: [new Date().toISOString().split('T')[0], Validators.required],
+    poNumber: [''],
+    items: this.fb.array([])
   });
 
   ngOnInit() {
     this.loadData();
-    this.addItem(); // إضافة سطر فارغ في البداية
+    this.addItem(); // إضافة سطر افتراضي
   }
 
+  // ✅✅ التعديل هنا: فلترة المواد لعرض "المواد الخام" فقط ✅✅
   loadData() {
-    // تحميل الموردين والمواد بالتوازي
     this.purchasingService.getSuppliers().subscribe(res => this.suppliers.set(res));
-    this.inventoryService.getMaterials().subscribe(res => this.materials.set(res));
+
+    this.inventoryService.getMaterials().subscribe(res => {
+      // الفلتر اللي هيجيب الـ 5 أصناف كلهم
+      const rawMaterialsOnly = res.filter(m => {
+        const type = (m.materialType as any); // عشان نتجاهل تدقيق الأنواع
+
+        return type === 'RawMaterial' || // الحالة الأولى (نص)
+               type === 'Raw'         || // احتياطي
+               type === 0             || // الحالة التانية (رقم)
+               type === '0';             // 👈👈 الحالة التالتة (نص "0" زي ما ظهر في الصورة)
+      });
+
+      this.materials.set(rawMaterialsOnly);
+    });
   }
 
-  // --- FormArray Helpers (أدوات التحكم في الجدول) ---
-
-  // Getter لسهولة الوصول للـ Array في الـ HTML
+  // --- التعامل مع الجدول ---
   get itemsArray(): FormArray {
     return this.orderForm.get('items') as FormArray;
   }
 
-  // إضافة سطر جديد
   addItem() {
     const itemGroup = this.fb.group({
-      materialId: ['', Validators.required],
+      materialId: [null, Validators.required], // null عشان الـ placeholder يظهر
       quantity: [1, [Validators.required, Validators.min(1)]],
-      unitPrice: [0, [Validators.required, Validators.min(0.01)]]
+      unitPrice: [0, [Validators.required, Validators.min(0)]]
     });
     this.itemsArray.push(itemGroup);
   }
 
-  // حذف سطر
   removeItem(index: number) {
-    this.itemsArray.removeAt(index);
+    if (this.itemsArray.length > 1) {
+      this.itemsArray.removeAt(index);
+    } else {
+      alert("At least one item is required.");
+    }
   }
 
-  // حساب الإجمالي (للعرض فقط)
   get totalAmount(): number {
     return this.itemsArray.controls.reduce((sum, control) => {
       const qty = control.get('quantity')?.value || 0;
@@ -78,50 +88,40 @@ export class CreateOrderComponent implements OnInit {
   }
 
   // --- الإرسال ---
- onSubmit() {
-  if (this.orderForm.invalid) {
-    this.orderForm.markAllAsTouched();
-    return;
-  }
-
-  this.isSubmitting.set(true);
-
-  // 👇 التعديل هنا: تجهيز البيانات يدوياً لضمان صحتها
-  const formValues = this.orderForm.value;
-
-  const command: CreatePurchaseOrderCommand = {
-    // 1. ضمان أن الـ ID رقم وليس نص (أحياناً الـ Select بيرجع نص)
-    supplierId: Number(formValues.supplierId),
-    
-    // 2. ضمان أن التاريخ نص بصيغة YYYY-MM-DD
-    // هذا السطر يحل مشكلة التواريخ العربية أو الصيغ المختلفة
-    expectedDeliveryDate: new Date(formValues.expectedDeliveryDate).toISOString(), 
-    
-    // 3. تحويل أصناف الجدول
-    items: formValues.items.map((item: any) => ({
-      materialId: Number(item.materialId),
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice)
-    }))
-  };
-
-  console.log('Sending Payload:', command); // 👈 اطبع البيانات في الكونسول عشان تراجعها
-
-  this.purchasingService.createPurchaseOrder(command).subscribe({
-    next: (res) => {
-      alert(`✅ Order Created Successfully! ID: ${res}`);
-      this.router.navigate(['/purchasing']);
-    },
-    error: (err) => {
-      console.error(err);
-      // قراءة رسالة الخطأ من السيرفر
-      const errorMsg = err.error?.errors 
-                       ? JSON.stringify(err.error.errors) 
-                       : (err.error?.message || 'Unknown Error');
-                       
-      alert(`❌ Failed: ${errorMsg}`);
-      this.isSubmitting.set(false);
+  onSubmit() {
+    if (this.orderForm.invalid) {
+      this.orderForm.markAllAsTouched();
+      return;
     }
-  });
-}
+
+    this.isSubmitting.set(true);
+
+    const formValue = this.orderForm.value;
+
+    // تجهيز الـ Payload
+    const command = {
+      supplierId: Number(formValue.supplierId),
+      expectedDeliveryDate: formValue.expectedDeliveryDate,
+      poNumber: formValue.poNumber || null,
+      items: formValue.items.map((item: any) => ({
+        materialId: Number(item.materialId),
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitPrice)
+      }))
+    };
+
+    console.log('🚀 Sending Order Payload:', command);
+
+    this.purchasingService.createPurchaseOrder(command).subscribe({
+      next: (res) => {
+        alert('✅ Order Created Successfully!');
+        this.router.navigate(['/purchasing/orders']);
+      },
+      error: (err) => {
+        console.error('❌ API Error:', err);
+        alert('Failed to create order. Please check the data.');
+        this.isSubmitting.set(false);
+      }
+    });
+  }
 }

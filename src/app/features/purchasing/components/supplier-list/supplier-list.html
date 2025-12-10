@@ -1,9 +1,4 @@
-<!-- ⚠️ NOTE: Supplier list uses Bootstrap table and utilities.
-     No functional changes - styling updates only. All data binding remains intact.
--->
-
 <div class="container-fluid p-4">
-  <!-- Header with action buttons -->
   <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
       <h2 class="h3 mb-0">🚚 Suppliers List</h2>
@@ -18,15 +13,13 @@
     </div>
   </div>
 
-  <!-- Loading alert -->
   @if (isLoading()) {
     <div class="alert alert-info d-flex align-items-center" role="alert">
-      <i class="bi bi-hourglass-split me-2"></i> 
+      <i class="bi bi-hourglass-split me-2"></i>
       <span>Loading suppliers data...</span>
     </div>
-  } 
+  }
   @else {
-    <!-- Bootstrap table for suppliers list -->
     <div class="table-responsive">
       <table class="table table-hover table-striped align-middle">
         <thead class="table-light">
@@ -34,6 +27,7 @@
             <th>Code</th>
             <th>Company Name</th>
             <th>Contact Person</th>
+            <th>Email</th>
             <th>Phone</th>
             <th>Status</th>
           </tr>
@@ -44,19 +38,29 @@
               <td><strong>{{ supplier.supplierCode }}</strong></td>
               <td>{{ supplier.supplierName }}</td>
               <td>{{ supplier.contactPerson }}</td>
-              <td>{{ supplier.phoneNumber }}</td>
+
               <td>
-                <span class="badge" 
-                      [class.bg-success]="supplier.isActive" 
+                @if(supplier.email) {
+                  <a [href]="'mailto:' + supplier.email" class="text-decoration-none">{{ supplier.email }}</a>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </td>
+
+              <td>{{ supplier.phoneNumber }}</td>
+
+              <td>
+                <span class="badge"
+                      [class.bg-success]="supplier.isActive"
                       [class.bg-secondary]="!supplier.isActive">
                   {{ supplier.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
             </tr>
-          } 
+          }
           @empty {
             <tr>
-              <td colspan="5" class="text-center py-4 text-muted">
+              <td colspan="6" class="text-center py-4 text-muted">
                 <i class="bi bi-inbox me-2"></i> No suppliers found.
               </td>
             </tr>

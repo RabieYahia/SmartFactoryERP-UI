@@ -1,156 +1,113 @@
-<!-- ⚠️ NOTE: BOM (Bill of Materials) form uses Bootstrap form components.
-     No functional changes - styling updates only. All material linking logic remains intact.
--->
-
 <div class="container-fluid p-4">
-  <!-- Header section -->
-  <div class="d-flex align-items-center justify-content-between mb-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="h3 mb-1">📜 Define Production Recipe (BOM)</h2>
-      <p class="text-muted mb-0">Link multiple raw materials to a finished product.</p>
+      <h2 class="h3 fw-bold text-primary mb-1">📜 Define Production Recipe (BOM)</h2>
+      <p class="text-muted small">Link raw materials to a finished product.</p>
     </div>
-    <button class="btn btn-outline-secondary" routerLink="/production/orders">
-      <i class="bi bi-factory me-2"></i> View Factory Orders
+    <button class="btn btn-outline-secondary" routerLink="/production">
+      <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
     </button>
   </div>
 
-  <div class="row">
-    <div class="col-12 col-lg-10">
-      <form [formGroup]="bomForm" (ngSubmit)="onSubmit()">
-        
-        <!-- Step 1: Select Finished Product -->
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body">
-            <h5 class="card-title mb-3">
-              <span class="badge bg-primary me-2">1</span>
-              Select Finished Product
-            </h5>
-            <div class="mb-0">
-              <label for="productId" class="form-label">🔨 Finished Product (What to make?)</label>
-              <select 
-                class="form-select" 
-                id="productId"
-                formControlName="productId"
-                [class.is-invalid]="bomForm.get('productId')?.invalid && bomForm.get('productId')?.touched"
-              >
-                <option [ngValue]="null">-- Select Finished Product --</option>
-                @for (mat of finishedProducts(); track mat.id) {
-                  <option [ngValue]="mat.id">{{ mat.materialName }} (Stock: {{ mat.currentStockLevel }})</option>
-                }
-              </select>
-              @if (bomForm.get('productId')?.invalid && bomForm.get('productId')?.touched) {
-                <div class="invalid-feedback d-block">
-                  <i class="bi bi-exclamation-circle me-1"></i> Product selection is required.
-                </div>
-              }
-            </div>
-          </div>
-        </div>
+  <form [formGroup]="bomForm" (ngSubmit)="onSubmit()">
 
-        <!-- Step 2: Add Components -->
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="card-title mb-0">
-                <span class="badge bg-primary me-2">2</span>
-                Add Components ({{ componentsArr.length }})
-              </h5>
-              <button type="button" class="btn btn-success btn-sm" (click)="addComponent()">
-                <i class="bi bi-plus-circle me-1"></i> Add Component
-              </button>
-            </div>
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white">
+        <h6 class="mb-0 fw-bold d-flex align-items-center">
+          <span class="badge-number">1</span> Select Finished Product
+        </h6>
+      </div>
+      <div class="card-body">
+        <label class="form-label text-muted small fw-bold">PRODUCT TO PRODUCE</label>
+        <select class="form-select form-select-lg" formControlName="productId"
+          [class.is-invalid]="bomForm.get('productId')?.invalid && bomForm.get('productId')?.touched">
+          <option [ngValue]="null" disabled selected>-- Choose Finished Good --</option>
 
-            <div formArrayName="components">
-              @if (componentsArr.length === 0) {
-                <div class="alert alert-info mb-0">
-                  <i class="bi bi-info-circle me-2"></i>
-                  No components added yet. Click "Add Component" to start.
-                </div>
-              } @else {
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                      <tr>
-                        <th width="50%">Raw Material</th>
-                        <th width="30%">Quantity</th>
-                        <th width="20%">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (comp of componentsArr.controls; track $index) {
-                        <tr [formGroupName]="$index">
-                          <td>
-                            <select 
-                              formControlName="componentId" 
-                              class="form-select form-select-sm"
-                              [class.is-invalid]="comp.get('componentId')?.invalid && comp.get('componentId')?.touched"
-                              (change)="onComponentSelected($index, comp.get('componentId')?.value)"
-                            >
-                              <option [ngValue]="null">-- Select Material --</option>
-                              @for (mat of rawMaterials(); track mat.id) {
-                                <option 
-                                  [ngValue]="mat.id"
-                                  [disabled]="isComponentAlreadyAdded(mat.id, $index)"
-                                >
-                                  {{ mat.materialName }}
-                                  @if (isComponentAlreadyAdded(mat.id, $index)) { (Already added) }
-                                </option>
-                              }
-                            </select>
-                          </td>
-                          <td>
-                            <input 
-                              type="number" 
-                              formControlName="quantity" 
-                              class="form-control form-control-sm" 
-                              placeholder="Qty"
-                              step="0.1"
-                              [class.is-invalid]="comp.get('quantity')?.invalid && comp.get('quantity')?.touched"
-                            >
-                          </td>
-                          <td>
-                            <button 
-                              type="button" 
-                              class="btn btn-sm btn-outline-danger"
-                              (click)="removeComponent($index)"
-                            >
-                              <i class="bi bi-trash"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 3: Save Recipe -->
-        <div class="card border-0 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title mb-3">
-              <span class="badge bg-primary me-2">3</span>
-              Save Production Recipe
-            </h5>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-outline-secondary" routerLink="/dashboard">
-                <i class="bi bi-x-circle me-2"></i> Cancel
-              </button>
-              <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
-                @if (isSubmitting()) { 
-                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  Saving... 
-                } @else { 
-                  <i class="bi bi-check-circle me-2"></i> Save Recipe
-                }
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </form>
+          @for (prod of finishedProducts(); track prod.id) {
+            <option [ngValue]="prod.id">{{ prod.materialName }} (Code: {{ prod.materialCode }})</option>
+          }
+        </select>
+        @if (bomForm.get('productId')?.invalid && bomForm.get('productId')?.touched) {
+          <div class="text-danger small mt-1">Please select a product.</div>
+        }
+      </div>
     </div>
-  </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold d-flex align-items-center">
+          <span class="badge-number">2</span> Raw Materials Recipe
+        </h6>
+        <button type="button" class="btn btn-sm btn-primary" (click)="addComponent()">
+          <i class="bi bi-plus-lg me-1"></i> Add Component
+        </button>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th style="width: 50%;" class="ps-4">Raw Material</th>
+                <th style="width: 30%;">Quantity Required</th>
+                <th style="width: 20%;" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="components">
+              @for (comp of componentsArr.controls; track $index) {
+                <tr [formGroupName]="$index">
+                  <td class="ps-4">
+                    <select class="form-select" formControlName="componentId"
+                      [class.is-invalid]="comp.get('componentId')?.invalid && comp.get('componentId')?.touched"
+                      (change)="onComponentSelected($index, comp.get('componentId')?.value)">
+                      <option [ngValue]="null" disabled selected>-- Select Material --</option>
+
+                      @for (mat of rawMaterials(); track mat.id) {
+                        <option [ngValue]="mat.id" [disabled]="isComponentAlreadyAdded(mat.id, $index)">
+                          {{ mat.materialName }}
+                        </option>
+                      }
+                    </select>
+                  </td>
+                  <td>
+                    <div class="input-group">
+                      <input type="number" class="form-control" formControlName="quantity" min="0.1" step="0.1" placeholder="Qty">
+                      <span class="input-group-text bg-light text-muted">Units</span>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-link text-danger p-0" (click)="removeComponent($index)" title="Remove">
+                      <i class="bi bi-trash-fill fs-5"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+              @empty {
+                <tr>
+                  <td colspan="3" class="text-center py-5 text-muted">
+                    <i class="bi bi-basket fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                    No components added yet. Click "Add Component" to start.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button type="button" class="btn btn-lg btn-light border px-4" routerLink="/production">Cancel</button>
+      <button type="submit" class="btn btn-lg btn-success px-5"
+        [disabled]="bomForm.invalid || componentsArr.length === 0 || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+        } @else {
+          <i class="bi bi-check-lg me-2"></i> Save Recipe
+        }
+      </button>
+    </div>
+
+  </form>
 </div>

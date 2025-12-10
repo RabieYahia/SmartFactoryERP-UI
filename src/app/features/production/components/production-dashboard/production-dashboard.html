@@ -9,8 +9,8 @@
       <button class="btn btn-outline-primary" routerLink="/production/bom">
         <i class="bi bi-diagram-3 me-2"></i>Manage BOM
       </button>
-      <button class="btn btn-primary" routerLink="/production/wizard">
-        <i class="bi bi-plus-circle me-2"></i>Create Production Order
+      <button class="btn btn-primary" routerLink="/production/create-order">
+        <i class="bi bi-plus-lg me-2"></i> Create Production Order
       </button>
     </div>
   </div>
@@ -153,8 +153,8 @@
                   <td>
                     <div class="d-flex align-items-center gap-2">
                       <div class="progress flex-grow-1" style="height: 8px; min-width: 100px;">
-                        <div 
-                          class="progress-bar" 
+                        <div
+                          class="progress-bar"
                           [style.width.%]="getProgressPercentage(order)"
                           [class.bg-success]="order.status === 'Completed'"
                           [class.bg-warning]="order.status === 'Started'"
