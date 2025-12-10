@@ -6,7 +6,7 @@
   <!-- Header with title and action button -->
   <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h2 class="h3 mb-0">📑 Sales Orders</h2>
+      <h2 class="h3 mb-0"><i class="bi bi-receipt-cutoff me-2"></i> Sales Orders</h2>
     </div>
     <button class="btn btn-primary" routerLink="/sales/create-order">
       <i class="bi bi-cart-plus me-2"></i> New Sale
@@ -43,22 +43,28 @@
               <td class="fw-bold text-success">{{ order.totalAmount | currency }}</td>
               <td>
                 <span class="badge" 
-                      [class.bg-secondary]="order.status === 'Draft'" 
-                      [class.bg-success]="order.status === 'Confirmed'"
-                      [class.bg-info]="order.status === 'Invoiced'">
-                  {{ order.status }}
+                      [class.bg-secondary]="getStatus(order.status) === 'draft'" 
+                      [class.bg-success]="getStatus(order.status) === 'confirmed'"
+                      [class.bg-info]="getStatus(order.status) === 'invoiced'">
+                  {{ getStatusLabel(order.status) }}
                 </span>
               </td>
               <td class="text-center">
-                @if (order.status === 'Draft') {
+                @if (getStatus(order.status) === 'draft') {
                   <button class="btn btn-sm btn-success me-2" (click)="onConfirm(order.id)" title="Confirm & Reserve Stock">
                     <i class="bi bi-check-circle me-1"></i> Confirm
                   </button>
                 }
 
-                @if (order.status === 'Confirmed' || order.status === 'Invoiced') {
-                  <button class="btn btn-sm btn-outline-secondary" (click)="downloadPdf(order.id)" title="Download Invoice">
-                    <i class="bi bi-file-pdf me-1"></i> PDF
+                @if (getStatus(order.status) === 'confirmed') {
+                  <button class="btn btn-sm btn-primary me-2" (click)="generateAndDownloadInvoice(order.id)" title="Generate Invoice">
+                    <i class="bi bi-receipt me-1"></i> Generate Invoice
+                  </button>
+                }
+
+                @if (getStatus(order.status) === 'invoiced') {
+                  <button class="btn btn-sm btn-outline-secondary" (click)="downloadPdf(order.id)" title="Download Invoice PDF">
+                    <i class="bi bi-file-pdf me-1"></i> Download PDF
                   </button>
                 }
               </td>

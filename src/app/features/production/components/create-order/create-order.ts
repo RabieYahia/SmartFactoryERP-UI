@@ -6,6 +6,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ProductionService, CreateProductionOrderCommand, CreateBOMCommand, OrderItemInputDto } from '../../services/production';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Material } from '../../../inventory/models/material.model';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-production-order',
@@ -15,10 +16,18 @@ import { Material } from '../../../inventory/models/material.model';
   styleUrl: './create-order.css'
 })
 export class CreateOrderComponent implements OnInit {
+<<<<<<< HEAD
   private fb = inject(FormBuilder);
   private productionService = inject(ProductionService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+=======
+  private fb = inject(FormBuilder);
+  private productionService = inject(ProductionService);
+  private inventoryService = inject(InventoryService);
+  private router = inject(Router);
+  private alertService = inject(AlertService);
+>>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
 
   // --- التحكم في الخطوات ---
   currentStep = signal<number>(1); // 1: Product/BOM, 2: Quantity/Stock Check
@@ -51,6 +60,7 @@ export class CreateOrderComponent implements OnInit {
     return this.bomForm.get('components') as FormArray;
   }
 
+<<<<<<< HEAD
   ngOnInit() {
     this.loadMaterials();
   }
@@ -182,3 +192,19 @@ export class CreateOrderComponent implements OnInit {
 
   // ... (goBack and cancel methods)
 }
+=======
+    this.productionService.createOrder(command).subscribe({
+      next: (res) => {
+        this.alertService.success(`Production Order Created! ID: ${res}`);
+        // سنقوم بتوجيهه لقائمة الإنتاج (التي سنبنيها الخطوة القادمة)
+        this.router.navigate(['/production/orders']); 
+      },
+      error: (err) => {
+        console.error(err);
+        this.alertService.error('Failed to create order.');
+        this.isSubmitting.set(false);
+      }
+    });
+  }
+}
+>>>>>>> c70a22fee14f6993b4b4670197472033b10f8036

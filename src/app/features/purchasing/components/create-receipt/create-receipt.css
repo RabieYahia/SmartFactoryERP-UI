@@ -4,7 +4,7 @@
 label { font-weight: bold; margin-right: 10px; }
 input[type="text"] { padding: 5px; width: 60%; }
 
-.modern-table { width: 100%; border-collapse: collapse; background: white; }
+.modern-table { width: 100%; border-collapse: collapse; background: var(--surface); color: var(--text-primary); }
 .modern-table th { background: #2c3e50; color: white; padding: 10px; text-align: left; }
 .modern-table td { padding: 10px; border-bottom: 1px solid #eee; }
 

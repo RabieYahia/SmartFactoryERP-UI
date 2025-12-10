@@ -6,6 +6,11 @@ import { PurchasingService } from '../../services/purchasing';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Supplier } from '../../models/supplier.model';
 import { Material } from '../../../inventory/models/material.model';
+<<<<<<< HEAD
+=======
+import { CreatePurchaseOrderCommand } from '../../models/purchase-order.model';
+import { AlertService } from '../../../../core/services/alert.service';
+>>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
 
 @Component({
   selector: 'app-create-order',
@@ -19,6 +24,7 @@ export class CreateOrderComponent implements OnInit {
   private purchasingService = inject(PurchasingService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   // Signals
   suppliers = signal<Supplier[]>([]);
@@ -88,10 +94,56 @@ export class CreateOrderComponent implements OnInit {
   }
 
   // --- الإرسال ---
+<<<<<<< HEAD
   onSubmit() {
     if (this.orderForm.invalid) {
       this.orderForm.markAllAsTouched();
       return;
+=======
+ onSubmit() {
+  if (this.orderForm.invalid) {
+    this.orderForm.markAllAsTouched();
+    return;
+  }
+
+  this.isSubmitting.set(true);
+
+  // 👇 التعديل هنا: تجهيز البيانات يدوياً لضمان صحتها
+  const formValues = this.orderForm.value;
+
+  const command: CreatePurchaseOrderCommand = {
+    // 1. ضمان أن الـ ID رقم وليس نص (أحياناً الـ Select بيرجع نص)
+    supplierId: Number(formValues.supplierId),
+    
+    // 2. ضمان أن التاريخ نص بصيغة YYYY-MM-DD
+    // هذا السطر يحل مشكلة التواريخ العربية أو الصيغ المختلفة
+    expectedDeliveryDate: new Date(formValues.expectedDeliveryDate).toISOString(), 
+    
+    // 3. تحويل أصناف الجدول
+    items: formValues.items.map((item: any) => ({
+      materialId: Number(item.materialId),
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice)
+    }))
+  };
+
+  console.log('Sending Payload:', command); // 👈 اطبع البيانات في الكونسول عشان تراجعها
+
+  this.purchasingService.createPurchaseOrder(command).subscribe({
+    next: (res) => {
+      this.alertService.success(`Order Created Successfully! ID: ${res}`);
+      this.router.navigate(['/purchasing']);
+    },
+    error: (err) => {
+      console.error(err);
+      // قراءة رسالة الخطأ من السيرفر
+      const errorMsg = err.error?.errors 
+                       ? JSON.stringify(err.error.errors) 
+                       : (err.error?.message || 'Unknown Error');
+                       
+      this.alertService.error(`Failed: ${errorMsg}`);
+      this.isSubmitting.set(false);
+>>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
     }
 
     this.isSubmitting.set(true);

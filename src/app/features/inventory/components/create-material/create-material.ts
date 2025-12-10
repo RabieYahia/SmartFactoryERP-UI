@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InventoryService } from '../../services/inventory';
+import { AlertService } from '../../../../core/services/alert.service';
 
 /**
  * COMPONENT: CreateMaterialComponent
@@ -41,6 +42,7 @@ export class CreateMaterialComponent {
   private fb = inject(FormBuilder);                    // Reactive form builder
   private inventoryService = inject(InventoryService); // Material API service
   private router = inject(Router);                     // Navigation service
+  private alertService = inject(AlertService);         // Alert notification service
 
   // ===== STATE SIGNALS =====
   // Signal to prevent duplicate form submissions while awaiting backend response
@@ -105,7 +107,7 @@ export class CreateMaterialComponent {
       next: (res) => {
         // ✅ SUCCESS: Material created with ID returned from backend
         console.log('✅ SUCCESS! Material created with ID:', res);
-        alert('✅ Material Created Successfully! ID: ' + res);
+        this.alertService.success('Material Created Successfully! ID: ' + res);
         // Navigate back to inventory list
         this.router.navigate(['/inventory']);
       },
@@ -113,7 +115,7 @@ export class CreateMaterialComponent {
         // ❌ ERROR: Backend validation or network error
         console.error('❌ Backend Error:', err);
         // Show user-friendly error message
-        alert('❌ Error creating material. Check console for details.');
+        this.alertService.error('Error creating material. Check console for details.');
         // Re-enable submit button for retry
         this.isSubmitting.set(false);
       }

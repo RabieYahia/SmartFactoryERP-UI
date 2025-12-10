@@ -2,10 +2,10 @@
   <!-- Header with Refresh -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="h3 mb-1 fw-bold">📊 Dashboard Overview</h2>
+      <h2 class="h3 mb-1 fw-bold"> Dashboard Overview</h2>
       <p class="text-muted mb-0">
         Real-time production monitoring and business intelligence
-        <span class="badge bg-light text-secondary ms-2">
+        <span class="badge ms-2" style="background: var(--surface-hover); color: var(--text-primary);">
           <i class="bi bi-clock me-1"></i>
           Updated: {{ lastUpdated() | date:'short' }}
         </span>
@@ -274,7 +274,7 @@
       <!-- Charts Section -->
       <div class="col-12 col-lg-8">
         <div class="card border-0 shadow-sm h-100">
-          <div class="card-header bg-white border-0 pt-4 px-4">
+          <div class="card-header border-0 pt-4 px-4" style="background: var(--surface); color: var(--text-primary);">
             <h5 class="card-title fw-bold">
               <i class="bi bi-graph-up text-primary me-2"></i>Sales Trend (Last 7 Days)
             </h5>
@@ -300,9 +300,9 @@
       <!-- Recent Activities -->
       <div class="col-12 col-lg-4">
         <div class="card border-0 shadow-sm h-100">
-          <div class="card-header bg-white border-0 pt-4 px-4">
+          <div class="card-header border-0 pt-4 px-4" style="background: var(--surface); color: var(--text-primary);">
             <h5 class="card-title fw-bold">
-              <i class="bi bi-activity text-info me-2"></i>Recent Activities
+              <i class="bi bi-clock-history text-info me-2"></i>Recent Activities
             </h5>
           </div>
           <div class="card-body overflow-auto" style="max-height: 350px;">
@@ -333,7 +333,7 @@
       <!-- Order Status Pie Chart -->
       <div class="col-12 col-lg-6">
         <div class="card border-0 shadow-sm h-100">
-          <div class="card-header bg-white border-0 pt-4 px-4">
+          <div class="card-header border-0 pt-4 px-4" style="background: var(--surface); color: var(--text-primary);">
             <h5 class="card-title fw-bold">
               <i class="bi bi-pie-chart-fill text-warning me-2"></i>Order Status Distribution
             </h5>
@@ -355,7 +355,7 @@
       <!-- Top Products Bar Chart -->
       <div class="col-12 col-lg-6">
         <div class="card border-0 shadow-sm h-100">
-          <div class="card-header bg-white border-0 pt-4 px-4">
+          <div class="card-header border-0 pt-4 px-4" style="background: var(--surface); color: var(--text-primary);">
             <h5 class="card-title fw-bold">
               <i class="bi bi-trophy-fill text-warning me-2"></i>Top Selling Products
             </h5>

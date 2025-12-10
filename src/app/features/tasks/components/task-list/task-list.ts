@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TasksService, Task } from '../../services/tasks';
+import { AlertService } from '../../../../core/services/alert.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-task-list',
@@ -12,6 +14,8 @@ import { TasksService, Task } from '../../services/tasks';
 })
 export class TaskListComponent implements OnInit {
   private tasksService = inject(TasksService);
+  private alertService = inject(AlertService);
+  private confirmService = inject(ConfirmService);
 
   tasks = signal<Task[]>([]);
   isLoading = signal<boolean>(true);
@@ -37,8 +41,13 @@ export class TaskListComponent implements OnInit {
   updateStatus(task: Task, newStatus: 'Start' | 'Complete') {
     const actionWord = newStatus === 'Start' ? 'Start working on' : 'Complete';
     
-    if (!confirm(`Are you sure you want to ${actionWord} this task?`)) return;
+    this.confirmService.warning(
+      `Are you sure you want to ${actionWord} this task?`,
+      () => this.proceedUpdateStatus(task, newStatus)
+    );
+  }
 
+  private proceedUpdateStatus(task: Task, newStatus: 'Start' | 'Complete') {
     // تحديث واجهة المستخدم فوراً (Optimistic Update) أو إظهار تحميل
     // هنا سنعيد التحميل لضمان البيانات
     this.isLoading.set(true);
@@ -46,12 +55,12 @@ export class TaskListComponent implements OnInit {
     this.tasksService.changeTaskStatus(task.id, newStatus).subscribe({
       next: () => {
         // رسالة نجاح وإعادة تحميل
-        // alert(`Task ${newStatus === 'Start' ? 'Started' : 'Completed'}!`);
+        this.alertService.success(`Task ${newStatus === 'Start' ? 'Started' : 'Completed'}!`);
         this.loadTasks();
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Error updating status');
+        this.alertService.error('Error updating status');
         this.isLoading.set(false);
       }
     });

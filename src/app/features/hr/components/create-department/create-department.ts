@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HrService } from '../../../../core/services/hr.service';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-department',
@@ -15,6 +16,7 @@ export class CreateDepartmentComponent {
   private fb = inject(FormBuilder);
   private hrService = inject(HrService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   isSubmitting = signal(false);
 
@@ -30,11 +32,11 @@ export class CreateDepartmentComponent {
 
     this.hrService.createDepartment(this.form.value).subscribe({
       next: () => {
-        alert('✅ Department Created!');
+        this.alertService.success('Department Created!');
         this.router.navigate(['/hr/employees']); // أو أي مكان تحبه
       },
       error: (err) => {
-        alert('❌ Error creating department');
+        this.alertService.error('Error creating department');
         this.isSubmitting.set(false);
       }
     });

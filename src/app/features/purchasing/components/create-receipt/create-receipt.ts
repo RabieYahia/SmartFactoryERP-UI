@@ -3,8 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PurchasingService, CreateGoodsReceiptCommand } from '../../services/purchasing';
+<<<<<<< HEAD
 // 👇 تأكد من صحة المسار الخاص بـ HrService عندك
 import { HrService, Employee } from '../../../../core/services/hr.service';
+=======
+import { HrService, Employee } from '../../../../core/services/hr.service';
+import { AlertService } from '../../../../core/services/alert.service'; 
+>>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
 
 @Component({
   selector: 'app-create-receipt',
@@ -18,7 +23,8 @@ export class CreateReceiptComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private purchasingService = inject(PurchasingService);
-  private hrService = inject(HrService); // 👈 1. حقن خدمة HR
+  private hrService = inject(HrService);
+  private alertService = inject(AlertService);
 
   orderData = signal<any>(null);
   employees = signal<Employee[]>([]); // 👈 2. قائمة الموظفين
@@ -46,7 +52,7 @@ export class CreateReceiptComponent implements OnInit {
   loadEmployees() {
     this.hrService.getEmployees().subscribe({
       next: (res) => this.employees.set(res),
-      error: (err) => console.error('❌ Error loading employees', err)
+      error: (err) => console.error('Error loading employees', err)
     });
   }
 
@@ -93,19 +99,19 @@ export class CreateReceiptComponent implements OnInit {
       }))
     };
 
-    console.log('📤 Sending Receipt:', command);
-    console.log('📋 Full Details:', JSON.stringify(command, null, 2));
+    console.log('Sending Receipt:', command);
+    console.log('Full Details:', JSON.stringify(command, null, 2));
 
     this.purchasingService.createGoodsReceipt(command).subscribe({
       next: () => {
-        alert('✅ Goods Received Successfully! Inventory Updated.');
+        this.alertService.success('Goods Received Successfully! Inventory Updated.');
         this.router.navigate(['/inventory']);
       },
       error: (err) => {
-        console.error('❌ Receipt Error:', err);
-        console.error('📄 Error Details:', err.error);
+        console.error('Receipt Error:', err);
+        console.error('Error Details:', err.error);
         const msg = err.error?.message || err.error?.title || 'Unknown Error';
-        alert(`❌ Error receiving goods: ${msg}`);
+        this.alertService.error(`Error receiving goods: ${msg}`);;
         this.isSubmitting.set(false);
       }
     });

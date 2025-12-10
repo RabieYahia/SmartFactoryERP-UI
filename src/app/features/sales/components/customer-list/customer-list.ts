@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SalesService } from '../../services/sales';
 import { Customer } from '../../models/customer.model';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-customer-list',
@@ -13,6 +14,7 @@ import { Customer } from '../../models/customer.model';
 })
 export class CustomerListComponent implements OnInit {
   private salesService = inject(SalesService);
+  private alertService = inject(AlertService);
 
   customers = signal<Customer[]>([]);
   isLoading = signal<boolean>(true);
@@ -28,8 +30,8 @@ export class CustomerListComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('❌ Load Customers Error:', err);
-        console.error('📄 Error Details:', err.error);
+        console.error('Load Customers Error:', err);
+        console.error('Error Details:', err.error);
         
         let errorMsg = 'Failed to load customers.';
         if (typeof err.error === 'string') {
@@ -43,7 +45,7 @@ export class CustomerListComponent implements OnInit {
           errorMsg = err.error.message;
         }
         
-        alert(`❌ ${errorMsg}`);
+        this.alertService.error(errorMsg);
         this.isLoading.set(false);
       }
     });

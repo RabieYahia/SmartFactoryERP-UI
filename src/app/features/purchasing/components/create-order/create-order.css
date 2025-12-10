@@ -4,6 +4,7 @@
   padding-bottom: 3rem;
 }
 
+<<<<<<< HEAD
 /* 2. تحسين شكل الكروت (Cards) */
 .card {
   border: none;
@@ -11,6 +12,9 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); /* ظل خفيف جداً */
   transition: all 0.3s ease;
 }
+=======
+.order-form { background: var(--surface); color: var(--text-primary); padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+>>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
 
 .card:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* تأثير عند الوقوف عليه */
