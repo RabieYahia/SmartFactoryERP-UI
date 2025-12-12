@@ -70,16 +70,13 @@ export class CreateBomComponent implements OnInit {
   }
 
   addComponent() {
-<<<<<<< HEAD
-=======
     const productId = this.bomForm.get('productId')?.value;
-    
+
     if (!productId) {
       this.alertService.warning('Please select a finished product first!');
       return;
     }
 
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
     const componentGroup = this.fb.group({
       componentId: [null, Validators.required],
       quantity: [1, [Validators.required, Validators.min(0.1)]]
@@ -100,32 +97,22 @@ export class CreateBomComponent implements OnInit {
   onComponentSelected(index: number, componentId: number) {
     // منع تكرار نفس المادة
     if (this.isComponentAlreadyAdded(componentId, index)) {
-<<<<<<< HEAD
-      alert('⚠️ This material is already added to the recipe!');
-      this.componentsArr.at(index).get('componentId')?.setValue(null);
+      this.alertService.warning('This component is already added!');
+      this.componentsArr.at(index).get('componentId')?.reset();
+      return;
     }
 
     // منع اختيار المنتج نفسه كمكون (Infinite Loop)
     const mainProductId = this.bomForm.get('productId')?.value;
     if (mainProductId && componentId === mainProductId) {
-      alert('❌ Cannot use the finished product as a component of itself!');
-      this.componentsArr.at(index).get('componentId')?.setValue(null);
-=======
-      this.alertService.warning('This component is already added!');
+      this.alertService.error('Cannot use the finished product as a component of itself!');
       this.componentsArr.at(index).get('componentId')?.reset();
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
     }
   }
 
   onSubmit() {
     if (this.bomForm.invalid || this.componentsArr.length === 0) {
       this.bomForm.markAllAsTouched();
-<<<<<<< HEAD
-      if (this.componentsArr.length === 0) alert('Please add at least one component.');
-      return;
-    }
-
-=======
       this.alertService.warning('Please complete all required fields!');
       return;
     }
@@ -161,7 +148,6 @@ export class CreateBomComponent implements OnInit {
   }
 
   private proceedCreateBom(productId: number) {
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
     this.isSubmitting.set(true);
     const val = this.bomForm.value;
 
@@ -176,27 +162,19 @@ export class CreateBomComponent implements OnInit {
     console.log('🚀 Saving BOM:', command);
 
     this.productionService.createBOM(command).subscribe({
-<<<<<<< HEAD
-      next: () => {
-        alert('✅ Recipe (BOM) Created Successfully!');
-        this.router.navigate(['/production']);
-      },
-      error: (err) => {
-        console.error(err);
-        alert('❌ Failed to save recipe. It might already exist.');
-=======
       next: (componentsAdded: number) => {
         console.log('✅ Success:', componentsAdded);
         this.alertService.success(`Recipe Created Successfully! ${componentsAdded} component(s) added.`);
         this.bomForm.reset();
         this.componentsArr.clear();
         this.isSubmitting.set(false);
+        // العودة لصفحة الإنتاج بعد النجاح
+        this.router.navigate(['/production']);
       },
       error: (err) => {
         console.error('❌ Backend Error:', err);
-        const errorMessage = err.error?.message || err.message || 'Unknown error';
+        const errorMessage = err.error?.message || err.message || 'Failed to save recipe. It might already exist.';
         this.alertService.error(`Error: ${errorMessage}`);
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
         this.isSubmitting.set(false);
       }
     });

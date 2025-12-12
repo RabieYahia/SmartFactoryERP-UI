@@ -34,7 +34,7 @@ export class OrderListComponent implements OnInit {
         this.orders.set(data);
         this.isLoading.set(false);
       },
-      error: (err: any) => { // ✅ Added type any
+      error: (err: any) => {
         console.error(err);
         this.isLoading.set(false);
       }
@@ -42,10 +42,6 @@ export class OrderListComponent implements OnInit {
   }
 
   onStart(id: number) {
-    if (!confirm('Start production? This will DEDUCT raw materials from inventory.')) {
-      return;
-    }
-
     // Step 1: Confirm user really wants to start production
     this.confirmService.warning(
       'Start production? This will DEDUCT raw materials from inventory.',
@@ -57,20 +53,9 @@ export class OrderListComponent implements OnInit {
     // Step 2: Show loading spinner
     this.isLoading.set(true);
 
-    // ✅✅ التصحيح هنا: استخدام startOrder بدلاً من startProduction ✅✅
+    // استخدام startOrder بدلاً من startProduction
     this.productionService.startOrder(id).subscribe({
       next: () => {
-
-        alert('🚀 Production Started! Materials deducted from inventory.');
-        this.loadOrders();
-      },
-      error: (err: any) => { // ✅ Added type any
-        console.error('❌ Start Production Error:', err);
-
-        // استخراج رسالة الخطأ وعرضها
-        const errorMessage = err.error?.message || 'Failed to start production. Check raw materials availability.';
-        alert(`❌ Error: ${errorMessage}`);
-
         // ✅ SUCCESS: Production started, materials deducted
         this.alertService.success('Production Started! Materials deducted from inventory.');
         // Reload orders to show updated status
@@ -124,10 +109,6 @@ export class OrderListComponent implements OnInit {
   }
 
   onComplete(id: number) {
-    if (!confirm('Complete production? This will ADD finished goods to inventory.')) {
-      return;
-    }
-
     // Step 1: Confirm user really wants to complete production
     this.confirmService.warning(
       'Complete production? This will ADD finished goods to inventory.',
@@ -141,15 +122,13 @@ export class OrderListComponent implements OnInit {
 
     this.productionService.completeProduction(id).subscribe({
       next: () => {
-        alert('✅ Production Completed! Finished goods added to stock.');
         // ✅ SUCCESS: Production completed, finished goods added
         this.alertService.success('Production Completed! Finished goods added to stock.');
         // Reload orders to show updated status
         this.loadOrders();
       },
-      error: (err: any) => { // ✅ Added type any
+      error: (err: any) => {
         console.error(err);
-        alert('❌ Error completing production. Please try again.');
         this.alertService.error('Error completing production. Please try again.');
         // Hide spinner for retry
         this.isLoading.set(false);

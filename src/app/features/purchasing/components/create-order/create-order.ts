@@ -6,11 +6,8 @@ import { PurchasingService } from '../../services/purchasing';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Supplier } from '../../models/supplier.model';
 import { Material } from '../../../inventory/models/material.model';
-<<<<<<< HEAD
-=======
 import { CreatePurchaseOrderCommand } from '../../models/purchase-order.model';
 import { AlertService } from '../../../../core/services/alert.service';
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
 
 @Component({
   selector: 'app-create-order',
@@ -44,21 +41,22 @@ export class CreateOrderComponent implements OnInit {
     this.addItem(); // إضافة سطر افتراضي
   }
 
-  // ✅✅ التعديل هنا: فلترة المواد لعرض "المواد الخام" فقط ✅✅
+  // فلترة المواد لعرض "المواد الخام" فقط
   loadData() {
     this.purchasingService.getSuppliers().subscribe(res => this.suppliers.set(res));
 
     this.inventoryService.getMaterials().subscribe(res => {
-      // الفلتر اللي هيجيب الـ 5 أصناف كلهم
+      // الفلتر اللي هيجيب المواد الخام فقط
       const rawMaterialsOnly = res.filter(m => {
         const type = (m.materialType as any); // عشان نتجاهل تدقيق الأنواع
 
         return type === 'RawMaterial' || // الحالة الأولى (نص)
                type === 'Raw'         || // احتياطي
                type === 0             || // الحالة التانية (رقم)
-               type === '0';             // 👈👈 الحالة التالتة (نص "0" زي ما ظهر في الصورة)
+               type === '0';             // الحالة التالتة (نص "0")
       });
 
+      console.log('📦 Raw Materials:', rawMaterialsOnly);
       this.materials.set(rawMaterialsOnly);
     });
   }
@@ -81,7 +79,7 @@ export class CreateOrderComponent implements OnInit {
     if (this.itemsArray.length > 1) {
       this.itemsArray.removeAt(index);
     } else {
-      alert("At least one item is required.");
+      this.alertService.warning('At least one item is required.');
     }
   }
 
@@ -94,84 +92,59 @@ export class CreateOrderComponent implements OnInit {
   }
 
   // --- الإرسال ---
-<<<<<<< HEAD
   onSubmit() {
     if (this.orderForm.invalid) {
       this.orderForm.markAllAsTouched();
+      this.alertService.warning('Please complete all required fields.');
       return;
-=======
- onSubmit() {
-  if (this.orderForm.invalid) {
-    this.orderForm.markAllAsTouched();
-    return;
-  }
-
-  this.isSubmitting.set(true);
-
-  // 👇 التعديل هنا: تجهيز البيانات يدوياً لضمان صحتها
-  const formValues = this.orderForm.value;
-
-  const command: CreatePurchaseOrderCommand = {
-    // 1. ضمان أن الـ ID رقم وليس نص (أحياناً الـ Select بيرجع نص)
-    supplierId: Number(formValues.supplierId),
-    
-    // 2. ضمان أن التاريخ نص بصيغة YYYY-MM-DD
-    // هذا السطر يحل مشكلة التواريخ العربية أو الصيغ المختلفة
-    expectedDeliveryDate: new Date(formValues.expectedDeliveryDate).toISOString(), 
-    
-    // 3. تحويل أصناف الجدول
-    items: formValues.items.map((item: any) => ({
-      materialId: Number(item.materialId),
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice)
-    }))
-  };
-
-  console.log('Sending Payload:', command); // 👈 اطبع البيانات في الكونسول عشان تراجعها
-
-  this.purchasingService.createPurchaseOrder(command).subscribe({
-    next: (res) => {
-      this.alertService.success(`Order Created Successfully! ID: ${res}`);
-      this.router.navigate(['/purchasing']);
-    },
-    error: (err) => {
-      console.error(err);
-      // قراءة رسالة الخطأ من السيرفر
-      const errorMsg = err.error?.errors 
-                       ? JSON.stringify(err.error.errors) 
-                       : (err.error?.message || 'Unknown Error');
-                       
-      this.alertService.error(`Failed: ${errorMsg}`);
-      this.isSubmitting.set(false);
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
     }
 
     this.isSubmitting.set(true);
 
-    const formValue = this.orderForm.value;
+    // تجهيز البيانات يدوياً لضمان صحتها
+    const formValues = this.orderForm.value;
 
-    // تجهيز الـ Payload
-    const command = {
-      supplierId: Number(formValue.supplierId),
-      expectedDeliveryDate: formValue.expectedDeliveryDate,
-      poNumber: formValue.poNumber || null,
-      items: formValue.items.map((item: any) => ({
+    const command: CreatePurchaseOrderCommand = {
+      // ضمان أن الـ ID رقم وليس نص
+      supplierId: Number(formValues.supplierId),
+
+      // ضمان أن التاريخ بصيغة ISO
+      expectedDeliveryDate: new Date(formValues.expectedDeliveryDate).toISOString(),
+
+      // PO Number اختياري
+      poNumber: formValues.poNumber || undefined,
+
+      // تحويل أصناف الجدول
+      items: formValues.items.map((item: any) => ({
         materialId: Number(item.materialId),
         quantity: Number(item.quantity),
         unitPrice: Number(item.unitPrice)
       }))
     };
 
-    console.log('🚀 Sending Order Payload:', command);
+    console.log('🚀 Sending Purchase Order:', command);
 
     this.purchasingService.createPurchaseOrder(command).subscribe({
       next: (res) => {
-        alert('✅ Order Created Successfully!');
+        this.alertService.success(`Purchase Order Created Successfully! ID: ${res}`);
         this.router.navigate(['/purchasing/orders']);
       },
       error: (err) => {
-        console.error('❌ API Error:', err);
-        alert('Failed to create order. Please check the data.');
+        console.error('❌ Create Purchase Order Error:', err);
+
+        // قراءة رسالة الخطأ من السيرفر
+        let errorMsg = 'Failed to create purchase order. Please check the data.';
+
+        if (err.error?.errors) {
+          // Validation errors from backend
+          errorMsg = JSON.stringify(err.error.errors);
+        } else if (err.error?.message) {
+          errorMsg = err.error.message;
+        } else if (typeof err.error === 'string') {
+          errorMsg = err.error;
+        }
+
+        this.alertService.error(`Error: ${errorMsg}`);
         this.isSubmitting.set(false);
       }
     });

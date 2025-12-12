@@ -4,17 +4,22 @@
   padding-bottom: 3rem;
 }
 
-<<<<<<< HEAD
-/* 2. تحسين شكل الكروت (Cards) */
+/* 2. تنسيق نموذج الطلب */
+.order-form {
+  background: var(--surface);
+  color: var(--text-primary);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* 3. تحسين شكل الكروت (Cards) */
 .card {
   border: none;
   border-radius: 12px; /* زوايا دائرية ناعمة */
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); /* ظل خفيف جداً */
   transition: all 0.3s ease;
 }
-=======
-.order-form { background: var(--surface); color: var(--text-primary); padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
 
 .card:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* تأثير عند الوقوف عليه */
@@ -26,7 +31,7 @@
   border-radius: 12px 12px 0 0 !important;
 }
 
-/* 3. تنسيق الجدول (Table Styling) - أهم جزء */
+/* 4. تنسيق الجدول (Table Styling) - أهم جزء */
 .table-responsive {
   border-radius: 0 0 12px 12px;
 }
@@ -48,7 +53,7 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* 4. تحسين حقول الإدخال داخل الجدول */
+/* 5. تحسين حقول الإدخال داخل الجدول */
 .table .form-control,
 .table .form-select {
   border-color: #e2e5e8;
@@ -62,21 +67,22 @@
   box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
 }
 
-/* 5. أيقونة الحذف */
+/* 6. أيقونة الحذف */
 .btn-link.text-danger {
   transition: transform 0.2s;
 }
+
 .btn-link.text-danger:hover {
   transform: scale(1.2);
   color: #dc3545 !important;
 }
 
-/* 6. شريط الإجمالي (Grand Total) */
+/* 7. شريط الإجمالي (Grand Total) */
 .fw-bold.fs-4.text-success {
   text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* 7. تنسيق المدخلات العامة في المعلومات الأساسية */
+/* 8. تنسيق المدخلات العامة في المعلومات الأساسية */
 label.form-label {
   color: #495057;
   font-size: 0.9rem;
@@ -89,7 +95,7 @@ label.form-label {
   color: #6c757d;
 }
 
-/* 8. زر الإضافة (+ Add Item) */
+/* 9. زر الإضافة (+ Add Item) */
 .btn-primary.btn-sm {
   padding: 0.4rem 1rem;
   font-weight: 500;

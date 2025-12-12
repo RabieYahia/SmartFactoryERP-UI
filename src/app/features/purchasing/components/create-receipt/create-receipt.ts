@@ -3,13 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PurchasingService, CreateGoodsReceiptCommand } from '../../services/purchasing';
-<<<<<<< HEAD
-// 👇 تأكد من صحة المسار الخاص بـ HrService عندك
 import { HrService, Employee } from '../../../../core/services/hr.service';
-=======
-import { HrService, Employee } from '../../../../core/services/hr.service';
-import { AlertService } from '../../../../core/services/alert.service'; 
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-receipt',
@@ -27,7 +22,7 @@ export class CreateReceiptComponent implements OnInit {
   private alertService = inject(AlertService);
 
   orderData = signal<any>(null);
-  employees = signal<Employee[]>([]); // 👈 2. قائمة الموظفين
+  employees = signal<Employee[]>([]);
   isSubmitting = signal<boolean>(false);
   poId: number = 0;
 
@@ -52,7 +47,10 @@ export class CreateReceiptComponent implements OnInit {
   loadEmployees() {
     this.hrService.getEmployees().subscribe({
       next: (res) => this.employees.set(res),
-      error: (err) => console.error('Error loading employees', err)
+      error: (err) => {
+        console.error('Error loading employees', err);
+        this.alertService.error('Failed to load employees list.');
+      }
     });
   }
 
@@ -75,13 +73,17 @@ export class CreateReceiptComponent implements OnInit {
           this.itemsArray.push(group);
         });
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Error loading order details:', err);
+        this.alertService.error('Failed to load purchase order details.');
+      }
     });
   }
 
   onSubmit() {
     if (this.receiptForm.invalid) {
-      this.receiptForm.markAllAsTouched(); // إظهار الأخطاء
+      this.receiptForm.markAllAsTouched();
+      this.alertService.warning('Please complete all required fields.');
       return;
     }
 
@@ -99,19 +101,29 @@ export class CreateReceiptComponent implements OnInit {
       }))
     };
 
-    console.log('Sending Receipt:', command);
+    console.log('🚀 Sending Goods Receipt:', command);
     console.log('Full Details:', JSON.stringify(command, null, 2));
 
     this.purchasingService.createGoodsReceipt(command).subscribe({
-      next: () => {
-        this.alertService.success('Goods Received Successfully! Inventory Updated.');
+      next: (receiptId) => {
+        this.alertService.success(`Goods Received Successfully! Receipt ID: ${receiptId}. Inventory Updated.`);
         this.router.navigate(['/inventory']);
       },
       error: (err) => {
-        console.error('Receipt Error:', err);
+        console.error('❌ Receipt Error:', err);
         console.error('Error Details:', err.error);
-        const msg = err.error?.message || err.error?.title || 'Unknown Error';
-        this.alertService.error(`Error receiving goods: ${msg}`);;
+
+        let errorMsg = 'Failed to receive goods. Please try again.';
+
+        if (err.error?.message) {
+          errorMsg = err.error.message;
+        } else if (err.error?.title) {
+          errorMsg = err.error.title;
+        } else if (typeof err.error === 'string') {
+          errorMsg = err.error;
+        }
+
+        this.alertService.error(`Error: ${errorMsg}`);
         this.isSubmitting.set(false);
       }
     });

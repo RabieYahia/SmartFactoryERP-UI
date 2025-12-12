@@ -1,20 +1,30 @@
-<<<<<<< HEAD
-/* تنسيق يملأ الشاشة ومتجاوب */
+/* تنسيق الحاوية الرئيسية */
 .container-fluid {
   max-width: 100%;
   padding-bottom: 3rem;
-=======
-.container { max-width: 500px; margin: 40px auto; font-family: sans-serif; text-align: center; }
-.subtitle { color: #666; margin-bottom: 20px; }
+}
 
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* بطاقة BOM */
 .bom-card {
-  background: var(--surface); color: var(--text-primary);
+  background: var(--surface);
+  color: var(--text-primary);
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   text-align: left;
   border-top: 5px solid #ff9800; /* لون الإنتاج (برتقالي) */
->>>>>>> c70a22fee14f6993b4b4670197472033b10f8036
 }
 
 /* تحسين شكل الكارد */
