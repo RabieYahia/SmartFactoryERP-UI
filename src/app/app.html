@@ -1,5 +1,11 @@
 <div class="app-container">
 
+  <!-- Global Alert Container -->
+  <app-alert-container></app-alert-container>
+
+  <!-- Global Confirmation Dialog Container -->
+  <app-confirm-dialog-container></app-confirm-dialog-container>
+
   <!-- 👇 إخفاء Header في صفحة Login -->
   <header class="topbar d-flex"*ngIf="showLayout">
     <div class="brand" routerLink="/dashboard">
@@ -45,12 +51,12 @@
     </div>
 
     <div class="top-actions ms-auto">
-      <i class="bi bi-moon" title="Theme toggle" style="cursor:pointer"></i>
+      <app-theme-toggle></app-theme-toggle>
       <i class="bi bi-bell" title="Notifications" style="cursor:pointer"></i>
 
       <div class="user-card dropdown">
         <div class="d-flex align-items-center" data-bs-toggle="dropdown" style="cursor:pointer">
-          <div class="avatar rounded-circle bg-light d-flex align-items-center justify-content-center" style="width:36px;height:36px">
+          <div class="avatar rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background: var(--surface-hover); color: var(--text-primary);">
             <i class="bi bi-person-circle text-muted" style="font-size:1.2rem"></i>
           </div>
           <div style="margin-left:.55rem">

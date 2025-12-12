@@ -1,130 +1,128 @@
-<!-- ⚠️ NOTE: Purchase order creation form uses Bootstrap components.
-     No functional changes - styling updates only. All calculation logic remains intact.
--->
-
 <div class="container-fluid p-4">
-  <div class="mb-4">
-    <h2 class="h3">🛒 Create Purchase Order</h2>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="h3 fw-bold text-primary mb-1">🛒 Create Purchase Order</h2>
+      <p class="text-muted small">Create a new procurement order for suppliers.</p>
+    </div>
+    <button class="btn btn-outline-secondary" routerLink="/purchasing">
+      <i class="bi bi-arrow-left me-2"></i> Back to List
+    </button>
   </div>
 
-  <div class="row">
-    <div class="col-12">
-      <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
-        <div class="card-body">
-          
-          <!-- Section 1: Order Details -->
-          <div class="mb-4">
-            <h5 class="card-title mb-3">1. Order Details</h5>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="supplierId" class="form-label">Supplier</label>
-                <select class="form-select" id="supplierId" formControlName="supplierId">
-                  <option value="">-- Select Supplier --</option>
-                  @for (sup of suppliers(); track sup.id) {
-                    <option [value]="sup.id">{{ sup.supplierName }}</option>
-                  }
-                </select>
-              </div>
+  <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
 
-              <div class="col-md-6 mb-3">
-                <label for="expectedDeliveryDate" class="form-label">Expected Delivery</label>
-                <input 
-                  type="date" 
-                  class="form-control" 
-                  id="expectedDeliveryDate"
-                  formControlName="expectedDeliveryDate"
-                >
-              </div>
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i>Order Info</h6>
+          </div>
+          <div class="card-body">
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Supplier <span class="text-danger">*</span></label>
+              <select class="form-select form-select-lg" formControlName="supplierId"
+                [class.is-invalid]="orderForm.get('supplierId')?.invalid && orderForm.get('supplierId')?.touched">
+                <option value="" disabled selected>Select Supplier...</option>
+                @for (sup of suppliers(); track sup.id) {
+                  <option [ngValue]="sup.id">{{ sup.supplierName }}</option>
+                }
+              </select>
+              @if (orderForm.get('supplierId')?.invalid && orderForm.get('supplierId')?.touched) {
+                <div class="text-danger small mt-1">Required.</div>
+              }
             </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Expected Delivery <span class="text-danger">*</span></label>
+              <input type="date" class="form-control form-control-lg" formControlName="expectedDeliveryDate">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small">PO Number (Optional)</label>
+              <input type="text" class="form-control" formControlName="poNumber" placeholder="e.g. PO-2025-001">
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-list-check me-2"></i>Order Items</h6>
+            <button type="button" class="btn btn-primary btn-sm" (click)="addItem()">
+              <i class="bi bi-plus-lg"></i> Add Item
+            </button>
           </div>
 
-          <!-- Section 2: Order Items -->
-          <div class="mb-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <h5 class="card-title mb-0">2. Order Items</h5>
-              <button type="button" class="btn btn-sm btn-outline-primary" (click)="addItem()">
-                <i class="bi bi-plus-circle me-2"></i> Add Item
-              </button>
-            </div>
-
-            <!-- Items Table -->
+          <div class="card-body p-0">
             <div class="table-responsive">
-              <table class="table table-sm table-bordered align-middle">
-                <thead class="table-light">
+              <table class="table align-middle mb-0">
+                <thead class="bg-light">
                   <tr>
-                    <th>Material</th>
-                    <th style="width: 100px;">Qty</th>
+                    <th style="min-width: 200px;">Material</th>
+                    <th style="width: 120px;">Qty</th>
                     <th style="width: 150px;">Unit Price</th>
-                    <th style="width: 100px;">Total</th>
-                    <th style="width: 60px;"></th>
+                    <th style="width: 120px;">Total</th>
+                    <th style="width: 50px;"></th>
                   </tr>
                 </thead>
                 <tbody formArrayName="items">
                   @for (item of itemsArray.controls; track $index) {
                     <tr [formGroupName]="$index">
-                      <td>
-                        <select class="form-select form-select-sm" formControlName="materialId">
-                          <option value="">-- Select Material --</option>
+                      <td class="p-2">
+                        <select class="form-select" formControlName="materialId">
+                          <option [ngValue]="null" disabled selected>Choose...</option>
                           @for (mat of materials(); track mat.id) {
-                            <option [value]="mat.id">{{ mat.materialName }}</option>
+                            <option [ngValue]="mat.id">{{ mat.materialName }}</option>
                           }
                         </select>
                       </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          class="form-control form-control-sm" 
-                          formControlName="quantity" 
-                          min="1"
-                        >
+                      <td class="p-2">
+                        <input type="number" class="form-control text-center" formControlName="quantity" min="1">
                       </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          class="form-control form-control-sm" 
-                          formControlName="unitPrice" 
-                          min="0"
-                        >
+                      <td class="p-2">
+                        <div class="input-group">
+                          <span class="input-group-text">$</span>
+                          <input type="number" class="form-control" formControlName="unitPrice" min="0">
+                        </div>
                       </td>
-                      <td class="text-end fw-bold text-primary">
+                      <td class="p-2 fw-bold text-primary">
                         {{ (item.get('quantity')?.value * item.get('unitPrice')?.value) | currency }}
                       </td>
-                      <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeItem($index)" title="Remove">
-                          <i class="bi bi-trash"></i>
+                      <td class="p-2 text-center">
+                        <button type="button" class="btn btn-link text-danger p-0" (click)="removeItem($index)">
+                          <i class="bi bi-trash-fill"></i>
                         </button>
                       </td>
                     </tr>
                   }
                 </tbody>
-                <tfoot>
-                  <tr class="table-light fw-bold">
-                    <td colspan="3" class="text-end">Grand Total:</td>
-                    <td class="text-primary">{{ totalAmount | currency }}</td>
-                    <td></td>
-                  </tr>
-                </tfoot>
               </table>
             </div>
-          </div>
 
-          <!-- Form actions -->
-          <div class="d-flex gap-2 justify-content-end">
-            <button type="button" class="btn btn-outline-secondary" routerLink="/purchasing">
-              <i class="bi bi-x-circle me-2"></i> Cancel
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
-              @if (isSubmitting()) { 
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Processing... 
-              } @else { 
-                <i class="bi bi-check-circle me-2"></i> Submit Order
-              }
-            </button>
+            <div class="bg-light p-3 d-flex justify-content-between align-items-center border-top">
+              <span class="fw-bold text-muted text-uppercase">Total Amount:</span>
+              <span class="fw-bold fs-4 text-success">{{ totalAmount | currency }}</span>
+            </div>
           </div>
-
         </div>
-      </form>
+      </div>
     </div>
-  </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-2">
+      <button type="button" class="btn btn-lg btn-light border px-4" routerLink="/purchasing">Cancel</button>
+      <button type="submit" class="btn btn-lg btn-primary px-5"
+              [disabled]="isSubmitting() || orderForm.invalid || itemsArray.length === 0">
+        @if (isSubmitting()) {
+          <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+        } @else {
+          Create Order
+        }
+      </button>
+    </div>
+
+  </form>
 </div>

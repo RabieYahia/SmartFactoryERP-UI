@@ -63,7 +63,7 @@ h2 {
 
 /* 2. تصميم الكارت (الفورم) */
 .form-card {
-  background: #ffffff;
+  background: var(--surface); color: var(--text-primary);
   padding: 35px;
   border-radius: 12px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);

@@ -1,16 +1,15 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { InventoryService } from '../../services/inventory';
+import { InventoryService } from '../../services/inventory'; // تأكد أن المسار صحيح
 
-// 1. تعريف شكل الداتا القادمة من الباك إند بالضبط
+// 1. تعريف شكل الداتا القادمة من الباك إند
 interface BackendMaterial {
   id: number;
   materialName: string;
   materialCode: string;
-  materialType: string | number; // قد تكون رقم أو نص
+  materialType: string | number;
   unitOfMeasure: string;
-  // الحقول الاختيارية التي قد تكون مفقودة
   currentStockLevel?: number;
   unitPrice?: number;
   minimumStockLevel?: number;
@@ -21,72 +20,58 @@ interface BackendMaterial {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './material-list.html',
-  styleUrls: ['./material-list.css'] // تأكد من اسم ملف الـ CSS
+  styleUrls: ['./material-list.css']
 })
 export class MaterialListComponent implements OnInit {
+  // حقن السيرفيس
   private inventoryService = inject(InventoryService);
 
-  // 2. استخدام Signals لأن الـ HTML عندك بيستخدم ()
+  // 2. Signals للتحكم في الحالة
   isLoading = signal<boolean>(true);
   activeTab = signal<'raw' | 'finished'>('raw');
-  
-  // الداتا الخام اللي راجعة من السيرفر
+
+  // الداتا الخام
   private allMaterials = signal<BackendMaterial[]>([]);
 
-  // 3. تصفية المواد الخام (Raw)
+  // 3. تصفية المواد الخام
   rawMaterials = computed(() => {
     const all = this.allMaterials();
-    const filtered = all.filter(m => {
+    return all.filter(m => {
       const typeStr = String(m.materialType).toLowerCase();
       return typeStr === '0' || typeStr === 'rawmaterial' || typeStr.includes('raw');
     });
-    console.log(`🪵 Raw Materials: ${filtered.length}`);
-    return filtered;
   });
 
-  // 4. تصفية المنتجات النهائية (Finished)
+  // 4. تصفية المنتجات النهائية
   finishedGoods = computed(() => {
     const all = this.allMaterials();
-    const filtered = all.filter(m => {
+    return all.filter(m => {
       const typeStr = String(m.materialType).toLowerCase();
       return typeStr === '1' || typeStr === 'finishedgood' || typeStr.includes('finished');
     });
-    console.log(`🛋️ Finished Goods: ${filtered.length}`);
-    return filtered;
   });
 
-  // 5. القائمة الحالية المعروضة بناءً على التاب المختار - مع طباعة تفصيلية
+  // 5. القائمة المعروضة حالياً (Mapped for View)
   currentList = computed(() => {
     const all = this.allMaterials();
     const tab = this.activeTab();
 
-    console.log(`🔍 Filtering for tab: ${tab}`);
-    console.log(`📊 Total items before filter: ${all.length}`);
-
-    // الخطوة 1: التصفية (Filtering)
+    // التصفية أولاً
     const filtered = all.filter(item => {
-      // توحيد التعامل مع النوع كـ نص (String) لتجنب مشاكل الأرقام
       const typeStr = String(item.materialType).toLowerCase();
-      
       if (tab === 'raw') {
-        // نعتبر الـ 0 أو RawMaterial مواد خام
         return typeStr === '0' || typeStr === 'rawmaterial' || typeStr.includes('raw');
       } else {
-        // نعتبر الـ 1 أو FinishedGood منتجات نهائية
         return typeStr === '1' || typeStr === 'finishedgood' || typeStr.includes('finished');
       }
     });
 
-    console.log(`✅ Items after filter: ${filtered.length}`);
-
-    // الخطوة 2: تعيين القيم (Mapping) لتناسب الـ HTML
+    // تحويل البيانات لتناسب العرض
     return filtered.map(item => ({
       id: item.id,
       materialName: item.materialName,
       materialCode: item.materialCode,
-      // الـ HTML ينتظر unit، ونحن نأخذها من unitOfMeasure
-      unit: item.unitOfMeasure || 'N/A', 
-      // وضع قيم افتراضية لو كانت الأرقام غير موجودة عشان الضرب ما يضربش
+      unit: item.unitOfMeasure || 'N/A',
       currentStockLevel: Number(item.currentStockLevel) || 0,
       minimumStockLevel: Number(item.minimumStockLevel) || 0,
       unitPrice: Number(item.unitPrice) || 0
@@ -106,7 +91,7 @@ export class MaterialListComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('❌ Error:', err);
+        console.error('❌ Error loading data:', err);
         this.isLoading.set(false);
       }
     });
@@ -114,5 +99,23 @@ export class MaterialListComponent implements OnInit {
 
   setActiveTab(tab: 'raw' | 'finished') {
     this.activeTab.set(tab);
+  }
+
+  // ✅✅ هذه هي الدالة التي كانت ناقصة ✅✅
+  onDelete(id: number, name: string) {
+    if (confirm(`Are you sure you want to delete "${name}"?`)) {
+      // نفترض أن دالة الحذف في السيرفيس اسمها deleteMaterial
+      this.inventoryService.deleteMaterial(id).subscribe({
+        next: () => {
+          alert('Material deleted successfully ✅');
+          // إعادة تحميل البيانات لتحديث الجدول
+          this.loadData();
+        },
+        error: (err: any) => {
+          console.error('❌ Delete Error:', err);
+          alert('❌ Failed to delete material');
+        }
+      });
+    }
   }
 }

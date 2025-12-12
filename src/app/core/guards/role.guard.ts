@@ -1,24 +1,26 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn, ActivatedRouteSnapshot } from '@angular/router';
-import { AuthService } from '../services/auth';
+import { AuthService } from '../services/auth'; // ⚠️ تأكد إن المسار ده صح حسب مشروعك
 
-/**
- * Role Guard - للتحقق من صلاحيات المستخدم
- * 
- * الاستخدام في Routes:
- * {
- *   path: 'admin',
- *   component: AdminComponent,
- *   canActivate: [roleGuard],
- *   data: { roles: ['Admin'] }
- * }
- */
 export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  // ============================================================
+  // 👇👇 ضيفنا الجزء ده عشان يكشف المشكلة 👇👇
+  // ============================================================
+  const currentUser = authService.currentUser();
+  const requiredRoles = route.data['roles'] as string[];
+
+  console.log('🔍 GUARD DEBUG START 🔍');
+  console.log('👤 User Object:', currentUser);
+  console.log('🔑 User Roles:', currentUser?.roles);
+  console.log('🛡️ Page Requires:', requiredRoles);
+  // ============================================================
+
   // 1. التحقق من تسجيل الدخول
   if (!authService.isLoggedIn()) {
+    console.warn('❌ User not logged in -> Redirecting to Login');
     router.navigate(['/login']);
     return false;
   }

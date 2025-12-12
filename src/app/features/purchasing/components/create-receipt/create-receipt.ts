@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PurchasingService, CreateGoodsReceiptCommand } from '../../services/purchasing';
-// 👇 تأكد من صحة المسار الخاص بـ HrService عندك
-import { HrService, Employee } from '../../../../core/services/hr.service'; 
+import { HrService, Employee } from '../../../../core/services/hr.service';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-receipt',
@@ -18,10 +18,11 @@ export class CreateReceiptComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private purchasingService = inject(PurchasingService);
-  private hrService = inject(HrService); // 👈 1. حقن خدمة HR
+  private hrService = inject(HrService);
+  private alertService = inject(AlertService);
 
   orderData = signal<any>(null);
-  employees = signal<Employee[]>([]); // 👈 2. قائمة الموظفين
+  employees = signal<Employee[]>([]);
   isSubmitting = signal<boolean>(false);
   poId: number = 0;
 
@@ -46,7 +47,10 @@ export class CreateReceiptComponent implements OnInit {
   loadEmployees() {
     this.hrService.getEmployees().subscribe({
       next: (res) => this.employees.set(res),
-      error: (err) => console.error('❌ Error loading employees', err)
+      error: (err) => {
+        console.error('Error loading employees', err);
+        this.alertService.error('Failed to load employees list.');
+      }
     });
   }
 
@@ -54,7 +58,7 @@ export class CreateReceiptComponent implements OnInit {
     this.purchasingService.getOrderById(this.poId).subscribe({
       next: (order) => {
         this.orderData.set(order);
-        
+
         // مسح العناصر القديمة (لتجنب التكرار لو حصل reload)
         this.itemsArray.clear();
 
@@ -69,13 +73,17 @@ export class CreateReceiptComponent implements OnInit {
           this.itemsArray.push(group);
         });
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Error loading order details:', err);
+        this.alertService.error('Failed to load purchase order details.');
+      }
     });
   }
 
   onSubmit() {
     if (this.receiptForm.invalid) {
-      this.receiptForm.markAllAsTouched(); // إظهار الأخطاء
+      this.receiptForm.markAllAsTouched();
+      this.alertService.warning('Please complete all required fields.');
       return;
     }
 
@@ -84,7 +92,7 @@ export class CreateReceiptComponent implements OnInit {
 
     const command: CreateGoodsReceiptCommand = {
       purchaseOrderId: this.poId,
-      receivedById: Number(formValue.receivedById),
+      receivedById: String(formValue.receivedById),
       notes: formValue.notes || '',
       items: formValue.items.map((i: any) => ({
         poItemId: i.poItemId,
@@ -93,19 +101,29 @@ export class CreateReceiptComponent implements OnInit {
       }))
     };
 
-    console.log('📤 Sending Receipt:', command);
-    console.log('📋 Full Details:', JSON.stringify(command, null, 2));
+    console.log('🚀 Sending Goods Receipt:', command);
+    console.log('Full Details:', JSON.stringify(command, null, 2));
 
     this.purchasingService.createGoodsReceipt(command).subscribe({
-      next: () => {
-        alert('✅ Goods Received Successfully! Inventory Updated.');
+      next: (receiptId) => {
+        this.alertService.success(`Goods Received Successfully! Receipt ID: ${receiptId}. Inventory Updated.`);
         this.router.navigate(['/inventory']);
       },
       error: (err) => {
         console.error('❌ Receipt Error:', err);
-        console.error('📄 Error Details:', err.error);
-        const msg = err.error?.message || err.error?.title || 'Unknown Error';
-        alert(`❌ Error receiving goods: ${msg}`);
+        console.error('Error Details:', err.error);
+
+        let errorMsg = 'Failed to receive goods. Please try again.';
+
+        if (err.error?.message) {
+          errorMsg = err.error.message;
+        } else if (err.error?.title) {
+          errorMsg = err.error.title;
+        } else if (typeof err.error === 'string') {
+          errorMsg = err.error;
+        }
+
+        this.alertService.error(`Error: ${errorMsg}`);
         this.isSubmitting.set(false);
       }
     });

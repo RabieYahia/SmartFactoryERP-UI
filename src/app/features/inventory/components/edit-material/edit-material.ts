@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InventoryService } from '../../services/inventory';
+import { AlertService } from '../../../../core/services/alert.service';
 
 /**
  * COMPONENT: EditMaterialComponent
@@ -56,6 +57,7 @@ export class EditMaterialComponent implements OnInit {
   private router = inject(Router);                     // Navigate after save
   private fb = inject(FormBuilder);                    // Create reactive form
   private inventoryService = inject(InventoryService); // API calls for material data
+  private alertService = inject(AlertService);         // Toast notifications
 
   // ===== STATE SIGNALS =====
   // Prevents duplicate form submissions while waiting for backend response
@@ -120,7 +122,7 @@ export class EditMaterialComponent implements OnInit {
       error: (err) => {
         // ❌ ERROR: Failed to fetch material details
         console.error(err);
-        alert('❌ Error loading material details. Please try again.');
+        this.alertService.error('Error loading material details. Please try again.');
       }
     });
   }
@@ -154,14 +156,14 @@ export class EditMaterialComponent implements OnInit {
     this.inventoryService.updateMaterial(this.materialId, command).subscribe({
       next: () => {
         // ✅ UPDATE successful
-        alert('✅ Material Updated Successfully!');
+        this.alertService.success('Material Updated Successfully!');
         // Navigate back to materials list
         this.router.navigate(['/inventory']);
       },
       error: (err) => {
         // ❌ UPDATE failed (validation error, network issue, etc.)
         console.error(err);
-        alert('❌ Error updating material. Please check your input.');
+        this.alertService.error('Error updating material. Please check your input.');
         // Re-enable submit button for retry
         this.isSubmitting.set(false);
       }

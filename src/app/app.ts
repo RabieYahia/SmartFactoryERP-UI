@@ -3,12 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './core/services/auth';
+import { AlertContainerComponent } from './shared/components/alert-container/alert-container.component';
+import { ConfirmDialogContainerComponent } from './shared/components/confirm-dialog-container/confirm-dialog-container.component';
+import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive], 
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive, AlertContainerComponent, ConfirmDialogContainerComponent, ThemeToggleComponent], 
   templateUrl: './app.html', 
   styleUrl: './app.css'
 })

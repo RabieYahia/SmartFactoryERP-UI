@@ -10,15 +10,14 @@ import { AuthResponse, LoginRequest, RegisterRequest, RefreshTokenRequest } from
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  
-  // ⚠️ تأكد إن البورت هو نفس بورت الباك إند بتاعك
+
+  // تأكد إن البورت هو نفس بورت الباك إند
   private apiUrl = 'https://localhost:7093/api/v1/auth';
 
-  // الـ Signals عشان نحدث الواجهة فوراً
+  // الـ Signals
   currentUser = signal<AuthResponse | null>(null);
 
   constructor() {
-    // أول ما الموقع يفتح، نجيب الداتا من التخزين
     this.loadUserFromStorage();
   }
 
@@ -38,14 +37,11 @@ export class AuthService {
 
   // ✅ تسجيل الخروج
   logout() {
-    // نبلغ السيرفر عشان يبطل الـ Refresh Token
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe();
-    
-    // نمسح الداتا محلياً
     this.clearSession();
   }
 
-  // ✅ تجديد التوكن (Refresh Token)
+  // ✅ تجديد التوكن
   refreshToken() {
     const user = this.currentUser();
     if (!user) return of(null);
@@ -57,16 +53,43 @@ export class AuthService {
 
     return this.http.post<any>(`${this.apiUrl}/refresh-token`, payload).pipe(
       tap((res) => {
-        // تحديث التوكن الجديد في التخزين
+        // بنحافظ على الرولز القديمة ونحدث التوكن بس
         const updatedUser = { ...user, token: res.token, refreshToken: res.refreshToken };
         this.saveUserSession(updatedUser);
       }),
       catchError(() => {
-        // لو فشل التجديد، نخرج المستخدم
         this.logout();
         return of(null);
       })
     );
+  }
+
+  // =========================================================
+  // 👇👇 الدالة الناقصة رقم 1: التحقق هل مسجل دخول أم لا 👇👇
+  // =========================================================
+  isLoggedIn(): boolean {
+    // ببساطة لو المتغير فيه داتا، يبقى مسجل دخول
+    return !!this.currentUser();
+  }
+
+  // =========================================================
+  // 👇👇 الدالة الناقصة رقم 2: التحقق من الصلاحيات (الأهم) 👇👇
+  // =========================================================
+  hasAnyRole(requiredRoles: string[]): boolean {
+    const user = this.currentUser();
+
+    // لو مفيش يوزر أو اليوزر مفيهوش رولز، نرجعه
+    if (!user || !user.roles) return false;
+
+    // 🔥 تعديل سحري: لو اليوزر SuperAdmin دايماً قوله "نعم"
+    // ده هيحميك لو نسيت تكتب SuperAdmin في أي راوت مستقبلاً
+    if (user.roles.includes('SuperAdmin')) {
+      return true;
+    }
+
+    // الطريقة العادية: هل اليوزر يمتلك أي صلاحية من الصلاحيات المطلوبة؟
+    // بنشوف التقاطع بين مصفوفة رولز اليوزر ومصفوفة المطلوب
+    return requiredRoles.some(role => user.roles.includes(role));
   }
 
   // 💾 دوال مساعدة للتخزين

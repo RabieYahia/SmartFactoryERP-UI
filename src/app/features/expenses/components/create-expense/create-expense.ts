@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ExpenseService } from '../../services/expense';
 import { EXPENSE_CATEGORIES } from '../../models/expense.model';
 import { HrService, Employee } from '../../../../core/services/hr.service'; // لجلب الموظفين
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-expense',
@@ -18,6 +19,7 @@ export class CreateExpenseComponent implements OnInit {
   private expenseService = inject(ExpenseService);
   private hrService = inject(HrService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
   categories = EXPENSE_CATEGORIES; // القائمة الثابتة
   employees = signal<Employee[]>([]);
@@ -50,12 +52,12 @@ export class CreateExpenseComponent implements OnInit {
 
     this.expenseService.createExpense(payload).subscribe({
       next: () => {
-        alert('✅ Expense Recorded!');
+        this.alertService.success('Expense Recorded!');
         this.router.navigate(['/expenses']);
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Error recording expense');
+        this.alertService.error('Error recording expense');
         this.isSubmitting.set(false);
       }
     });

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // عشان نستخدم ngModel في الـ Select
 import { HrService } from '../../../../core/services/hr.service';
 import { Employee, AttendanceLog } from '../../../../core/models/hr.model'; // تأكد من المسار
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-attendance-list',
@@ -13,6 +14,7 @@ import { Employee, AttendanceLog } from '../../../../core/models/hr.model'; // �
 })
 export class AttendanceListComponent implements OnInit {
   private hrService = inject(HrService);
+  private alertService = inject(AlertService);
 
   // Data Signals
   employees = signal<Employee[]>([]);       // القائمة المنسدلة
@@ -39,7 +41,7 @@ export class AttendanceListComponent implements OnInit {
 
   onToggle() {
     if (!this.selectedEmployeeId) {
-      alert('Please select an employee first!');
+      this.alertService.warning('Please select an employee first!');
       return;
     }
 
@@ -47,14 +49,14 @@ export class AttendanceListComponent implements OnInit {
 
     this.hrService.toggleAttendance(this.selectedEmployeeId).subscribe({
       next: (res) => {
-        alert(`✅ ${res.message}`); // رسالة الـ Backend (Checked In / Out)
+        this.alertService.success(res.message); // رسالة الـ Backend (Checked In / Out)
         this.loadTodayLogs(); // تحديث الجدول فوراً
         this.isLoading.set(false);
         this.selectedEmployeeId = null; // تصفير الاختيار
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Error updating attendance');
+        this.alertService.error('Error updating attendance');
         this.isLoading.set(false);
       }
     });

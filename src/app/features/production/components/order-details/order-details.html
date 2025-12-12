@@ -1,0 +1,129 @@
+<div class="container-fluid p-4">
+
+  @if (isLoading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Loading details...</p>
+    </div>
+  }
+  @else if (orderData(); as order) {
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-outline-secondary btn-sm" routerLink="/production/orders">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+        <div>
+          <h2 class="h4 fw-bold mb-0">Order #{{ order.id }}</h2>
+          <span class="badge rounded-pill mt-1"
+            [class.bg-secondary]="order.status === 'Planned' || order.status === 'Scheduled'"
+            [class.bg-primary]="order.status === 'Started' || order.status === 'InProgress'"
+            [class.bg-success]="order.status === 'Completed'">
+            {{ order.status }}
+          </span>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        @if (order.status === 'Planned' || order.status === 'Scheduled') {
+          <button class="btn btn-success" (click)="startProduction()">
+            <i class="bi bi-play-fill me-1"></i> Start Production
+          </button>
+        }
+        @if (order.status === 'Started' || order.status === 'InProgress') {
+          <button class="btn btn-primary" (click)="completeProduction()">
+            <i class="bi bi-check-lg me-1"></i> Complete
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white fw-bold">📦 Order Info</div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="text-muted small d-block">Product</label>
+              <strong class="fs-5 text-primary">{{ order.productName }}</strong>
+            </div>
+            <div class="mb-3">
+              <label class="text-muted small d-block">Quantity</label>
+              <strong class="fs-4">{{ order.quantity }}</strong> Units
+            </div>
+            <div class="mb-3">
+              <label class="text-muted small d-block">Start Date</label>
+              <span>{{ order.startDate | date:'mediumDate' }}</span>
+            </div>
+            <div>
+               <label class="text-muted small d-block">Priority</label>
+               <span class="badge bg-warning text-dark">{{ order.priority || 'Medium' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <form [formGroup]="bomForm">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <span class="fw-bold">🛠️ Raw Materials (BOM)</span>
+
+              @if (order.status === 'Planned' || order.status === 'Scheduled') {
+                <button class="btn btn-sm btn-outline-primary" (click)="saveChanges()" [disabled]="isSaving() || bomForm.invalid">
+                  @if (isSaving()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                  @else { <i class="bi bi-save me-1"></i> Save Changes }
+                </button>
+              }
+            </div>
+
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="bg-light small text-uppercase">
+                    <tr>
+                      <th class="ps-4">Material</th>
+                      <th style="width: 150px;">Required</th>
+                      <th class="text-center">Stock</th>
+                      <th class="text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody formArrayName="items">
+                    @for (item of itemsArr.controls; track $index) {
+                      <tr [formGroupName]="$index">
+                        <td class="ps-4">
+                          <div class="fw-bold">{{ item.get('materialName')?.value }}</div>
+                          <div class="small text-muted">{{ item.get('unit')?.value }}</div>
+                        </td>
+
+                        <td>
+                          @if (order.status === 'Planned' || order.status === 'Scheduled') {
+                            <input type="number" class="form-control form-control-sm" formControlName="quantity">
+                          } @else {
+                            <span class="fw-bold">{{ item.get('quantity')?.value }}</span>
+                          }
+                        </td>
+
+                        <td class="text-center text-muted">
+                          {{ item.get('currentStock')?.value }}
+                        </td>
+
+                        <td class="text-center">
+                          @if (item.get('quantity')?.value <= item.get('currentStock')?.value) {
+                            <i class="bi bi-check-circle-fill text-success" title="OK"></i>
+                          } @else {
+                            <i class="bi bi-exclamation-triangle-fill text-danger" title="Shortage"></i>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

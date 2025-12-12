@@ -9,8 +9,8 @@
       <button class="btn btn-outline-primary" routerLink="/production/bom">
         <i class="bi bi-diagram-3 me-2"></i>Manage BOM
       </button>
-      <button class="btn btn-primary" routerLink="/production/wizard">
-        <i class="bi bi-plus-circle me-2"></i>Create Production Order
+      <button class="btn btn-primary" routerLink="/production/create-order">
+        <i class="bi bi-plus-lg me-2"></i> Create Production Order
       </button>
     </div>
   </div>
@@ -19,7 +19,7 @@
   <div class="row g-3 mb-4">
     <div class="col-md-3">
       <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
+        <div class="card-body" style="background: var(--surface); color: var(--text-primary);">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <p class="text-muted small mb-1">Active Orders</p>
@@ -35,7 +35,7 @@
 
     <div class="col-md-3">
       <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
+        <div class="card-body" style="background: var(--surface); color: var(--text-primary);">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <p class="text-muted small mb-1">In Progress</p>
@@ -51,7 +51,7 @@
 
     <div class="col-md-3">
       <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
+        <div class="card-body" style="background: var(--surface); color: var(--text-primary);">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <p class="text-muted small mb-1">Completed Today</p>
@@ -67,7 +67,7 @@
 
     <div class="col-md-3">
       <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
+        <div class="card-body" style="background: var(--surface); color: var(--text-primary);">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <p class="text-muted small mb-1">Efficiency</p>
@@ -84,7 +84,7 @@
 
   <!-- Quick Actions -->
   <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
+    <div class="card-body" style="background: var(--surface); color: var(--text-primary);">
       <h5 class="card-title mb-3">Quick Actions</h5>
       <div class="row g-2">
         <div class="col-md-12">
@@ -98,10 +98,10 @@
 
   <!-- Production Orders List -->
   <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white">
+    <div class="card-header" style="background: var(--surface); color: var(--text-primary);">
       <h5 class="card-title mb-0">Production Orders</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="background: var(--surface); color: var(--text-primary);">
       @if (isLoading()) {
         <div class="text-center py-5">
           <div class="spinner-border text-primary" role="status">
@@ -153,8 +153,8 @@
                   <td>
                     <div class="d-flex align-items-center gap-2">
                       <div class="progress flex-grow-1" style="height: 8px; min-width: 100px;">
-                        <div 
-                          class="progress-bar" 
+                        <div
+                          class="progress-bar"
                           [style.width.%]="getProgressPercentage(order)"
                           [class.bg-success]="order.status === 'Completed'"
                           [class.bg-warning]="order.status === 'Started'"

@@ -5,7 +5,7 @@
 }
 
 .form-card {
-  background: #fff;
+  background: var(--surface); color: var(--text-primary);
   padding: 25px;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);

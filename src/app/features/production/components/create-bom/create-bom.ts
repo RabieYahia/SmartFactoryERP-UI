@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { ProductionService, CreateBOMCommand } from '../../services/production';
 import { InventoryService } from '../../../inventory/services/inventory';
 import { Material } from '../../../inventory/models/material.model';
+import { AlertService } from '../../../../core/services/alert.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-create-bom',
@@ -18,50 +20,60 @@ export class CreateBomComponent implements OnInit {
   private productionService = inject(ProductionService);
   private inventoryService = inject(InventoryService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
+  private confirmService = inject(ConfirmService);
 
-  materials = signal<Material[]>([]);
   isSubmitting = signal<boolean>(false);
 
-  // Computed signals للتصفية
-  finishedProducts = signal<Material[]>([]);
-  rawMaterials = signal<Material[]>([]);
+  // القوائم المفلترة
+  finishedProducts = signal<Material[]>([]); // للمنتج النهائي
+  rawMaterials = signal<Material[]>([]);     // للمواد الخام
 
-  // الفورم الرئيسي باستخدام FormArray
   bomForm: FormGroup = this.fb.group({
     productId: [null, Validators.required],
-    components: this.fb.array([]) // FormArray للمكونات
+    components: this.fb.array([])
   });
 
-  // دالة مساعدة للوصول للـ FormArray بسهولة
   get componentsArr(): FormArray {
     return this.bomForm.get('components') as FormArray;
   }
 
   ngOnInit() {
-    // استخدام الـ endpoints المتخصصة للحصول على البيانات المفلترة مباشرة
-    this.inventoryService.getFinishedGoods().subscribe({
-      next: (finished) => {
+    this.loadAndFilterMaterials();
+  }
+
+  loadAndFilterMaterials() {
+    // هنجيب كل المواد مرة واحدة ونفلترها هنا (عشان نضمن الدقة)
+    this.inventoryService.getMaterials().subscribe({
+      next: (allMaterials) => {
+        console.log('📦 All Materials:', allMaterials);
+
+        // 1️⃣ فلتر المنتجات النهائية (Finished Goods)
+        const finished = allMaterials.filter(m => {
+          const t = (m.materialType as any);
+          return t === 'FinishedGood' || t === 'Finished' || t === 2 || t === '2';
+        });
         this.finishedProducts.set(finished);
-        console.log('🔨 Finished Products loaded:', finished.length);
-      },
-      error: (err) => console.error('❌ Error loading finished products:', err)
-    });
-    
-    this.inventoryService.getRawMaterials().subscribe({
-      next: (raw) => {
+
+        // 2️⃣ فلتر المواد الخام (Raw Materials)
+        const raw = allMaterials.filter(m => {
+          const t = (m.materialType as any);
+          return t === 'RawMaterial' || t === 'Raw' || t === 0 || t === '0';
+        });
         this.rawMaterials.set(raw);
-        console.log('🪵 Raw Materials loaded:', raw.length);
+
+        console.log('🔨 Finished Goods:', finished);
+        console.log('🪵 Raw Materials:', raw);
       },
-      error: (err) => console.error('❌ Error loading raw materials:', err)
+      error: (err) => console.error('Failed to load materials', err)
     });
   }
 
-  // إضافة مكون جديد للـ FormArray
   addComponent() {
     const productId = this.bomForm.get('productId')?.value;
-    
+
     if (!productId) {
-      alert('⚠️ Please select a finished product first!');
+      this.alertService.warning('Please select a finished product first!');
       return;
     }
 
@@ -69,52 +81,44 @@ export class CreateBomComponent implements OnInit {
       componentId: [null, Validators.required],
       quantity: [1, [Validators.required, Validators.min(0.1)]]
     });
-    
     this.componentsArr.push(componentGroup);
-    console.log('✅ Component row added. Total:', this.componentsArr.length);
   }
 
-  // حذف مكون من الـ FormArray
   removeComponent(index: number) {
     this.componentsArr.removeAt(index);
-    console.log('🗑️ Component removed at index', index);
   }
 
-  // الحصول على اسم المادة حسب الـ ID
-  getMaterialName(materialId: number): string {
-    const material = this.rawMaterials().find(m => m.id === materialId);
-    return material ? material.materialName : 'Unknown';
-  }
-
-  // التحقق من إضافة نفس المكون مرتين
   isComponentAlreadyAdded(componentId: number, currentIndex: number): boolean {
     return this.componentsArr.controls.some(
       (ctrl, index) => index !== currentIndex && ctrl.get('componentId')?.value === componentId
     );
   }
 
-  // معالج تغيير اختيار المكون
   onComponentSelected(index: number, componentId: number) {
+    // منع تكرار نفس المادة
     if (this.isComponentAlreadyAdded(componentId, index)) {
-      alert('⚠️ This component is already added!');
+      this.alertService.warning('This component is already added!');
+      this.componentsArr.at(index).get('componentId')?.reset();
+      return;
+    }
+
+    // منع اختيار المنتج نفسه كمكون (Infinite Loop)
+    const mainProductId = this.bomForm.get('productId')?.value;
+    if (mainProductId && componentId === mainProductId) {
+      this.alertService.error('Cannot use the finished product as a component of itself!');
       this.componentsArr.at(index).get('componentId')?.reset();
     }
   }
 
-  // حفظ الوصفة الكاملة
   onSubmit() {
-    console.log('🔵 Submit clicked');
-    console.log('📋 Form Valid:', this.bomForm.valid);
-    console.log('📦 Form Data:', this.bomForm.value);
-
-    if (this.bomForm.invalid) {
+    if (this.bomForm.invalid || this.componentsArr.length === 0) {
       this.bomForm.markAllAsTouched();
-      alert('⚠️ Please complete all required fields!');
+      this.alertService.warning('Please complete all required fields!');
       return;
     }
 
     if (this.componentsArr.length === 0) {
-      alert('⚠️ Please add at least one component!');
+      this.alertService.warning('Please add at least one component!');
       return;
     }
 
@@ -126,7 +130,7 @@ export class CreateBomComponent implements OnInit {
     );
 
     if (hasSelfReference) {
-      alert('❌ A product cannot be a component of itself!');
+      this.alertService.error('A product cannot be a component of itself!');
       return;
     }
 
@@ -137,36 +141,40 @@ export class CreateBomComponent implements OnInit {
       return `  • ${c.quantity}x ${material?.materialName}`;
     }).join('\n');
 
-    const confirmed = confirm(
-      `📋 Create Recipe for "${productName}"?\n\nComponents:\n${componentsList}\n\nClick OK to confirm.`
+    this.confirmService.warning(
+      `Create Recipe for "${productName}"?\n\nComponents:\n${componentsList}\n\nClick OK to confirm.`,
+      () => this.proceedCreateBom(productId)
     );
+  }
 
-    if (!confirmed) return;
-
+  private proceedCreateBom(productId: number) {
     this.isSubmitting.set(true);
+    const val = this.bomForm.value;
 
     const command: CreateBOMCommand = {
-      productId: Number(productId),
-      components: this.componentsArr.value.map((c: any) => ({
+      productId: Number(val.productId),
+      components: val.components.map((c: any) => ({
         componentId: Number(c.componentId),
         quantity: Number(c.quantity)
       }))
     };
 
-    console.log('📤 Sending to backend:', command);
+    console.log('🚀 Saving BOM:', command);
 
     this.productionService.createBOM(command).subscribe({
       next: (componentsAdded: number) => {
         console.log('✅ Success:', componentsAdded);
-        alert(`✅ Recipe Created Successfully! ${componentsAdded} component(s) added.`);
+        this.alertService.success(`Recipe Created Successfully! ${componentsAdded} component(s) added.`);
         this.bomForm.reset();
         this.componentsArr.clear();
         this.isSubmitting.set(false);
+        // العودة لصفحة الإنتاج بعد النجاح
+        this.router.navigate(['/production']);
       },
       error: (err) => {
         console.error('❌ Backend Error:', err);
-        const errorMessage = err.error?.message || err.message || 'Unknown error';
-        alert(`❌ Error: ${errorMessage}`);
+        const errorMessage = err.error?.message || err.message || 'Failed to save recipe. It might already exist.';
+        this.alertService.error(`Error: ${errorMessage}`);
         this.isSubmitting.set(false);
       }
     });

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { HrService } from '../../../../core/services/hr.service';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-create-department',
@@ -15,7 +16,7 @@ export class CreateDepartmentComponent implements OnInit {
   private fb = inject(FormBuilder);
   private hrService = inject(HrService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private alertService = inject(AlertService);
 
   isSubmitting = signal(false);
   isEdit = signal(false);
@@ -52,12 +53,12 @@ export class CreateDepartmentComponent implements OnInit {
 
     this.hrService.createDepartment(payload).subscribe({
       next: () => {
-        alert('✅ Department Created!');
-        this.isSubmitting.set(false);
-        this.router.navigate(['/hr']); // Navigate to HR module
+        this.alertService.success('Department Created!');
+        this.router.navigate(['/hr/employees']); // أو أي مكان تحبه
       },
       error: (err) => {
-        this.handleError(err);
+        this.alertService.error('Error creating department');
+        this.isSubmitting.set(false);
       }
     });
   }
