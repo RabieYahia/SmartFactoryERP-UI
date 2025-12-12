@@ -15,6 +15,21 @@ h2 {
   display: inline-block; /* الخط يبقى على قد الكلمة بس */
 }
 
+/* Breadcrumb styling */
+.breadcrumb {
+  background: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb-item a {
+  color: #0055ff;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+}
+
 /* 2. تصميم الكارت (الفورم) */
 .form-card {
   background: #ffffff;
@@ -38,8 +53,13 @@ label {
   font-size: 0.95rem;
 }
 
+.text-danger {
+  color: #dc3545;
+}
+
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+textarea {
   padding: 12px 15px;
   border: 2px solid #dee2e6; /* حدود رمادية فاتحة */
   border-radius: 8px;
@@ -47,10 +67,16 @@ input[type="number"] {
   color: #333;
   transition: all 0.3s ease; /* تنعيم الحركة عند التغيير */
   background-color: #fdfdfd;
+  font-family: inherit;
+}
+
+textarea {
+  resize: vertical;
 }
 
 /* تأثير عند الضغط داخل الحقل (Focus) */
-input:focus {
+input:focus,
+textarea:focus {
   border-color: #0055ff; /* لون أزرق مميز */
   background-color: #fff;
   box-shadow: 0 0 0 4px rgba(0, 85, 255, 0.1); /* توهج خفيف حول الحقل */
@@ -111,4 +137,24 @@ button:disabled {
   cursor: not-allowed;
   transform: none !important; /* إلغاء حركة الرفع */
   box-shadow: none !important;
+}
+
+/* Spinner styling */
+.spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-border-sm {
+  width: 0.875rem;
+  height: 0.875rem;
 }

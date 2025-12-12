@@ -10,6 +10,7 @@ import { LoginComponent } from './features/auth/login/login';
 import { RegisterComponent } from './features/auth/register/register';
 import { ProfileSecurityComponent } from './features/auth/profile-security/profile-security';
 import { ChangePasswordComponent } from './features/auth/change-password/change-password';
+import { ConfirmEmailComponent } from './features/auth/confirm-email/confirm-email';
 
 // --- Admin ---
 import { UserManagementComponent } from './features/admin/user-management/user-management';
@@ -65,6 +66,7 @@ export const routes: Routes = [
   // 1️⃣ المسارات العامة
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'confirm-email', component: ConfirmEmailComponent },
   { path: 'unauthorized', component: UnauthorizedComponent },
   
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -131,8 +133,10 @@ export const routes: Routes = [
 
       // --- HR ---
       { path: 'hr', component: EmployeeListComponent },
-      { path: 'hr/create-department', component: CreateDepartmentComponent },
-      { path: 'hr/create-employee', component: CreateEmployeeComponent },
+      { path: 'hr/create-department', component: CreateDepartmentComponent, canActivate: [roleGuard], data: { policy: 'CanManageHR' } },
+      { path: 'hr/create-employee', component: CreateEmployeeComponent, canActivate: [roleGuard], data: { policy: 'CanManageHR' } },
+      { path: 'hr/edit-department/:id', component: CreateDepartmentComponent, canActivate: [roleGuard], data: { policy: 'CanManageHR' } },
+      { path: 'hr/edit-employee/:id', component: CreateEmployeeComponent, canActivate: [roleGuard], data: { policy: 'CanManageHR' } },
       { path: 'hr/attendance', component: AttendanceListComponent },
 
       // --- Expenses ---
@@ -152,6 +156,6 @@ export const routes: Routes = [
     ]
   },
 
-  // 3️⃣ Wildcard
-  { path: '**', redirectTo: 'login' }
+  // 3️⃣ Wildcard - redirect to dashboard if logged in, otherwise login
+  { path: '**', redirectTo: 'dashboard' }
 ];

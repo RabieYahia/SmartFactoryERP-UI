@@ -1,108 +1,101 @@
-<!-- ⚠️ NOTE: Employee creation form uses Bootstrap form components.
-     No functional changes - styling updates only. All form logic remains intact.
--->
-
-<div class="container-fluid p-4">
+<div class="container">
+  <!-- Header Section -->
   <div class="mb-4">
-    <h2 class="h3">👤 New Employee</h2>
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="#" routerLink="/hr" class="text-decoration-none">HR & Departments</a></li>
+        <li class="breadcrumb-item active">New Employee</li>
+      </ol>
+    </nav>
+    <h2> Create New Employee</h2>
   </div>
 
-  <div class="row">
-    <div class="col-12 col-md-8 col-lg-6">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card border-0 shadow-sm">
-        <div class="card-body">
-          
-          <!-- Full Name field -->
-          <div class="mb-3">
-            <label for="fullName" class="form-label">
-              Full Name 
-              <span class="text-danger">*</span>
-            </label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="fullName"
-              formControlName="fullName" 
-              placeholder="e.g. Ahmed Ali"
-            >
-          </div>
-
-          <!-- Job Title field -->
-          <div class="mb-3">
-            <label for="jobTitle" class="form-label">
-              Job Title 
-              <span class="text-danger">*</span>
-            </label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="jobTitle"
-              formControlName="jobTitle" 
-              placeholder="e.g. Warehouse Keeper"
-            >
-          </div>
-
-          <!-- Department select -->
-          <div class="mb-3">
-            <label for="departmentId" class="form-label">
-              Department 
-              <span class="text-danger">*</span>
-            </label>
-            <select class="form-select" id="departmentId" formControlName="departmentId">
-              <option value="">-- Select Department --</option>
-              @for (dept of departments(); track dept.id) {
-                <option [value]="dept.id">{{ dept.name }}</option>
-              }
-            </select>
-          </div>
-
-          <!-- Email field -->
-          <div class="mb-3">
-            <label for="email" class="form-label">
-              Email 
-              <span class="text-danger">*</span>
-            </label>
-            <input 
-              type="email" 
-              class="form-control" 
-              id="email"
-              formControlName="email" 
-              placeholder="email@company.com"
-            >
-          </div>
-
-          <!-- Phone field -->
-          <div class="mb-4">
-            <label for="phoneNumber" class="form-label">
-              Phone 
-              <span class="text-danger">*</span>
-            </label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="phoneNumber"
-              formControlName="phoneNumber" 
-              placeholder="+20 1xxxxxxxxx"
-            >
-          </div>
-
-          <!-- Form actions -->
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-secondary" routerLink="/hr">
-              <i class="bi bi-x-circle me-2"></i> Cancel
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
-              @if (isSubmitting()) { 
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Saving... 
-              } @else { 
-                <i class="bi bi-check-circle me-2"></i> Save Employee
-              }
-            </button>
-          </div>
-
-        </div>
-      </form>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
+    
+    <!-- Full Name field -->
+    <div class="form-group">
+      <label for="fullName">
+        Full Name 
+        <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="fullName"
+        formControlName="fullName" 
+        placeholder="e.g. Ahmed Ali"
+      >
     </div>
-  </div>
+
+    <!-- Job Title field -->
+    <div class="form-group">
+      <label for="jobTitle">
+        Job Title 
+        <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="jobTitle"
+        formControlName="jobTitle" 
+        placeholder="e.g. Warehouse Keeper"
+      >
+    </div>
+
+    <!-- Department select -->
+    <div class="form-group">
+      <label for="departmentId">
+        Department 
+        <span class="text-danger">*</span>
+      </label>
+      <select id="departmentId" formControlName="departmentId">
+        <option value="">-- Select Department --</option>
+        @for (dept of departments(); track dept.id) {
+          <option [value]="dept.id">{{ dept.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Email field -->
+    <div class="form-group">
+      <label for="email">
+        Email 
+        <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="email" 
+        id="email"
+        formControlName="email" 
+        placeholder="email@company.com"
+      >
+    </div>
+
+    <!-- Phone field -->
+    <div class="form-group">
+      <label for="phoneNumber">
+        Phone Number 
+        <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="phoneNumber"
+        formControlName="phoneNumber" 
+        placeholder="+20 1xxxxxxxxx"
+      >
+    </div>
+
+    <!-- Form actions -->
+    <div class="actions">
+      <button type="button" class="btn-secondary" routerLink="/hr">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting() || form.invalid">
+        @if (isSubmitting()) { 
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Saving... 
+        } @else { 
+          <i class="bi bi-check-circle"></i> Save Employee
+        }
+      </button>
+    </div>
+
+  </form>
 </div>

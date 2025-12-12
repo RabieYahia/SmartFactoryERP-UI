@@ -32,5 +32,25 @@ export interface AssignRoleRequest {
 
 export interface LockUserCommand {
   userId: string;
-  lockoutDurationInDays: number;
+  lockoutDurationInDays?: number;
+}
+
+export interface RegisterUserCommand {
+  fullName: string;
+  email: string;
+  password: string;
+  phoneNumber?: string;
+  employeeId?: number;
+  roles: string[];
+  sendWelcomeEmail?: boolean;
+}
+
+export interface RegisterUserResponse {
+  userId: string;
+  fullName: string;
+  email: string;
+  employeeId?: number;
+  roles: string[];
+  isSuccess: boolean;
+  message: string;
 }

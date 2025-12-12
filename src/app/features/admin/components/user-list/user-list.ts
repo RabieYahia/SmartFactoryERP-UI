@@ -30,6 +30,18 @@ export class UserListComponent implements OnInit {
   availableRoles: string[] = [];
   selectedNewRole = '';
 
+  // Create User Modal
+  showCreateModal = false;
+  newUser = {
+    fullName: '',
+    email: '',
+    password: '',
+    phoneNumber: '',
+    employeeId: undefined as number | undefined,
+    roles: [] as string[],
+    sendWelcomeEmail: true
+  };
+
   ngOnInit() {
     this.loadUsers();
     this.loadRoles();
@@ -178,6 +190,89 @@ export class UserListComponent implements OnInit {
       error: (err) => {
         console.error('Error removing role:', err);
         alert('❌ Failed to remove role');
+      }
+    });
+  }
+
+  // Open Create User Modal
+  openCreateModal() {
+    this.newUser = {
+      fullName: '',
+      email: '',
+      password: '',
+      phoneNumber: '',
+      employeeId: undefined,
+      roles: [],
+      sendWelcomeEmail: true
+    };
+    this.showCreateModal = true;
+  }
+
+  // Close Create User Modal
+  closeCreateModal() {
+    this.showCreateModal = false;
+  }
+
+  // Toggle role selection
+  toggleRole(role: string) {
+    const index = this.newUser.roles.indexOf(role);
+    if (index > -1) {
+      this.newUser.roles.splice(index, 1);
+    } else {
+      this.newUser.roles.push(role);
+    }
+  }
+
+  // Resend Confirmation Email
+  resendConfirmationEmail(userId: string, userName: string) {
+    if (!confirm(`Resend confirmation email to "${userName}"?`)) return;
+
+    this.userService.resendConfirmationEmail(userId).subscribe({
+      next: () => {
+        alert(`✅ Confirmation email sent to ${userName}`);
+      },
+      error: (err) => {
+        console.error('Error sending confirmation email:', err);
+        const errorMsg = err.error?.message || 'Failed to send confirmation email';
+        alert(`❌ ${errorMsg}`);
+      }
+    });
+  }
+
+  // Create User
+  createUser() {
+    if (!this.newUser.fullName || !this.newUser.email || !this.newUser.password) {
+      alert('⚠️ Please fill in all required fields');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.newUser.email)) {
+      alert('⚠️ Invalid email format');
+      return;
+    }
+
+    // Password validation
+    if (this.newUser.password.length < 8) {
+      alert('⚠️ Password must be at least 8 characters');
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    this.userService.registerUser(this.newUser).subscribe({
+      next: (response) => {
+        alert(`✅ ${response.message}`);
+        this.closeCreateModal();
+        this.loadUsers();
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Error creating user:', err);
+        const errorMsg = err.error?.message || 'Failed to create user';
+        alert(`❌ ${errorMsg}`);
+        this.isLoading.set(false);
       }
     });
   }

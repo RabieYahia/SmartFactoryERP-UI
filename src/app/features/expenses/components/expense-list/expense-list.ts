@@ -16,6 +16,19 @@ export class ExpenseListComponent implements OnInit {
   expenses = signal<Expense[]>([]);
 
   ngOnInit() {
-    this.expenseService.getExpenses().subscribe(res => this.expenses.set(res));
+    console.log('🔄 Loading expenses...');
+    this.expenseService.getExpenses().subscribe({
+      next: (res) => {
+        console.log('✅ Expenses from Backend:', res);
+        if (res && res.length > 0) {
+          console.log('📅 First expense date:', res[0].expenseDate);
+          console.log('📊 First expense full:', res[0]);
+        }
+        this.expenses.set(res);
+      },
+      error: (err) => {
+        console.error('❌ Error loading expenses:', err);
+      }
+    });
   }
 }

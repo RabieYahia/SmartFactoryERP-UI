@@ -1,1 +1,90 @@
-<p>department-list works!</p>
+<!-- HTML FILE -->
+<div class="container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="header-text">
+        <h2>🏢 Departments</h2>
+        <p class="subtitle">Manage company departments and organizational structure</p>
+      </div>
+      <a routerLink="/hr/create-department" class="btn-add">
+        <i class="bi bi-plus-circle"></i>
+        <span>Add Department</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-card">
+      <span class="spinner"></span>
+      <span>Loading departments...</span>
+    </div>
+  } 
+  <!-- Empty State -->
+  @else if (departments().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📂</div>
+      <h3>No Departments Yet</h3>
+      <p>Start building your organizational structure by creating your first department</p>
+      <a routerLink="/hr/create-department" class="btn-primary">
+        <i class="bi bi-plus-circle"></i>
+        Create First Department
+      </a>
+    </div>
+  } 
+  <!-- Departments Grid -->
+  @else {
+    <div class="departments-grid">
+      @for (dept of departments(); track dept.id) {
+        <div class="dept-card">
+          <!-- Card Header -->
+          <div class="dept-header">
+            <div class="dept-icon-wrapper">
+              <div class="dept-icon">
+                <i class="bi bi-building"></i>
+              </div>
+              <span class="dept-code">{{ dept.code }}</span>
+            </div>
+          </div>
+          
+          <!-- Card Body -->
+          <div class="dept-body">
+            <h3 class="dept-name">{{ dept.name }}</h3>
+            
+            @if (dept.description) {
+              <p class="dept-description">{{ dept.description }}</p>
+            } @else {
+              <p class="dept-description no-description">No description provided</p>
+            }
+            
+            <!-- Employee Count -->
+            <div class="dept-stats">
+              <div class="stat-badge">
+                <i class="bi bi-people-fill"></i>
+                <span class="stat-number">{{ dept.employeeCount || 0 }}</span>
+                <span class="stat-label">{{ dept.employeeCount === 1 ? 'Employee' : 'Employees' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Card Footer -->
+          <div class="dept-footer">
+            <button class="btn-action btn-view" title="View Details">
+              <i class="bi bi-eye"></i>
+              <span>View</span>
+            </button>
+            <button class="btn-action btn-edit" [routerLink]="['/hr/edit-department', dept.id]" title="Edit Department">
+              <i class="bi bi-pencil"></i>
+              <span>Edit</span>
+            </button>
+            <button class="btn-action btn-delete" (click)="onDelete(dept)" title="Delete Department">
+              <i class="bi bi-trash"></i>
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

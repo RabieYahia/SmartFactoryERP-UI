@@ -30,7 +30,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // 3. معالجة الأخطاء (زي انتهاء التوكن)
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      // بس لو كان في توكن وفشل، يعني التوكن منتهي
+      // لو مفيش توكن أصلاً، يبقى المستخدم مش logged in وده طبيعي
+      if (error.status === 401 && token) {
         // لو التوكن منتهي أو غير صالح، نخرج المستخدم
         localStorage.removeItem('user_data');
         router.navigate(['/login']);

@@ -120,4 +120,36 @@ export class EmployeeListComponent implements OnInit {
   setActiveTab(tab: 'departments' | 'employees') {
     this.activeTab.set(tab);
   }
+
+  onDeleteEmployee(emp: Employee) {
+    if (!confirm(`Delete employee "${emp.fullName}"?`)) return;
+    this.isLoading.set(true);
+    this.hrService.deleteEmployee(emp.id).subscribe({
+      next: () => {
+        alert('✅ Employee deleted');
+        this.loadData();
+      },
+      error: (err) => {
+        console.error('Error deleting employee:', err);
+        alert('❌ Failed to delete employee');
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  onDeleteDepartment(dept: Department) {
+    if (!confirm(`Delete department "${dept.name}"? This cannot be undone.`)) return;
+    this.isLoading.set(true);
+    this.hrService.deleteDepartment(dept.id).subscribe({
+      next: () => {
+        alert('✅ Department deleted');
+        this.loadData();
+      },
+      error: (err) => {
+        console.error('Error deleting department:', err);
+        alert('❌ Failed to delete department');
+        this.isLoading.set(false);
+      }
+    });
+  }
 }

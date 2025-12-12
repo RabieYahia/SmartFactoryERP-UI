@@ -22,20 +22,35 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
     router.navigate(['/login']);
     return false;
   }
+  // 2. دعم نوعين من تعريفات الوصول في routes:
+  //    - data.roles: مصفوفة أدوار صريحة (مثلاً ['Admin'])
+  //    - data.policy: اسم سياسة من الـ backend (مثلاً 'CanManageHR')
+  // خريطة السياسات إلى الأدوار المستخدمة في الـ backend
+  const policyMap: Record<string, string[]> = {
+    CanManageHR: ['SuperAdmin', 'Admin', 'HRManager'],
+    CanViewHR: ['SuperAdmin', 'Admin', 'HRManager', 'Manager', 'Employee'],
+    CanManageAttendance: ['SuperAdmin', 'Admin', 'HRManager', 'Manager']
+  };
 
-  // 2. الحصول على الأدوار المطلوبة من route data
-  const requiredRoles = route.data['roles'] as string[];
-  
-  // 3. إذا لم تكن هناك أدوار محددة، السماح بالدخول
-  if (!requiredRoles || requiredRoles.length === 0) {
+  // 3. جلب أي تعريف وصول من الـ route
+  const requiredRoles = route.data['roles'] as string[] | undefined;
+  const policyName = route.data['policy'] as string | undefined;
+
+  // 4. إذا عرفنا policy، حللها إلى أدوار
+  let rolesToCheck: string[] | undefined = requiredRoles;
+  if (policyName) {
+    rolesToCheck = policyMap[policyName] || [];
+  }
+
+  // 5. إذا لم تكن هناك أدوار محددة، السماح بالدخول
+  if (!rolesToCheck || rolesToCheck.length === 0) {
     return true;
   }
 
-  // 4. التحقق من وجود أي من الأدوار المطلوبة
-  if (authService.hasAnyRole(requiredRoles)) {
+  // 6. التحقق من وجود أي من الأدوار المطلوبة
+  if (authService.hasAnyRole(rolesToCheck)) {
     return true;
   }
-
   // 5. إذا لم يكن لديه الصلاحية، توجيه لصفحة Unauthorized
   console.warn('⛔ Access denied. Required roles:', requiredRoles);
   router.navigate(['/unauthorized']);

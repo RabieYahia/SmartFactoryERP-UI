@@ -3,6 +3,7 @@ export interface Department {
   name: string;
   code: string;
   description?: string;
+  employeeCount?: number;
 }
 // ... (Department & Employee موجودين)
 

@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserListDto, UserDetailsDto, UpdateUserCommand, AssignRoleRequest, LockUserCommand } from '../models/user.model';
+import { UserListDto, UserDetailsDto, UpdateUserCommand, AssignRoleRequest, LockUserCommand, RegisterUserCommand, RegisterUserResponse } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +9,11 @@ import { UserListDto, UserDetailsDto, UpdateUserCommand, AssignRoleRequest, Lock
 export class UserManagementService {
   private http = inject(HttpClient);
   private apiUrl = 'https://localhost:7093/api/v1/usermanagement';
+
+  // Register new user
+  registerUser(command: RegisterUserCommand): Observable<RegisterUserResponse> {
+    return this.http.post<RegisterUserResponse>(`${this.apiUrl}/register`, command);
+  }
 
   // Get all users with optional filters
   getUsers(searchTerm?: string, role?: string, isLocked?: boolean): Observable<UserListDto[]> {
@@ -71,5 +76,10 @@ export class UserManagementService {
   // Get account security
   getAccountSecurity(userId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${userId}/security`);
+  }
+
+  // Resend confirmation email
+  resendConfirmationEmail(userId: string): Observable<any> {
+    return this.http.post(`https://localhost:7093/api/v1/auth/resend-confirmation-email/${userId}`, {});
   }
 }

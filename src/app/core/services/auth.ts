@@ -67,6 +67,11 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/reset-password`, request);
   }
 
+  // ✅ تأكيد البريد الإلكتروني
+  confirmEmail(request: { userId: string; token: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/confirm-email`, request);
+  }
+
   // ✅ تسجيل الخروج
   logout(): void {
     console.log('🚪 Logging out user...');

@@ -27,6 +27,9 @@
         <div class="mb-3">
           <label class="form-label fw-bold">Password</label>
           <input type="password" class="form-control" [(ngModel)]="data.password" name="password" required placeholder="••••••••">
+          <small class="text-muted d-block mt-1">
+            Min 8 chars, must include: uppercase, lowercase, digit, special char (@$!%*?&amp;#)
+          </small>
         </div>
 
         <div class="mb-3">
