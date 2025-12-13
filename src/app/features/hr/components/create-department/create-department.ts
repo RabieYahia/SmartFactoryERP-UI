@@ -55,7 +55,7 @@ export class CreateDepartmentComponent implements OnInit {
     this.hrService.createDepartment(payload).subscribe({
       next: () => {
         this.alertService.success('Department Created!');
-        this.router.navigate(['/hr/employees']); // أو أي مكان تحبه
+        this.router.navigate(['/hr']); // Navigate back to HR employee list (departments tab)
       },
       error: (err) => {
         this.alertService.error('Error creating department');
