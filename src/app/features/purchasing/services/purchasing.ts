@@ -81,6 +81,16 @@ export class PurchasingService {
     return this.http.post<number>(`${this.apiUrl}/suppliers`, supplier);
   }
 
+  // Get single supplier by id
+  getSupplierById(id: number): Observable<Supplier> {
+    return this.http.get<Supplier>(`${this.apiUrl}/suppliers/${id}`);
+  }
+
+  // Update existing supplier
+  updateSupplier(id: number, supplier: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/suppliers/${id}`, supplier);
+  }
+
   // -------------------------
   // Purchase Orders Methods
   // -------------------------
