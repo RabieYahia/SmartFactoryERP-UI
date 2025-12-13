@@ -1,6 +1,6 @@
 <div class="container-fluid p-4">
   <div class="mb-4">
-    <h2 class="h3 mb-1">👥 HR & Departments</h2>
+    <h2 class="h3 mb-1"> HR & Departments</h2>
     <p class="text-muted small">Manage staff, departments, and track daily attendance.</p>
   </div>
 
@@ -58,11 +58,11 @@
         <ul class="nav nav-tabs card-header-tabs">
           <li class="nav-item">
             <button class="nav-link" [class.active]="activeTab() === 'departments'" 
-                    (click)="setActiveTab('departments')">🏢 Departments</button>
+                    (click)="setActiveTab('departments')"> Departments</button>
           </li>
           <li class="nav-item">
             <button class="nav-link" [class.active]="activeTab() === 'employees'" 
-                    (click)="setActiveTab('employees')">👥 Employees</button>
+                    (click)="setActiveTab('employees')"> Employees</button>
           </li>
         </ul>
       </div>
@@ -72,7 +72,7 @@
         @if (activeTab() === 'departments') {
           <div class="d-flex justify-content-between mb-3">
             <h5>Department Directory</h5>
-            <button class="btn btn-primary btn-sm" routerLink="/hr/create-department">➕ New Dept</button>
+            <button class="btn btn-primary btn-sm" routerLink="/hr/create-department"> New Dept</button>
           </div>
           
           <div class="row g-3">
