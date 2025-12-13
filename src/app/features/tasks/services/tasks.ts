@@ -20,7 +20,7 @@ export interface Task {
 })
 export class TasksService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://localhost:7093/api/v1/tasks';
+  private apiUrl = 'https://sfe.runasp.net/api/v1/tasks';
 
   // --- 1. إدارة المهام (CRUD) ---
 

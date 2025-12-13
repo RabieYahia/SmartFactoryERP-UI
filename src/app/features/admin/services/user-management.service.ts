@@ -8,7 +8,7 @@ import { UserListDto, UserDetailsDto, UpdateUserCommand, AssignRoleRequest, Lock
 })
 export class UserManagementService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://localhost:7093/api/v1/usermanagement';
+  private apiUrl = 'https://sfe.runasp.net/api/v1/usermanagement';
 
   // Register new user
   registerUser(command: RegisterUserCommand): Observable<RegisterUserResponse> {
@@ -80,6 +80,6 @@ export class UserManagementService {
 
   // Resend confirmation email
   resendConfirmationEmail(userId: string): Observable<any> {
-    return this.http.post(`https://localhost:7093/api/v1/auth/resend-confirmation-email/${userId}`, {});
+    return this.http.post(`https://sfe.runasp.net/api/v1/auth/resend-confirmation-email/${userId}`, {});
   }
 }
