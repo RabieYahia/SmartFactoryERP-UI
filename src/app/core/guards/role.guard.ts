@@ -6,18 +6,6 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // ============================================================
-  // 👇👇 ضيفنا الجزء ده عشان يكشف المشكلة 👇👇
-  // ============================================================
-  const currentUser = authService.currentUser();
-  const requiredRoles = route.data['roles'] as string[];
-
-  console.log('🔍 GUARD DEBUG START 🔍');
-  console.log('👤 User Object:', currentUser);
-  console.log('🔑 User Roles:', currentUser?.roles);
-  console.log('🛡️ Page Requires:', requiredRoles);
-  // ============================================================
-
   // 1. التحقق من تسجيل الدخول
   if (!authService.isLoggedIn()) {
     console.warn('❌ User not logged in -> Redirecting to Login');

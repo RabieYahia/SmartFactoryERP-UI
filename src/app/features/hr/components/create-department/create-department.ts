@@ -16,6 +16,7 @@ export class CreateDepartmentComponent implements OnInit {
   private fb = inject(FormBuilder);
   private hrService = inject(HrService);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
   private alertService = inject(AlertService);
 
   isSubmitting = signal(false);
@@ -64,7 +65,7 @@ export class CreateDepartmentComponent implements OnInit {
   }
 
   ngOnInit() {
-    const idParam = this.route.snapshot.paramMap.get('id');
+    const idParam = this.activatedRoute.snapshot.paramMap.get('id');
     if (idParam) {
       const id = Number(idParam);
       this.isEdit.set(true);

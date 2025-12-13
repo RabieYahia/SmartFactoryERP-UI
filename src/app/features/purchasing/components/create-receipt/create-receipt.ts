@@ -49,6 +49,11 @@ export class CreateReceiptComponent implements OnInit {
       next: (res) => this.employees.set(res),
       error: (err) => {
         console.error('Error loading employees', err);
+        if (err.status === 401) {
+          this.alertService.error('Session expired or unauthorized. Please login.');
+          this.router.navigate(['/login']);
+          return;
+        }
         this.alertService.error('Failed to load employees list.');
       }
     });
