@@ -68,7 +68,7 @@ export class PurchasingService {
   private http = inject(HttpClient);
 
   // رابط الباك إند
-  private apiUrl = 'https://localhost:7093/api/v1/purchasing';
+  private apiUrl = 'https://sfe.runasp.net/api/v1/purchasing';
 
   // -------------------------
   // Suppliers Methods

@@ -24,7 +24,7 @@ export class UserManagementComponent implements OnInit {
   private http = inject(HttpClient);
   private alertService = inject(AlertService);
   private confirmService = inject(ConfirmService);
-  private apiUrl = 'https://localhost:7093/api/v1/users';
+  private apiUrl = 'https://sfe.runasp.net/api/v1/users';
 
   users = signal<User[]>([]);
   isLoading = signal(true);

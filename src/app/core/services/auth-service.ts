@@ -12,7 +12,7 @@ export class AuthService {
   private router = inject(Router);
 
   // تأكد إن البورت هو نفس بورت الباك إند
-  private apiUrl = 'https://localhost:7093/api/v1/auth';
+  private apiUrl = 'https://sfe.runasp.net/api/v1/auth';
 
   // الـ Signals
   currentUser = signal<AuthResponse | null>(null);

@@ -7,7 +7,7 @@ import { MachineData, MachineAlert } from '../../features/iot/Models/iot.model';
 })
 export class SignalrService {
   private hubConnection!: signalR.HubConnection;
-  private apiUrl = 'https://localhost:7093/machineHub'; // ⚠️ تأكد من البورت
+  private apiUrl = 'https://sfe.runasp.net/machineHub'; // ⚠️ تأكد من البورت
 
   // Signals لتخزين البيانات وعرضها في الكومبوننت
   machines = signal<MachineData[]>([]);
