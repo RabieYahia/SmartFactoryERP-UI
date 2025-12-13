@@ -3,6 +3,9 @@ export interface Expense {
   description: string;
   amount: number;
   expenseDate: string;
+  // some APIs may return alternate date fields
+  date?: string;
+  createdAt?: string;
   category: string; // "Rent", "Utilities", etc.
   employeeId?: number; // اختياري
 }

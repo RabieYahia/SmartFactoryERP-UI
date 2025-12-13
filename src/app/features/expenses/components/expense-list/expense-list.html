@@ -31,8 +31,10 @@
         <!-- Loop through all expenses: track by ID for performance optimization -->
         @for (exp of expenses(); track exp.id) {
           <tr>
-            <!-- Expense Date: Formatted as medium date (e.g., Jan 5, 2024, 3:45 PM) -->
-            <td>{{ exp.expenseDate ? (exp.expenseDate | date: 'MMM d, y, h:mm a') : 'N/A' }}</td>
+            <!-- Expense Date: try multiple possible fields and format defensively -->
+            <td>
+              {{ (exp.expenseDate || exp.date || exp.createdAt) ? ((exp.expenseDate || exp.date || exp.createdAt) | date: 'MMM d, y, h:mm a') : 'N/A' }}
+            </td>
             
             <!-- Description: Brief description of the expense -->
             <td>{{ exp.description }}</td>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './sales-dashboard.html',
   styleUrl: './sales-dashboard.css'
 })
-export class SalesDashboardComponent {
+export class SalesDashboardComponent implements OnInit {
   modules = [
     {
       title: 'Customers',
@@ -33,4 +33,8 @@ export class SalesDashboardComponent {
       color: '#8b5cf6'
     }
   ];
+
+  ngOnInit(): void {
+    console.log('SalesDashboardComponent initialized');
+  }
 }

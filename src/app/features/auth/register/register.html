@@ -3,10 +3,10 @@
     <div class="card-body p-4">
       
       <div class="text-center mb-4">
-        <h2 class="fw-bold text-success">🆕 New Account</h2>
-        <p class="text-muted">Join Smart Factory ERP today.</p>
+        <h2 class="fw-bold text-primary">New Account</h2>
       </div>
 
+      <!-- رسالة الخطأ العامة -->
       @if (errorMessage()) {
         <div class="alert alert-danger text-center p-2 mb-3">
           {{ errorMessage() }}
@@ -14,34 +14,111 @@
       }
 
       <form (ngSubmit)="onSubmit()">
+        
+        <!-- الاسم الكامل -->
         <div class="mb-3">
           <label class="form-label fw-bold">Full Name</label>
-          <input type="text" class="form-control" [(ngModel)]="data.fullName" name="fullName" required placeholder="John Doe">
+          <input 
+            type="text" 
+            class="form-control" 
+            [class.is-invalid]="fieldErrors()['fullName']"
+            [(ngModel)]="data.fullName" 
+            (ngModelChange)="clearFieldError('fullName')"
+            name="fullName" 
+            required 
+            placeholder="John Doe">
+          @if (fieldErrors()['fullName']) {
+            <div class="invalid-feedback d-block">
+              {{ fieldErrors()['fullName'] }}
+            </div>
+          }
         </div>
 
+        <!-- البريد الإلكتروني -->
         <div class="mb-3">
           <label class="form-label fw-bold">Email Address</label>
-          <input type="email" class="form-control" [(ngModel)]="data.email" name="email" required placeholder="john@factory.com">
+          <input 
+            type="email" 
+            class="form-control" 
+            [class.is-invalid]="fieldErrors()['email']"
+            [(ngModel)]="data.email" 
+            (ngModelChange)="clearFieldError('email')"
+            name="email" 
+            required 
+            placeholder="john@factory.com">
+          @if (fieldErrors()['email']) {
+            <div class="invalid-feedback d-block">
+              {{ fieldErrors()['email'] }}
+            </div>
+          }
         </div>
 
+        <!-- كلمة المرور -->
         <div class="mb-3">
           <label class="form-label fw-bold">Password</label>
-          <input type="password" class="form-control" [(ngModel)]="data.password" name="password" required placeholder="••••••••">
-          <small class="text-muted d-block mt-1">
-            Min 8 chars, must include: uppercase, lowercase, digit, special char (@$!%*?&amp;#)
-          </small>
+          <input 
+            type="password" 
+            class="form-control" 
+            [class.is-invalid]="fieldErrors()['password']"
+            [(ngModel)]="data.password" 
+            (ngModelChange)="clearFieldError('password')"
+            name="password" 
+            required 
+            placeholder="••••••••">
+          @if (fieldErrors()['password']) {
+            <div class="invalid-feedback d-block">
+              {{ fieldErrors()['password'] }}
+            </div>
+          } @else {
+            <small class="text-muted d-block mt-1">
+              Min 8 chars, must include: uppercase, lowercase, digit, special char (@$!%*?&amp;#)
+            </small>
+          }
         </div>
 
+        <!-- تأكيد كلمة المرور -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Confirm Password</label>
+          <input 
+            type="password" 
+            class="form-control" 
+            [class.is-invalid]="fieldErrors()['confirmPassword']"
+            [(ngModel)]="data.confirmPassword" 
+            (ngModelChange)="clearFieldError('confirmPassword')"
+            name="confirmPassword" 
+            required 
+            placeholder="••••••••">
+          @if (fieldErrors()['confirmPassword']) {
+            <div class="invalid-feedback d-block">
+              {{ fieldErrors()['confirmPassword'] }}
+            </div>
+          }
+        </div>
+
+        <!-- رقم الموظف -->
         <div class="mb-3">
           <label class="form-label fw-bold">Employee ID (Optional)</label>
-          <input type="number" class="form-control" [(ngModel)]="data.employeeId" name="employeeId" placeholder="101">
+          <input 
+            type="number" 
+            class="form-control" 
+            [class.is-invalid]="fieldErrors()['employeeId']"
+            [(ngModel)]="data.employeeId" 
+            (ngModelChange)="clearFieldError('employeeId')"
+            name="employeeId" 
+            placeholder="101">
+          @if (fieldErrors()['employeeId']) {
+            <div class="invalid-feedback d-block">
+              {{ fieldErrors()['employeeId'] }}
+            </div>
+          }
         </div>
 
-        <button type="submit" class="btn btn-success w-100 py-2 fw-bold" [disabled]="isLoading()">
+        <!-- زر التسجيل -->
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" [disabled]="isLoading()">
           @if (isLoading()) { 
             <span class="spinner-border spinner-border-sm me-2"></span> Creating Account... 
           } @else { 
-            ✅ Register 
+             Register 
           }
         </button>
       </form>

@@ -22,7 +22,7 @@ export class SalesService {
   private http = inject(HttpClient);
   
   // 3. رابط الـ Backend (تأكد من البورت)
-  private apiUrl = 'https://sfe.runasp.net/api/v1/sales';
+  private apiUrl = 'https://localhost:7093/api/v1/sales';
 
   // =========================
   // Customers Methods

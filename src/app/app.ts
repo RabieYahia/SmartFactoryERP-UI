@@ -76,6 +76,13 @@ export class AppComponent {
   }
 
   /**
+   * التحقق إذا المستخدم InventoryManager
+   */
+  get isInventoryManager(): boolean {
+    return this.authService.hasRole('InventoryManager');
+  }
+
+  /**
    * Global Search
    */
   onSearchInput(event: any) {
