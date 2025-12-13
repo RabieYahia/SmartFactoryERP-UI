@@ -112,7 +112,7 @@ export class CreateReceiptComponent implements OnInit {
     this.purchasingService.createGoodsReceipt(command).subscribe({
       next: (receiptId) => {
         this.alertService.success(`Goods Received Successfully! Receipt ID: ${receiptId}. Inventory Updated.`);
-        this.router.navigate(['/inventory']);
+        this.router.navigate(['/purchasing/orders']); // Navigate back to purchase orders list
       },
       error: (err) => {
         console.error('❌ Receipt Error:', err);

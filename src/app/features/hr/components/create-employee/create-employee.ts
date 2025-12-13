@@ -101,7 +101,7 @@ export class CreateEmployeeComponent implements OnInit {
     this.hrService.createEmployee(payload).subscribe({
       next: () => {
         this.alertService.success('Employee Created!');
-        this.router.navigate(['/hr/employees']);
+        this.router.navigate(['/hr']); // Navigate back to HR employee list
       },
       error: (err) => {
         console.error(err);
