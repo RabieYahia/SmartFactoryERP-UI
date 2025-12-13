@@ -37,13 +37,22 @@ export class CreateTaskComponent implements OnInit {
 
   onSubmit() {
     if (this.form.invalid) return;
+
+    const rawDue = this.form.value.dueDate;
+    const due = rawDue ? new Date(rawDue) : null;
+    const now = new Date();
+    if (!due || due.getTime() <= now.getTime()) {
+      this.alertService.error('Due date cannot be in the past or empty. Please choose a future date.');
+      return;
+    }
+
     this.isSubmitting.set(true);
 
     const payload = {
       ...this.form.value,
       priority: Number(this.form.value.priority),
       assignedEmployeeId: Number(this.form.value.assignedEmployeeId),
-      dueDate: new Date(this.form.value.dueDate!).toISOString()
+      dueDate: due.toISOString()
     };
 
     this.tasksService.createTask(payload).subscribe({
@@ -52,8 +61,11 @@ export class CreateTaskComponent implements OnInit {
         this.router.navigate(['/tasks']);
       },
       error: (err) => {
-        console.error(err);
-        this.alertService.error('Error creating task');
+        console.error('Create Task Error:', err);
+        // Log server response body if available to help debugging
+        if (err && err.error) console.error('Server error body:', err.error);
+        const serverMsg = err?.error?.message || err?.message || 'Error creating task';
+        this.alertService.error(serverMsg);
         this.isSubmitting.set(false);
       }
     });

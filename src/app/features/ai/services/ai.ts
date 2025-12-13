@@ -8,7 +8,7 @@ import { ProductForecast } from '../models/forecast.model';
 })
 export class AiService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://sfe.runasp.net/api/v1/ai';
+  private apiUrl = 'https://localhost:7093/api/v1/ai';
 
   getForecast(productId: number): Observable<ProductForecast> {
     return this.http.get<ProductForecast>(`${this.apiUrl}/forecast/${productId}`);

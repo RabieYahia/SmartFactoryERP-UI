@@ -68,7 +68,7 @@ export class PurchasingService {
   private http = inject(HttpClient);
 
   // رابط الباك إند
-  private apiUrl = 'https://sfe.runasp.net/api/v1/purchasing';
+  private apiUrl = 'https://localhost:7093/api/v1/purchasing';
 
   // -------------------------
   // Suppliers Methods
@@ -79,6 +79,16 @@ export class PurchasingService {
 
   createSupplier(supplier: any): Observable<number> {
     return this.http.post<number>(`${this.apiUrl}/suppliers`, supplier);
+  }
+
+  // Get single supplier by id
+  getSupplierById(id: number): Observable<Supplier> {
+    return this.http.get<Supplier>(`${this.apiUrl}/suppliers/${id}`);
+  }
+
+  // Update existing supplier
+  updateSupplier(id: number, supplier: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/suppliers/${id}`, supplier);
   }
 
   // -------------------------

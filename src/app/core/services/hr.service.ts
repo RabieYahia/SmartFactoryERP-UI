@@ -8,7 +8,7 @@ import { AttendanceLog } from '../models/hr.model'; // Import
 })
 export class HrService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://sfe.runasp.net/api/v1/hr';
+  private apiUrl = 'https://localhost:7093/api/v1/hr';
 
   // --- Departments ---
   getDepartments(): Observable<Department[]> {

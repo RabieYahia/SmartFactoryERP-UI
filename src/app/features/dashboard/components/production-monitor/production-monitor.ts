@@ -34,7 +34,7 @@ export class ProductionMonitorComponent implements OnInit, OnDestroy {
   }
 
   loadMonitorData() {
-    this.http.get<any>('https://sfe.runasp.net/api/v1/dashboard/production-monitor')
+    this.http.get<any>('https://localhost:7093/api/v1/dashboard/production-monitor')
       .subscribe(data => {
         this.presentWorkers.set(data.presentWorkersCount);
         this.activeOrders.set(data.activeOrders);
