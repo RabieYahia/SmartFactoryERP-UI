@@ -1,7 +1,7 @@
 <div class="container">
   
   <div class="header-section">
-    <h1>🏭 IoT Simulation Dashboard</h1>
+    <h1> IoT Simulation Dashboard</h1>
     <div class="connection-badge" 
          [class.connected]="signalR.connectionStatus().includes('Active')"
          [class.disconnected]="!signalR.connectionStatus().includes('Active')">
@@ -29,7 +29,7 @@
 
         <div class="metrics">
           <div class="metric">
-            <span>⚡ Speed:</span>
+            <span> Speed:</span>
             <span class="value">{{ machine.speed }} rpm</span>
           </div>
 
@@ -41,7 +41,7 @@
           </div>
 
           <div class="metric">
-            <span>📦 Production:</span>
+            <span> Production:</span>
             <span class="value">{{ machine.productionCount }}</span>
           </div>
         </div>
