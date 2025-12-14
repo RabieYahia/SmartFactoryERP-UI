@@ -11,7 +11,7 @@ import { AuthResponse, ChangePasswordRequest, LoginRequest, RegisterRequest } fr
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = 'https://localhost:7093/api/v1/auth';
+  private apiUrl = 'https://sfe.runasp.net/api/v1/auth';
 
   // إشارة لمعرفة هل المستخدم مسجل دخول أم لا
   isLoggedIn = signal<boolean>(this.hasToken());

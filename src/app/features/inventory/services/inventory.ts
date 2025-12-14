@@ -11,7 +11,7 @@ export class InventoryService {
   private http = inject(HttpClient);
   
   // 2. رابط الـ Backend (تأكد من البورت 7093)
-  private apiUrl = 'https://localhost:7093/api/v1/inventory';
+  private apiUrl = 'https://sfe.runasp.net/api/v1/inventory';
 
   // =========================
   // CRUD Operations
