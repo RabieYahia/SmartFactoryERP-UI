@@ -10,7 +10,7 @@ import { AlertService } from '../../../../core/services/alert.service';
 @Component({
   selector: 'app-create-production-order',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './create-order.html',
   styleUrl: './create-order.css'
 })
@@ -21,19 +21,19 @@ export class CreateOrderComponent implements OnInit {
   private router = inject(Router);
   private alertService = inject(AlertService);
 
-  // --- التحكم في الخطوات ---
+  // --- Step Control ---
   currentStep = signal<number>(1); // 1: Product/BOM, 2: Quantity/Stock Check
 
-  // --- البيانات ---
+  // --- Data ---
   finishedProducts = signal<Material[]>([]);
   rawMaterials = signal<Material[]>([]);
   selectedBOM = signal<{ components: any[] } | null>(null);
-  stockStatus = signal<any[]>([]); // لتخزين حالة المخزون (يكفي/لا يكفي)
+  stockStatus = signal<any[]>([]); // Store stock status (sufficient/insufficient)
 
   isSubmitting = signal<boolean>(false);
-  isBomMissing = signal<boolean>(false); // هل المنتج محتاج تعريف BOM؟
+  isBomMissing = signal<boolean>(false); // Does the product need BOM definition?
 
-  // --- الفورم الأساسي (الخطوة 2) ---
+  // --- Main Form (Step 2) ---
   orderForm: FormGroup = this.fb.group({
     quantity: [1, [Validators.required, Validators.min(1)]],
     startDate: [new Date().toISOString().split('T')[0], Validators.required],
@@ -41,7 +41,7 @@ export class CreateOrderComponent implements OnInit {
     notes: ['']
   });
 
-  // --- فورم الـ BOM (الخطوة 1 - لو مفيش BOM) ---
+  // --- BOM Form (Step 1 - if no BOM exists) ---
   bomForm: FormGroup = this.fb.group({
     productId: ['', Validators.required],
     components: this.fb.array([])
@@ -57,27 +57,27 @@ export class CreateOrderComponent implements OnInit {
 
   loadMaterials() {
     this.inventoryService.getMaterials().subscribe(res => {
-      // فلتر المنتجات التامة
+      // Filter finished products
       this.finishedProducts.set(res.filter(m => (m.materialType as any) === 'FinishedGood' || (m.materialType as any) === 2 || (m.materialType as any) === '2'));
-      // فلتر المواد الخام
+      // Filter raw materials
       this.rawMaterials.set(res.filter(m => (m.materialType as any) === 'RawMaterial' || (m.materialType as any) === 0 || (m.materialType as any) === '0'));
     });
   }
 
-  // --- الخطوة 1: اختيار المنتج والتحقق من الـ BOM ---
+  // --- Step 1: Select product and verify BOM ---
   onProductSelect() {
     const prodId = this.bomForm.get('productId')?.value;
     if (!prodId) return;
 
     this.isBomMissing.set(false);
 
-    // نفترض دائماً أن المستخدم سيعرف BOM فورية
-    this.isBomMissing.set(true); // لفتح شاشة إدخال الـ BOM
+    // Always assume user will define BOM immediately
+    this.isBomMissing.set(true); // Open BOM entry screen
     this.componentsArr.clear();
-    this.addComponent(); // إضافة سطر فاضي للمكونات
+    this.addComponent(); // Add empty row for components
   }
 
-  // --- دوال فورم الـ BOM ---
+  // --- BOM Form Functions ---
   addComponent() {
     const g = this.fb.group({
       componentId: [null, Validators.required],
@@ -90,24 +90,24 @@ export class CreateOrderComponent implements OnInit {
     this.componentsArr.removeAt(i);
   }
 
-  // الانتقال للخطوة 2 مع حفظ BOM مؤقتاً
+  // Navigate to step 2 with temporary BOM save
   goToStep2() {
     if (this.bomForm.invalid || this.componentsArr.length === 0) {
       this.alertService.warning('Please define at least one valid raw material component.');
       return;
     }
 
-    // حفظ الـ components محلياً (BOM الفورية)
+    // Save components locally (immediate BOM)
     this.selectedBOM.set({ components: this.componentsArr.value });
 
     this.isBomMissing.set(false);
     this.nextStep();
   }
 
-  // --- التنقل ---
+  // --- Navigation ---
   nextStep() {
     this.currentStep.set(2);
-    this.calculateStockRequirements(); // أول ما يدخل الخطوة 2 يحسب
+    this.calculateStockRequirements(); // Calculate when entering step 2
   }
 
   goBack() {
@@ -122,16 +122,16 @@ export class CreateOrderComponent implements OnInit {
     }
   }
 
-  // --- الخطوة 2: حساب المخزون ---
+  // --- Step 2: Calculate Stock Requirements ---
   calculateStockRequirements() {
     const orderQty = this.orderForm.get('quantity')?.value || 0;
 
-    // نستخدم الـ components المحفوظة في selectedBOM
+    // Use the components stored in selectedBOM
     const componentsToUse = this.selectedBOM()?.components || [];
 
     const status = componentsToUse.map(comp => {
       const rawMat = this.rawMaterials().find(m => m.id == comp.componentId);
-      const requiredQty = comp.quantity * orderQty; // كمية الوحدة * كمية الأوردر
+      const requiredQty = comp.quantity * orderQty; // Unit quantity * Order quantity
       const availableQty = rawMat?.currentStockLevel || 0;
 
       return {
@@ -139,26 +139,26 @@ export class CreateOrderComponent implements OnInit {
         required: requiredQty,
         available: availableQty,
         isSufficient: availableQty >= requiredQty,
-        materialId: comp.componentId // مهم جداً: لتمريره في الـ Command
+        materialId: comp.componentId // Very important: to pass in the Command
       };
     });
 
     this.stockStatus.set(status);
   }
 
-  // عند تغيير الكمية في الفورم
+  // When quantity changes in the form
   onQuantityChange() {
     this.calculateStockRequirements();
   }
 
-  // --- الخطوة الأخيرة: إنشاء الأوردر ---
+  // --- Final Step: Create Order ---
   submitOrder() {
     if (this.orderForm.invalid) {
       this.alertService.warning('Please complete all required fields.');
       return;
     }
 
-    // منع الإنشاء لو المخزون لا يكفي
+    // Prevent creation if stock is insufficient
     const hasShortage = this.stockStatus().some(s => !s.isSufficient);
     if (hasShortage) {
       const confirmMsg = '⚠️ Warning: Not enough stock for some materials. Do you want to proceed anyway?';
@@ -167,10 +167,10 @@ export class CreateOrderComponent implements OnInit {
 
     this.isSubmitting.set(true);
 
-    // إنشاء مصفوفة الخامات (Items) النهائية المطلوبة للـ Command
+    // Create final materials array (Items) required for the Command
     const orderComponents: OrderItemInputDto[] = this.stockStatus().map(s => ({
       materialId: s.materialId,
-      quantity: s.required // نستخدم الـ Required Quantity المحسوبة
+      quantity: s.required // Use the calculated Required Quantity
     }));
 
     const command: CreateProductionOrderCommand = {
@@ -179,7 +179,7 @@ export class CreateOrderComponent implements OnInit {
       startDate: new Date(this.orderForm.get('startDate')?.value).toISOString(),
       priority: this.orderForm.get('priority')?.value,
       notes: this.orderForm.get('notes')?.value,
-      items: orderComponents // تمرير مصفوفة الخامات
+      items: orderComponents // Pass materials array
     };
 
     console.log('🚀 Creating Production Order:', command);
